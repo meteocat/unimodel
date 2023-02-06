@@ -3,7 +3,6 @@ import xarray
 from rasterio import Affine
 
 
-
 def _get_wrf_prs_metadata(xarray_var):
 
     """Get projection, Affine transform and shape from a PRS xarray.
@@ -50,17 +49,22 @@ def _get_wrf_prs_metadata(xarray_var):
             'crs': crs_wrf, 'x_size': nx, 'y_size': ny}
 
 
-def read_wrf_prs(file):
+def read_wrf_prs(file,variable):
+    """Read wrf variable chosen in a wrf-PRS grib file
 
-    ds_prec = xarray.open_dataarray(file, engine='cfgrib',
-                    backend_kwargs=dict(filter_by_keys={'shortName': 'tp'}))
-    
-    geographics = _get_wrf_prs_metadata(ds_prec)
-    
-    ds_prec = ds_prec.rio.write_crs(geographics['crs'])
+    Args:
+        file (string): Path of the file which has to be readed
+        variable (string): Variable to extract
+    Returns:
+        xarray: Contains the data and the geographical information to  
+                transform the grids
+    """
 
+    ds_data = xarray.open_dataarray(file, engine='cfgrib',
+                    backend_kwargs=dict(filter_by_keys={'shortName': variable}))
+ 
+    geographics = _get_wrf_prs_metadata(ds_data)
+    ds_data = ds_data.rio.write_crs(geographics['crs'])
+    ds_data.rio.write_transform(geographics['affine'], inplace=True)
 
-    return ds_prec
-
-
-
+    return ds_data
