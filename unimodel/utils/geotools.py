@@ -1,3 +1,5 @@
+"""Subrutines for retrieve geographical features
+"""
 import numpy as np
 
 
@@ -12,7 +14,7 @@ def _get_key(attribs, key, default=None):
 def proj4_from_grib(ds_grib):
     """
     ES UNA COPIA DE UNA SUBRUTINA DEL PYGRIB
-    sets the ``projparams`` instance variable to a dictionary containing 
+    sets the ``projparams`` instance variable to a dictionary containing
     proj4 key/value pairs describing the grid.
     """
     projparams = {}
@@ -173,4 +175,4 @@ def proj4_from_grib(ds_grib):
     else: # unsupported grid type.
         projparams = None
 
-    return (projparams)
+    return projparams
