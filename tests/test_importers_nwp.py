@@ -26,9 +26,12 @@ class TestIOImportNwp(unittest.TestCase):
         self.assertAlmostEqual(data_var.values[120][133],1.97)
         self.assertAlmostEqual(data_var.values[133][120],0.14)
     
-        self.assertAlmostEqual(data_var.rio.transform(),
-                               Affine(3000.0, 0.0, -250966.8378711785,
-                                      0.0, -3000.0, 389938.10408251436))
+        self.assertAlmostEqual(data_var.rio.transform().a, 3000.0)
+        self.assertAlmostEqual(data_var.rio.transform().b, 0.0)
+        self.assertAlmostEqual(data_var.rio.transform().c, -252466.8378711785)
+        self.assertAlmostEqual(data_var.rio.transform().d, 0.0)
+        self.assertAlmostEqual(data_var.rio.transform().e, 3000.0)
+        self.assertAlmostEqual(data_var.rio.transform().f, -385561.89591748564)
 
 
     def test_read_icon(self):
@@ -46,6 +49,9 @@ class TestIOImportNwp(unittest.TestCase):
         self.assertAlmostEqual(data_var.values[33][13],0.032226562)
         self.assertAlmostEqual(data_var.values[13][33],0.4423828)
     
-        self.assertAlmostEqual(data_var.rio.transform(),
-                               Affine(0.0625, 0.0, -12.03125,
-                                      0.0, -0.0625, 34.03125))
+        self.assertAlmostEqual(data_var.rio.transform().a, 0.0625)
+        self.assertAlmostEqual(data_var.rio.transform().b, 0.0)
+        self.assertAlmostEqual(data_var.rio.transform().c, -12.03125)
+        self.assertAlmostEqual(data_var.rio.transform().d, 0.0)
+        self.assertAlmostEqual(data_var.rio.transform().e, 0.0625)
+        self.assertAlmostEqual(data_var.rio.transform().f, 33.96875)
