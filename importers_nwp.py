@@ -120,5 +120,57 @@ def _get_moloch_metadata(moloch_data: xarray.DataArray) -> dict:
 
     return {'x0': x_0, 'dx': d_x, 'y0': y_0, 'dy': d_y,
             'crs': moloch_projection,
-            'x_size': moloch_data.attrs['GRIB_Ny'],
-            'y_size': moloch_data.attrs['GRIB_Nx']}
+            'x_size': moloch_data.attrs['GRIB_Nx'],
+            'y_size': moloch_data.attrs['GRIB_Ny']}
+
+
+def read_bolam_grib(grib_file: str, variable: str) -> xarray.DataArray:
+    """Reads a Bolam grib file and transforms it into an xarray.DataArray.
+
+    Args:
+        grib_file (str): Path to a Bolam grib file.
+        variable (str): Variable to extract.
+
+    Returns:
+        xarray: Bolam grib file data.
+    """
+    grib_filter = {'shortName': variable}
+
+    grib_data = xarray.open_dataarray(grib_file, engine='cfgrib',
+                    backend_kwargs=dict(filter_by_keys=grib_filter))
+
+    grib_md = _get_bolam_metadata(grib_data)
+
+    grib_data.rio.write_crs(grib_md['crs'], inplace=True)
+
+    x_coords = np.linspace(grib_md['x0'],
+                           grib_md['x0'] + (grib_md['x_size'] * grib_md['dx'])
+                           - grib_md['dx'],
+                           grib_md['x_size'])
+
+    y_coords = np.linspace(grib_md['y0'],
+                           grib_md['y0'] + (grib_md['y_size'] * grib_md['dy'])
+                           - grib_md['dy'],
+                           grib_md['y_size'])
+
+    grib_data = grib_data.assign_coords(x=x_coords, y=y_coords)
+    grib_data.rio.write_crs(grib_md['crs'], inplace=True)
+    grib_data = grib_data.drop_vars(['latitude', 'longitude'], errors='ignore')
+
+    return grib_data
+
+
+def _get_bolam_metadata(bolam_data: xarray.DataArray) -> dict:
+
+    bolam_projection = proj4_from_grib(bolam_data)
+
+    x_0 = bolam_data.attrs['GRIB_longitudeOfFirstGridPointInDegrees'] - 360.0
+    d_x = bolam_data.attrs['GRIB_iDirectionIncrementInDegrees']
+
+    y_0 = bolam_data.attrs['GRIB_latitudeOfFirstGridPointInDegrees']
+    d_y = bolam_data.attrs['GRIB_jDirectionIncrementInDegrees']
+
+    return {'x0': x_0, 'dx': d_x, 'y0': y_0, 'dy': d_y,
+            'crs': bolam_projection,
+            'x_size': bolam_data.attrs['GRIB_Nx'],
+            'y_size': bolam_data.attrs['GRIB_Ny']}
