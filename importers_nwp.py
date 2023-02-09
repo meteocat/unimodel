@@ -91,21 +91,19 @@ def read_moloch_grib(grib_file: str, variable: str) -> xarray.DataArray:
 
     grib_data.rio.write_crs(grib_md['crs'], inplace=True)
 
-    x_coords = np.linspace(grib_md['affine'].c,
-                           grib_md['affine'].c + (grib_md['x_size'] *
-                           grib_md['affine'].a) - grib_md['affine'].a,
+    x_coords = np.linspace(grib_md['x0'],
+                           grib_md['x0'] + (grib_md['x_size'] * grib_md['dx'])
+                           - grib_md['dx'],
                            grib_md['x_size'])
 
-    y_coords = np.linspace(grib_md['affine'].f,
-                            grib_md['affine'].f + (grib_md['y_size'] *
-                            grib_md['affine'].e) - grib_md['affine'].e,
-                            grib_md['y_size'])
+    y_coords = np.linspace(grib_md['y0'],
+                           grib_md['y0'] + (grib_md['y_size'] * grib_md['dy'])
+                           - grib_md['dy'],
+                           grib_md['y_size'])
 
     grib_data = grib_data.assign_coords(x=x_coords, y=y_coords)
     grib_data.rio.write_crs(grib_md['crs'], inplace=True)
     grib_data = grib_data.drop_vars(['latitude', 'longitude'], errors='ignore')
-
-    grib_data.rio.write_transform(grib_md['affine'], inplace=True)
 
     return grib_data
 
@@ -114,14 +112,13 @@ def _get_moloch_metadata(moloch_data: xarray.DataArray) -> dict:
 
     moloch_projection = proj4_from_grib(moloch_data)
 
-    moloch_extension = Affine.from_gdal(
-        moloch_data.attrs['GRIB_longitudeOfFirstGridPointInDegrees'],
-        moloch_data.attrs['GRIB_iDirectionIncrementInDegrees'],
-        0,
-        moloch_data.attrs['GRIB_latitudeOfFirstGridPointInDegrees'],
-        0,
-        moloch_data.attrs['GRIB_jDirectionIncrementInDegrees'])
+    x_0 = moloch_data.attrs['GRIB_longitudeOfFirstGridPointInDegrees']
+    d_x = moloch_data.attrs['GRIB_iDirectionIncrementInDegrees']
 
-    return {'affine': moloch_extension, 'crs': moloch_projection,
+    y_0 = moloch_data.attrs['GRIB_latitudeOfFirstGridPointInDegrees']
+    d_y = moloch_data.attrs['GRIB_jDirectionIncrementInDegrees']
+
+    return {'x0': x_0, 'dx': d_x, 'y0': y_0, 'dy': d_y,
+            'crs': moloch_projection,
             'x_size': moloch_data.attrs['GRIB_Ny'],
             'y_size': moloch_data.attrs['GRIB_Nx']}
