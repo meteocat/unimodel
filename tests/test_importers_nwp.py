@@ -10,7 +10,7 @@ class TestImportersNWP(unittest.TestCase):
     """Tests NWP grib to xarray."""
     def test_read_wrf_prs(self):
         """Test WRF grib to xarray."""
-        file='/home/jmc/workspace/unimodel/tests/data/WRFPRS-03.2023020600_032.grib'
+        file='tests/data/WRFPRS-03.2023020600_032.grib'
         variable='tp'
         data_var = read_wrf_prs(file,variable)
 
@@ -34,7 +34,7 @@ class TestImportersNWP(unittest.TestCase):
         """Tests Moloch grib to xarray."""
         moloch_data = read_moloch_grib(
             'tests/data/moloch-1p6.2022032100_48.grib2', 'tp')
-
+        moloch_data.rio.to_raster('test_moloch.tif')
         self.assertEqual(moloch_data.shape, (370, 370))
 
         self.assertEqual(moloch_data.rio.crs.data['proj'], 'ob_tran')
@@ -43,10 +43,10 @@ class TestImportersNWP(unittest.TestCase):
         self.assertEqual(moloch_data.rio.crs.data['lon_0'], 358.36)
         self.assertEqual(moloch_data.rio.crs.data['o_lon_p'], 0)
 
-        self.assertEqual(moloch_data.rio.transform().a, 0.014)
-        self.assertEqual(moloch_data.rio.transform().c, -0.007)
-        self.assertEqual(moloch_data.rio.transform().e, 0.014)
-        self.assertEqual(moloch_data.rio.transform().f, -1.5)
+        self.assertAlmostEqual(moloch_data.rio.transform().a, 0.014)
+        self.assertAlmostEqual(moloch_data.rio.transform().c, -0.007)
+        self.assertAlmostEqual(moloch_data.rio.transform().e, 0.014)
+        self.assertAlmostEqual(moloch_data.rio.transform().f, -1.5)
 
         self.assertAlmostEqual(moloch_data.data[5, 70], 13.779, 2)
         self.assertAlmostEqual(moloch_data.data[70, 5], 32.943, 2)
