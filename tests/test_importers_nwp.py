@@ -4,7 +4,7 @@ import unittest
 from rasterio import Affine
 
 from importers_nwp import (read_bolam_grib, read_icon_grib, read_moloch_grib,
-                           read_wrf_prs, read_arome_grib)
+                           read_wrf_prs, read_arome_grib, read_arpege_grib)
 
 
 class TestImportersNWP(unittest.TestCase):
@@ -119,3 +119,21 @@ class TestImportersNWP(unittest.TestCase):
 
         self.assertAlmostEqual(arome_data.data[500, 749], 0.204, 2)
         self.assertAlmostEqual(arome_data.data[0, 0], 0.0, 2)
+
+    
+    def test_read_arpege_grib(self):
+        """Tests ARPEGE grib to xarray."""
+        arpege_data = read_arpege_grib(
+            'tests/data/arpege-11.2023020900_20.grib2', 'tp')
+        self.assertEqual(arpege_data.shape, (51, 76))
+
+        self.assertEqual(arpege_data.rio.crs.data['proj'], 'longlat')
+        self.assertEqual(arpege_data.rio.crs.data['datum'], 'WGS84')
+
+        self.assertAlmostEqual(arpege_data.rio.transform().a, 0.0999,3)
+        self.assertAlmostEqual(arpege_data.rio.transform().c, -1.55,3)
+        self.assertAlmostEqual(arpege_data.rio.transform().e, -0.1,3)
+        self.assertAlmostEqual(arpege_data.rio.transform().f, 44.05,3)
+
+        self.assertAlmostEqual(arpege_data.data[50, 73], 6.205, 2)
+        self.assertAlmostEqual(arpege_data.data[3, 3], 0.0, 2)
