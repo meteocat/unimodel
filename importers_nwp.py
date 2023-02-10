@@ -8,6 +8,44 @@ from rasterio import Affine
 from unimodel.utils.geotools import proj4_from_grib
 
 
+def read_wrf_prs(grib_file: str, variable: str) -> xarray.DataArray:
+    """Reads a WRF grib file and transforms it into an xarray.DataArray.
+
+    Args:
+        grib_file (string): Path to a WRF grib file.
+        variable (string): Variable to extract.
+    Returns:
+        xarray: Contains the data and the geographical information to
+                transform the grids
+    """
+
+    ds_data = xarray.open_dataarray(grib_file, engine='cfgrib',
+                    backend_kwargs=dict(filter_by_keys={'shortName': variable}))
+    geographics = _get_wrf_prs_metadata(ds_data)
+    ds_data = ds_data.rio.write_crs(geographics['crs'])
+
+    # El grib del WRF produeixen un xarray sense coordenades i per evitar feina
+    # innecessària al futur es decideix crear-les i anomenar-les x i y perquè
+    # seran les que després s'usaran per reprojectar.
+
+    x_coords = np.linspace(geographics['x0'],
+                           geographics['x0'] + ((geographics['x_size'] -1) *
+                            geographics['dx']),
+                            geographics['x_size'])
+
+    y_coords = np.linspace(geographics['y0'],
+                            geographics['y0'] + ((geographics['y_size'] -1)*
+                            geographics['dy']),
+                            geographics['y_size'])
+    y_coords = y_coords[::-1]
+
+    ds_data = ds_data.assign_coords(x=x_coords, y=y_coords)
+    ds_data = ds_data.drop_vars(['latitude', 'longitude'], errors='ignore')
+
+
+    return ds_data
+
+
 def _get_wrf_prs_metadata(xarray_var: xarray.DataArray) -> dict:
     """Get projection, Affine transform and shape from a PRS xarray.
 
@@ -56,79 +94,8 @@ def _get_wrf_prs_metadata(xarray_var: xarray.DataArray) -> dict:
             'crs': crs_wrf, 'x_size': nx, 'y_size': ny}
 
 
-def _get_icon_metadata(xarray_var):
-    """Get projection
 
-    Args:
-        xarray_var (xarray): xarray to get information from.
-
-    Returns:
-        dict: CRS
-    """
-
-    # Llegim la projeccion associatda al xarray i la escrivim com CRS.
-    projparams=proj4_from_grib(xarray_var)
-    crs_model= pyproj.crs.CRS.from_dict(projparams)
-
-    return {'crs': crs_model}
-
-
-def _get_icon_metadata(xarray_var):
-    """Get projection
-
-    Args:
-        xarray_var (xarray): xarray to get information from.
-
-    Returns:
-        dict: CRS
-    """
-
-    # Llegim la projeccion associatda al xarray i la escrivim com CRS.
-    projparams=proj4_from_grib(xarray_var)
-    crs_model= pyproj.crs.CRS.from_dict(projparams)
-
-    return {'crs': crs_model}
-
-
-def read_wrf_prs(grib_file: str, variable: str) -> xarray.DataArray:
-    """Reads a WRF grib file and transforms it into an xarray.DataArray.
-
-    Args:
-        grib_file (string): Path to a WRF grib file.
-        variable (string): Variable to extract.
-    Returns:
-        xarray: Contains the data and the geographical information to
-                transform the grids
-    """
-
-    ds_data = xarray.open_dataarray(grib_file, engine='cfgrib',
-                    backend_kwargs=dict(filter_by_keys={'shortName': variable}))
-    geographics = _get_wrf_prs_metadata(ds_data)
-    ds_data = ds_data.rio.write_crs(geographics['crs'])
-
-    # El grib del WRF produeixen un xarray sense coordenades i per evitar feina
-    # innecessària al futur es decideix crear-les i anomenar-les x i y perquè
-    # seran les que després s'usaran per reprojectar.
-
-    x_coords = np.linspace(geographics['x0'],
-                           geographics['x0'] + ((geographics['x_size'] -1) *
-                            geographics['dx']),
-                            geographics['x_size'])
-
-    y_coords = np.linspace(geographics['y0'],
-                            geographics['y0'] + ((geographics['y_size'] -1)*
-                            geographics['dy']),
-                            geographics['y_size'])
-    y_coords = y_coords[::-1]
-
-    ds_data = ds_data.assign_coords(x=x_coords, y=y_coords)
-    ds_data = ds_data.drop_vars(['latitude', 'longitude'], errors='ignore')
-
-
-    return ds_data
-
-
-def read_icon(file, variable):
+def read_icon_grib(file, variable):
     """Read wrf variable chosen in a ICON grib file
 
     Args:
@@ -138,16 +105,33 @@ def read_icon(file, variable):
         xarray: Contains the data and the geographical information to
                 transform the grids
     """
-    ds_data = xarray.open_dataarray(file, engine='cfgrib',
+    grib_data = xarray.open_dataarray(file, engine='cfgrib',
                     backend_kwargs=dict(filter_by_keys={'shortName': variable}))
 
-    geographics = _get_icon_metadata(ds_data)
-    ds_data = ds_data.rio.write_crs(geographics['crs'])
+    geographics = _get_icon_metadata(grib_data)
+    grib_data = grib_data.rio.write_crs(geographics['crs'])
 
     # Canviem els noms perquè amb coordenades x i y serà més fàcil reprojectar.
-    ds_data = ds_data.rename({'longitude':'x','latitude':'y'})
+    grib_data = grib_data.rename({'longitude':'x','latitude':'y'})
 
-    return ds_data
+    return grib_data
+
+
+def _get_icon_metadata(xarray_var):
+    """Get projection
+
+    Args:
+        xarray_var (xarray): xarray to get information from.
+
+    Returns:
+        dict: CRS
+    """
+
+    # Llegim la projeccion associatda al xarray i la escrivim com CRS.
+    projparams=proj4_from_grib(xarray_var)
+    crs_model= pyproj.crs.CRS.from_dict(projparams)
+
+    return {'crs': crs_model}
 
 
 def read_moloch_grib(grib_file: str, variable: str) -> xarray.DataArray:
@@ -180,7 +164,6 @@ def read_moloch_grib(grib_file: str, variable: str) -> xarray.DataArray:
                            grib_md['y_size'])
 
     grib_data = grib_data.assign_coords(x=x_coords, y=y_coords)
-    grib_data.rio.write_crs(grib_md['crs'], inplace=True)
     grib_data = grib_data.drop_vars(['latitude', 'longitude'], errors='ignore')
 
     return grib_data
@@ -232,7 +215,6 @@ def read_bolam_grib(grib_file: str, variable: str) -> xarray.DataArray:
                            grib_md['y_size'])
 
     grib_data = grib_data.assign_coords(x=x_coords, y=y_coords)
-    grib_data.rio.write_crs(grib_md['crs'], inplace=True)
     grib_data = grib_data.drop_vars(['latitude', 'longitude'], errors='ignore')
 
     return grib_data
@@ -252,3 +234,49 @@ def _get_bolam_metadata(bolam_data: xarray.DataArray) -> dict:
             'crs': bolam_projection,
             'x_size': bolam_data.attrs['GRIB_Nx'],
             'y_size': bolam_data.attrs['GRIB_Ny']}
+
+
+
+
+def read_arome_grib(grib_file: str, variable: str) -> xarray.DataArray:
+    """Reads a AROME grib file and transforms it into an xarray.DataArray.
+
+    Args:
+        grib_file (str): Path to a AROME grib file.
+        variable (str): Variable to extract.
+
+    Returns:
+        xarray: AROME grib file data.
+    """
+    grib_filter = {'shortName': variable}
+
+    grib_data = xarray.open_dataarray(grib_file, engine='cfgrib',
+                    backend_kwargs=dict(filter_by_keys=grib_filter))
+
+    grib_md = _get_arome_metadata(grib_data)
+
+
+    grib_data.rio.write_crs(grib_md['crs'], inplace=True)
+
+   # Canviem els noms perquè amb coordenades x i y serà més fàcil reprojectar.
+    grib_data = grib_data.rename({'longitude':'x','latitude':'y'})
+
+    return grib_data
+
+
+
+def _get_arome_metadata(arome_data: xarray.DataArray) -> dict:
+    """Get projection AROME
+
+    Args:
+        xarray_var (xarray): xarray to get information from.
+
+    Returns:
+        dict: CRS
+    """
+
+    # Llegim la projeccion associatda al xarray i la escrivim com CRS.
+    projparams=proj4_from_grib(arome_data)
+    crs_model= pyproj.crs.CRS.from_dict(projparams)
+
+    return {'crs': crs_model}
