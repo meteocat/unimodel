@@ -3,7 +3,8 @@ import unittest
 
 from rasterio import Affine
 
-from importers_nwp import read_bolam_grib, read_moloch_grib, read_wrf_prs
+from importers_nwp import (read_bolam_grib, read_icon_grib, read_moloch_grib,
+                           read_wrf_prs)
 
 
 class TestImportersNWP(unittest.TestCase):
@@ -35,9 +36,9 @@ class TestImportersNWP(unittest.TestCase):
 
     def test_read_icon(self):
         """Function to test the NWP reads"""
-        file='/home/jmc/workspace/unimodel/tests/data/icon-07.2023020700_10.grib2'
+        file='tests/data/icon-07.2023020700_10.grib2'
         variable='tp'
-        data_var = read_icon(file,variable)
+        data_var = read_icon_grib(file,variable)
 
         self.assertEqual(data_var.rio.crs.data['proj'],'longlat')
         self.assertEqual(data_var.rio.crs.data['datum'],'WGS84')
