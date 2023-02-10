@@ -22,34 +22,72 @@ def _get_wrf_prs_metadata(xarray_var: xarray.DataArray) -> dict:
     nx = xarray_var.attrs['GRIB_Nx']
     ny = xarray_var.attrs['GRIB_Ny']
 
+    # Degut a que el WRF-PRS es genera malament (el lat_0 no està definit) es posa la projecció 
+    # del WRF harcoded tal com està definida en la versió actual del WRF de 3 km.
     crs_wrf = pyproj.CRS(
         '+proj=lcc +units=m +R=6370000'
-        ' +lat_1=' + str(xarray_var.attrs['GRIB_Latin2InDegrees']) +
-        ' +lat_2=' + str(xarray_var.attrs['GRIB_Latin1InDegrees']) +
-        # ' +lat_0=' + str(xarray_var.attrs['GRIB_LaDInDegrees']) +
-        ' +lat_0=40.70002' +
-        ' +lon_0=' + str(xarray_var.attrs['GRIB_LoVInDegrees']) +
+        ' +lat_1= 60.0' +
+        ' +lat_2= 30.0' + 
+        ' +lat_0= 40.70002' +
+        ' +lon_0= -1.5' +
         ' +nadgrids=@null')
-    crs_gcp = pyproj.CRS('EPSG:4326')
 
-    # Easting and Northings of the domains center point
-    transformer = pyproj.Transformer.from_crs(crs_gcp, crs_wrf)
+    # Pel fet que el WRF-PRS està en format GRIB1 i té menys decimals es creen errors de metres
+    # que es propaguen. Per aquest sentit es proposa usar els valors calculats directament a partir
+    # de les metodolodies explicades a: 
+    # https://meteocat.atlassian.net/wiki/spaces/RAM/pages/2820702244/Geotransform+WRF
+    # El geotransform calculat allà perl WRF de 3 km és:
+    # wrfout_gt = (-252466.8378711785, 3000.0, 0.0, 391438.10408251436, 0.0, -3000.0)
+    # Així doncs: 
 
-    # Up left corner of domain
-    x0, y0 = transformer.transform(
-        float(xarray_var.attrs['GRIB_latitudeOfFirstGridPointInDegrees']),
-        float(xarray_var.attrs['GRIB_longitudeOfFirstGridPointInDegrees']))
-    y0 = (ny-1) * dy + y0
 
-    # Wrfout geotransform
-    wrfout_gt = (-252466.8378711785+1500, 3000.0, 0.0,
-                 391438.10408251436-1500, 0.0, -3000.0)
+    # Upper left pixel centre donat per algoritme anterior
+    x0 = -252466.8378711785
+    y0 = 391438.10408251436
 
-    return {'affine': Affine.from_gdal(wrfout_gt[0], wrfout_gt[1],
-                                       wrfout_gt[2], wrfout_gt[3],
-                                       wrfout_gt[4], wrfout_gt[5]),
-            # 'affine': Affine.from_gdal(x0, dx, 0, y0, 0, -dy),
+    # Perquè el xarray treballa amb el centre del pixel i el gdal ens mostra el corner superior esquerre
+    # fem canvis:
+    x0 = x0 + dx/2
+    y0 = y0 - dy/2
+
+    # Passem -dy perquè es decreixent.
+
+    return { 'x0': x0, 'y0':y0, 'dx':dx, 'dy':-dy,
             'crs': crs_wrf, 'x_size': nx, 'y_size': ny}
+
+
+def _get_icon_metadata(xarray_var):
+    """Get projection
+
+    Args:
+        xarray_var (xarray): xarray to get information from.
+
+    Returns:
+        dict: CRS
+    """
+
+    # Llegim la projeccion associatda al xarray i la escrivim com CRS.
+    projparams=proj4_from_grib(xarray_var)
+    crs_model= pyproj.crs.CRS.from_dict(projparams)
+
+    return {'crs': crs_model}
+
+
+def _get_icon_metadata(xarray_var):
+    """Get projection
+
+    Args:
+        xarray_var (xarray): xarray to get information from.
+
+    Returns:
+        dict: CRS
+    """
+
+    # Llegim la projeccion associatda al xarray i la escrivim com CRS.
+    projparams=proj4_from_grib(xarray_var)
+    crs_model= pyproj.crs.CRS.from_dict(projparams)
+
+    return {'crs': crs_model}
 
 
 def read_wrf_prs(grib_file: str, variable: str) -> xarray.DataArray:
@@ -62,14 +100,54 @@ def read_wrf_prs(grib_file: str, variable: str) -> xarray.DataArray:
         xarray: Contains the data and the geographical information to
                 transform the grids
     """
-    grib_data = xarray.open_dataarray(grib_file, engine='cfgrib',
-                backend_kwargs=dict(filter_by_keys={'shortName': variable}))
 
-    geographics = _get_wrf_prs_metadata(grib_data)
-    grib_data = grib_data.rio.write_crs(geographics['crs'])
-    grib_data.rio.write_transform(geographics['affine'], inplace=True)
+    ds_data = xarray.open_dataarray(grib_file, engine='cfgrib',
+                    backend_kwargs=dict(filter_by_keys={'shortName': variable}))
+    geographics = _get_wrf_prs_metadata(ds_data)
+    ds_data = ds_data.rio.write_crs(geographics['crs'])
 
-    return grib_data
+    # El grib del WRF produeixen un xarray sense coordenades i per evitar feina
+    # innecessària al futur es decideix crear-les i anomenar-les x i y perquè
+    # seran les que després s'usaran per reprojectar.
+
+    x_coords = np.linspace(geographics['x0'],
+                           geographics['x0'] + ((geographics['x_size'] -1) *
+                            geographics['dx']),
+                            geographics['x_size'])
+
+    y_coords = np.linspace(geographics['y0'],
+                            geographics['y0'] + ((geographics['y_size'] -1)*
+                            geographics['dy']),
+                            geographics['y_size'])
+    y_coords = y_coords[::-1]
+
+    ds_data = ds_data.assign_coords(x=x_coords, y=y_coords)
+    ds_data = ds_data.drop_vars(['latitude', 'longitude'], errors='ignore')
+
+
+    return ds_data
+
+
+def read_icon(file, variable):
+    """Read wrf variable chosen in a ICON grib file
+
+    Args:
+        grib_file (string): Path to a WRF grib file.
+        variable (string): Variable to extract.
+    Returns:
+        xarray: Contains the data and the geographical information to
+                transform the grids
+    """
+    ds_data = xarray.open_dataarray(file, engine='cfgrib',
+                    backend_kwargs=dict(filter_by_keys={'shortName': variable}))
+
+    geographics = _get_icon_metadata(ds_data)
+    ds_data = ds_data.rio.write_crs(geographics['crs'])
+
+    # Canviem els noms perquè amb coordenades x i y serà més fàcil reprojectar.
+    ds_data = ds_data.rename({'longitude':'x','latitude':'y'})
+
+    return ds_data
 
 
 def read_moloch_grib(grib_file: str, variable: str) -> xarray.DataArray:
