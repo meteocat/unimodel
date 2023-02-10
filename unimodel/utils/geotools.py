@@ -124,7 +124,7 @@ def proj4_from_grib(ds_grib):
         projparams['lat_2']=attributes['GRIB_Latin2']/scale
         if attributes['GRIB_truncateDegrees']:
             projparams['lat_2'] = int(projparams['lat_2'])
-    elif attributes['gridType'] == 'space_view':
+    elif attributes['GRIB_gridType'] == 'space_view':
         projparams['lon_0']=attributes['GRIB_longitudeOfSubSatellitePointInDegrees']
         projparams['lat_0']=attributes['GRIB_latitudeOfSubSatellitePointInDegrees']
         if projparams['lat_0'] == 0.: # if lat_0 is equator, it's a
@@ -140,7 +140,7 @@ def proj4_from_grib(ds_grib):
         projparams['lat_0'] = attributes['GRIB_standardParallel']/1.e6
         projparams['lon_0'] = attributes['GRIB_centralLongitude']/1.e6
         projparams['proj'] = 'aeqd'
-    elif attributes['gridType'] == "lambert_azimuthal_equal_area":
+    elif attributes['GRIB_gridType'] == "lambert_azimuthal_equal_area":
         projparams['lat_0'] = attributes['GRIB_standardParallel']/1.e6
         projparams['lon_0'] = attributes['GRIB_centralLongitude']/1.e6
         projparams['proj'] = 'laea'
