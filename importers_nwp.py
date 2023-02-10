@@ -57,38 +57,20 @@ def _get_wrf_prs_metadata(xarray_var):
 
 
 def _get_icon_metadata(xarray_var):
-    """Get projection, Affine transform and shape from an xarray.
+    """Get projection
 
     Args:
         xarray_var (xarray): xarray to get information from.
 
     Returns:
-        dict: CRS, x size, y size and Affine transform.
+        dict: CRS
     """
-
-    nx = xarray_var.attrs['GRIB_Nx']
-    ny = xarray_var.attrs['GRIB_Ny']
 
     # Llegim la projeccion associatda al xarray i la escrivim com CRS.
     projparams=proj4_from_grib(xarray_var)
     crs_model= pyproj.crs.CRS.from_dict(projparams)
 
-    # La informació que apareix en els fitxers grib estan en coordenades geogràfiques (lat,lon) 
-    # equiespaiades la qual cosa fa senzill definir l'afí
-
-    # Low left corner of domain
-    x0 = xarray_var.attrs['GRIB_longitudeOfFirstGridPointInDegrees']
-    y0 = xarray_var.attrs['GRIB_latitudeOfFirstGridPointInDegrees']
-
-    # Increments
-    dx = xarray_var.attrs['GRIB_iDirectionIncrementInDegrees']
-    dy = xarray_var.attrs['GRIB_jDirectionIncrementInDegrees']
-
-    # Upper left corner of domain
-
-
-    return {'affine': Affine.from_gdal(x0, dx, 0, y0+dy*ny, 0, -dy),
-            'crs': crs_model, 'x_size': nx, 'y_size': ny}
+    return {'crs': crs_model}
 
 
 
