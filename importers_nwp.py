@@ -280,3 +280,47 @@ def _get_arome_metadata(arome_data: xarray.DataArray) -> dict:
     crs_model= pyproj.crs.CRS.from_dict(projparams)
 
     return {'crs': crs_model}
+
+
+def read_arpege_grib(grib_file: str, variable: str) -> xarray.DataArray:
+    """Reads a ARPEGE grib file and transforms it into an xarray.DataArray.
+
+    Args:
+        grib_file (str): Path to a arpege grib file.
+        variable (str): Variable to extract.
+
+    Returns:
+        xarray: arpege grib file data.
+    """
+    grib_filter = {'shortName': variable}
+
+    grib_data = xarray.open_dataarray(grib_file, engine='cfgrib',
+                    backend_kwargs=dict(filter_by_keys=grib_filter))
+
+    grib_md = _get_arpege_metadata(grib_data)
+
+
+    grib_data.rio.write_crs(grib_md['crs'], inplace=True)
+
+   # Canviem els noms perquè amb coordenades x i y serà més fàcil reprojectar.
+    grib_data = grib_data.rename({'longitude':'x','latitude':'y'})
+
+    return grib_data
+
+
+
+def _get_arpege_metadata(arpege_data: xarray.DataArray) -> dict:
+    """Get projection ARPEGE
+
+    Args:
+        xarray_var (xarray): xarray to get information from.
+
+    Returns:
+        dict: CRS
+    """
+
+    # Llegim la projeccion associatda al xarray i la escrivim com CRS.
+    projparams=proj4_from_grib(arpege_data)
+    crs_model= pyproj.crs.CRS.from_dict(projparams)
+
+    return {'crs': crs_model}
