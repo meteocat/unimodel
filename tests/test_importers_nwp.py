@@ -4,7 +4,7 @@ import unittest
 from rasterio import Affine
 
 from importers_nwp import (read_bolam_grib, read_icon_grib, read_moloch_grib,
-                           read_wrf_prs)
+                           read_wrf_prs, read_arome_grib)
 
 
 class TestImportersNWP(unittest.TestCase):
@@ -64,7 +64,7 @@ class TestImportersNWP(unittest.TestCase):
         """Tests Moloch grib to xarray."""
         moloch_data = read_moloch_grib(
             'tests/data/moloch-1p6.2022032100_48.grib2', 'tp')
-        moloch_data.rio.to_raster('test_moloch.tif')
+        
         self.assertEqual(moloch_data.shape, (370, 370))
 
         self.assertEqual(moloch_data.rio.crs.data['proj'], 'ob_tran')
@@ -85,7 +85,7 @@ class TestImportersNWP(unittest.TestCase):
         """Tests Bolam grib to xarray."""
         bolam_data = read_bolam_grib(
             'tests/data/bolam-08.2023020600_32.grib2', 'tp')
-        bolam_data.rio.to_raster('test_bolam.tif')
+        
         self.assertEqual(bolam_data.shape, (138, 194))
 
         self.assertEqual(bolam_data.rio.crs.data['proj'], 'ob_tran')
@@ -101,3 +101,21 @@ class TestImportersNWP(unittest.TestCase):
 
         self.assertAlmostEqual(bolam_data.data[20, 58], 11.087, 2)
         self.assertAlmostEqual(bolam_data.data[58, 20], 0.000, 2)
+
+
+    def test_read_arome_grib(self):
+        """Tests AROME grib to xarray."""
+        arome_data = read_arome_grib(
+            'tests/data/arome-1p1.2023021000_10.grib2', 'tp')
+        self.assertEqual(arome_data.shape, (501, 751))
+
+        self.assertEqual(arome_data.rio.crs.data['proj'], 'longlat')
+        self.assertEqual(arome_data.rio.crs.data['datum'], 'WGS84')
+
+        self.assertAlmostEqual(arome_data.rio.transform().a, 0.00999,3)
+        self.assertAlmostEqual(arome_data.rio.transform().c, -1.505,3)
+        self.assertAlmostEqual(arome_data.rio.transform().e, -0.00999,3)
+        self.assertAlmostEqual(arome_data.rio.transform().f, 44.0049,3)
+
+        self.assertAlmostEqual(arome_data.data[500, 749], 0.204, 2)
+        self.assertAlmostEqual(arome_data.data[0, 0], 0.0, 2)
