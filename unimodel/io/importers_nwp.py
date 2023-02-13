@@ -54,6 +54,8 @@ def import_nwp_grib(date_run: datetime, lead_time: int, model: str,
     date_run_f = _get_datetime_formatted(date_run)
 
     if config[model]['compressed']:
+        # If model is informed as compressed (tar.gz), the key 'src_tar'
+        # (tar source file) must be included in the configuration dictionary
         if 'src_tar' not in config[model].keys():
             raise KeyError('src_tar must be included if compressed is set to '
                            'True.')
@@ -62,14 +64,20 @@ def import_nwp_grib(date_run: datetime, lead_time: int, model: str,
                                                    day=date_run_f['day'],
                                                    run=date_run_f['hour'])
 
+        # If tar file is already copied in stage directory, program execution
+        # continues
         if not exists(model_dir + basename(tar_file)):
+            # If tar_file not exists, previous tar files are removed
             for prev_file in prev_files_tar:
                 remove(prev_file)
+            # If tar_file exists in source folder, it is copied to stage
+            # directory
             if exists(tar_file):
                 copy2(tar_file, model_dir)
             else:
                 raise FileNotFoundError(tar_file + ' not found.')
 
+    # NWP grib file is formatted following informed run date and lead time
     nwp_file = config[model]['src'].format_map({'year': date_run_f['year'],
                                                 'month': date_run_f['month'],
                                                 'day': date_run_f['day'],
@@ -77,12 +85,16 @@ def import_nwp_grib(date_run: datetime, lead_time: int, model: str,
                                                 'run': date_run_f['hour'],
                                                 'lt': str(lead_time).zfill(2)})
 
+    # If NWP grib file already exists in stage directory, this part is skipped
     if not exists(model_dir + basename(nwp_file)):
+        # If NWP grib file not exists, previous grib files are removed
         for prev_file in prev_files:
             remove(prev_file)
+        # If NWP grib file is from a compressed source, it is extracted
         if config[model]['compressed']:
             with tarfile.open(model_dir + basename(tar_file)) as tar:
                 tar.extract(nwp_file, path=model_dir)
+        # Otherwise, if exists, it is directly copied to stage directory
         elif exists(nwp_file):
             copy2(nwp_file, model_dir)
         else:
