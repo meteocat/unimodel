@@ -1,6 +1,10 @@
 """Subrutines for retrieve geographical features
 """
 import numpy as np
+import rioxarray
+import xarray
+from rasterio import Affine
+from rasterio.warp import Resampling
 
 
 def _get_key(attribs, key, default=None):
@@ -176,3 +180,29 @@ def proj4_from_grib(ds_grib):
         projparams = None
 
     return projparams
+
+
+
+def reproject_xarray(xr_coarse: xarray.DataArray, dst_proj: str, shape: tuple,
+                     ul_corner: tuple, resolution: tuple,  
+                     resampling: Resampling = Resampling.cubic_spline) -> xarray:
+    """Reproject an xarray based on crs, transform and shape of another xarray.
+
+    Args:
+        xr_coarse (xarray): xarray to reproject.
+        xr_hres (xarray): xarray with characteristics to reproject to.
+        resampling (Resampling, optional): Resampling method used for
+            interpolation processes. Defaults to Resampling.cubic_spline.
+
+    Returns:
+        xarray: Reprojected xarray.
+    """
+
+    transform=Affine.from_gdal(ul_corner[0], resolution[0], 0, 
+                               ul_corner[1], 0, resolution[1])
+    xr_reproj = xr_coarse.rio.reproject(dst_proj, shape=(shape[0], shape[1]),
+                                        resampling=resampling,
+                                        transform=transform)
+    
+    return xr_reproj
+
