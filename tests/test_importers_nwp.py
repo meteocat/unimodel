@@ -72,19 +72,19 @@ class TestNWPImporter(unittest.TestCase):
 
     def test_io_import_nwp_grib_model_not_in_config(self):
         """Tests import of a model not in configuration dictionary."""
-        with self.assertRaises(KeyError) as cm:
+        with self.assertRaises(KeyError) as err:
             import_nwp_grib(datetime(2022, 11, 7, 0), 2, 'molcho', self.config)
 
-        self.assertEqual(cm.exception.args[0],
+        self.assertEqual(err.exception.args[0],
                          'molcho not in configuration dictionary.')
 
     def test_io_import_nwp_grib_model_not_src_tar(self):
         """Tests import of a comprsessed model without src_tar."""
-        with self.assertRaises(KeyError) as cm:
+        with self.assertRaises(KeyError) as err:
             import_nwp_grib(datetime(2022, 11, 7, 0), 2, 'wrf43_prs_tar',
                             self.config)
 
-        self.assertEqual(cm.exception.args[0], 'src_tar must be included if '
+        self.assertEqual(err.exception.args[0], 'src_tar must be included if '
                          'compressed is set to True.')
 
     def tearDown(self) -> None:

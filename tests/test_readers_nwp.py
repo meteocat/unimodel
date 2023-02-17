@@ -1,4 +1,5 @@
-"""Tests transformation of NWP grib to xarray."""
+"""Tests transformation of NWP grib to xarray.
+"""
 import unittest
 
 from unimodel.io.readers_nwp import (read_arome_grib, read_arpege_grib,
