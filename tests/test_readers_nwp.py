@@ -13,7 +13,8 @@ class TestReadersNWP(unittest.TestCase):
         """Test WRF grib to xarray."""
         file='tests/data/nwp_src/wrf43_prs/WRFPRS-03.2023020600_032.grib'
         variable='tp'
-        data_var = read_wrf_prs(file,variable)
+        model='wrf'
+        data_var = read_wrf_prs(file, variable, model)
 
         self.assertEqual(data_var.rio.crs.data['proj'],'lcc')
         self.assertEqual(data_var.rio.crs.data['lat_1'],60)
@@ -24,8 +25,8 @@ class TestReadersNWP(unittest.TestCase):
         self.assertEqual(data_var.x.shape[0],299)
         self.assertEqual(data_var.y.shape[0],259)
 
-        self.assertAlmostEqual(data_var.values[120][133],1.97)
-        self.assertAlmostEqual(data_var.values[133][120],0.14)
+        self.assertAlmostEqual(data_var.values[0][0][120][133],1.97)
+        self.assertAlmostEqual(data_var.values[0][0][133][120],0.14)
 
         self.assertAlmostEqual(data_var.rio.transform().a, 3000.0)
         self.assertAlmostEqual(data_var.rio.transform().b, 0.0)
@@ -38,7 +39,8 @@ class TestReadersNWP(unittest.TestCase):
         """Function to test the NWP reads"""
         file='tests/data/nwp_src/icon/icon-07.2023020700_10.grib2'
         variable='tp'
-        data_var = read_icon_grib(file,variable)
+        model='icon'
+        data_var = read_icon_grib(file, variable, model)
 
         self.assertEqual(data_var.rio.crs.data['proj'],'longlat')
         self.assertEqual(data_var.rio.crs.data['datum'],'WGS84')
@@ -46,8 +48,8 @@ class TestReadersNWP(unittest.TestCase):
         self.assertEqual(data_var.x.shape[0],337)
         self.assertEqual(data_var.y.shape[0],209)
 
-        self.assertAlmostEqual(data_var.values[33][13],0.032226562)
-        self.assertAlmostEqual(data_var.values[13][33],0.4423828)
+        self.assertAlmostEqual(data_var.values[0][0][33][13],0.032226562)
+        self.assertAlmostEqual(data_var.values[0][0][13][33],0.4423828)
 
         self.assertAlmostEqual(data_var.rio.transform().a, 0.0625)
         self.assertAlmostEqual(data_var.rio.transform().b, 0.0)
@@ -58,10 +60,12 @@ class TestReadersNWP(unittest.TestCase):
 
     def test_read_moloch_grib(self):
         """Tests Moloch grib to xarray."""
-        moloch_data = read_moloch_grib(
-            'tests/data/nwp_src/moloch/moloch-1p6.2022032100_48.grib2', 'tp')
+        file='tests/data/nwp_src/moloch/moloch-1p6.2022032100_48.grib2'
+        variable='tp'
+        model='moloch'
+        moloch_data = read_moloch_grib(file, variable, model)
 
-        self.assertEqual(moloch_data.shape, (370, 370))
+        self.assertEqual(moloch_data.shape, (1, 1, 370, 370))
 
         self.assertEqual(moloch_data.rio.crs.data['proj'], 'ob_tran')
         self.assertEqual(moloch_data.rio.crs.data['o_proj'], 'longlat')
@@ -74,15 +78,17 @@ class TestReadersNWP(unittest.TestCase):
         self.assertAlmostEqual(moloch_data.rio.transform().e, 0.014)
         self.assertAlmostEqual(moloch_data.rio.transform().f, -1.5)
 
-        self.assertAlmostEqual(moloch_data.data[5, 70], 13.779, 2)
-        self.assertAlmostEqual(moloch_data.data[70, 5], 32.943, 2)
+        self.assertAlmostEqual(moloch_data.data[0, 0, 5, 70], 13.779, 2)
+        self.assertAlmostEqual(moloch_data.data[0, 0, 70, 5], 32.943, 2)
 
     def test_read_bolam_grib(self):
         """Tests Bolam grib to xarray."""
-        bolam_data = read_bolam_grib(
-            'tests/data/nwp_src/bolam/bolam-08.2023020600_32.grib2', 'tp')
+        file='tests/data/nwp_src/bolam/bolam-08.2023020600_32.grib2'
+        variable='tp'
+        model='bolam'
+        bolam_data = read_bolam_grib(file, variable, model)
 
-        self.assertEqual(bolam_data.shape, (138, 194))
+        self.assertEqual(bolam_data.shape, (1, 1, 138, 194))
 
         self.assertEqual(bolam_data.rio.crs.data['proj'], 'ob_tran')
         self.assertEqual(bolam_data.rio.crs.data['o_proj'], 'longlat')
@@ -95,14 +101,17 @@ class TestReadersNWP(unittest.TestCase):
         self.assertAlmostEqual(bolam_data.rio.transform().e, 0.075)
         self.assertAlmostEqual(bolam_data.rio.transform().f, -5.025)
 
-        self.assertAlmostEqual(bolam_data.data[20, 58], 11.087, 2)
-        self.assertAlmostEqual(bolam_data.data[58, 20], 0.000, 2)
+        self.assertAlmostEqual(bolam_data.data[0, 0, 20, 58], 11.087, 2)
+        self.assertAlmostEqual(bolam_data.data[0, 0, 58, 20], 0.000, 2)
 
     def test_read_arome_grib(self):
         """Tests AROME grib to xarray."""
-        arome_data = read_arome_grib(
-            'tests/data/nwp_src/arome/arome-1p1.2023021000_10.grib2', 'tp')
-        self.assertEqual(arome_data.shape, (501, 751))
+        file= 'tests/data/nwp_src/arome/arome-1p1.2023021000_10.grib2'
+        variable='tp'
+        model='arome'
+        arome_data = read_arome_grib(file, variable, model)
+        
+        self.assertEqual(arome_data.shape, (1, 1, 501, 751))
 
         self.assertEqual(arome_data.rio.crs.data['proj'], 'longlat')
         self.assertEqual(arome_data.rio.crs.data['datum'], 'WGS84')
@@ -112,14 +121,17 @@ class TestReadersNWP(unittest.TestCase):
         self.assertAlmostEqual(arome_data.rio.transform().e, -0.00999,3)
         self.assertAlmostEqual(arome_data.rio.transform().f, 44.0049,3)
 
-        self.assertAlmostEqual(arome_data.data[500, 749], 0.204, 2)
-        self.assertAlmostEqual(arome_data.data[0, 0], 0.0, 2)
+        self.assertAlmostEqual(arome_data.data[0, 0, 500, 749], 0.204, 2)
+        self.assertAlmostEqual(arome_data.data[0, 0, 0, 0], 0.0, 2)
 
     def test_read_arpege_grib(self):
         """Tests ARPEGE grib to xarray."""
-        arpege_data = read_arpege_grib(
-            'tests/data/nwp_src/arpege/arpege-11.2023020900_20.grib2', 'tp')
-        self.assertEqual(arpege_data.shape, (51, 76))
+        file= 'tests/data/nwp_src/arpege/arpege-11.2023020900_20.grib2'
+        variable='tp'
+        model='arpege'
+        arpege_data = read_arpege_grib(file, variable, model)
+        
+        self.assertEqual(arpege_data.shape, (1, 1, 51, 76))
 
         self.assertEqual(arpege_data.rio.crs.data['proj'], 'longlat')
         self.assertEqual(arpege_data.rio.crs.data['datum'], 'WGS84')
@@ -129,5 +141,5 @@ class TestReadersNWP(unittest.TestCase):
         self.assertAlmostEqual(arpege_data.rio.transform().e, -0.1,3)
         self.assertAlmostEqual(arpege_data.rio.transform().f, 44.05,3)
 
-        self.assertAlmostEqual(arpege_data.data[50, 73], 6.205, 2)
-        self.assertAlmostEqual(arpege_data.data[3, 3], 0.0, 2)
+        self.assertAlmostEqual(arpege_data.data[0, 0, 50, 73], 6.205, 2)
+        self.assertAlmostEqual(arpege_data.data[0, 0, 3, 3], 0.0, 2)

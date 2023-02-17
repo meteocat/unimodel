@@ -7,7 +7,7 @@ import xarray
 from unimodel.utils.geotools import proj4_from_grib
 
 
-def read_wrf_prs(grib_file: str, variable: str) -> xarray.DataArray:
+def read_wrf_prs(grib_file: str, variable: str, model:str) -> xarray.DataArray:
     """Reads a WRF grib file and transforms it into an xarray.DataArray.
 
     Args:
@@ -39,6 +39,13 @@ def read_wrf_prs(grib_file: str, variable: str) -> xarray.DataArray:
 
     grib_data = grib_data.assign_coords(x=x_coords, y=y_coords)
     grib_data = grib_data.drop_vars(['latitude', 'longitude'], errors='ignore')
+
+    # Let's expand the xarray with two variables: "time" so that we can later
+    # create a Dataxarray that contains this dimension to store everything
+    # the forecast of a day in a single object. The "model" variable is added
+    # also to later put all model outputs in one file.
+    grib_data = grib_data.assign_coords(model=model)
+    grib_data = grib_data.expand_dims(['model', 'time'])
 
     return grib_data
 
@@ -87,7 +94,7 @@ def _get_wrf_prs_metadata(xarray_var: xarray.DataArray) -> dict:
             'x_size': n_x, 'y_size': n_y}
 
 
-def read_icon_grib(file, variable):
+def read_icon_grib(file: str, variable: str, model: str) -> xarray.DataArray:
     """Read wrf variable chosen in a ICON grib file
 
     Args:
@@ -106,10 +113,17 @@ def read_icon_grib(file, variable):
     # Rename coordinates for further reprojection
     grib_data = grib_data.rename({'longitude':'x','latitude':'y'})
 
+    # Let's expand the xarray with two variables: "time" so that we can later
+    # create a Dataxarray that contains this dimension to store everything
+    # the forecast of a day in a single object. The "model" variable is added
+    # also to later put all model outputs in one file.
+    grib_data = grib_data.assign_coords(model=model)
+    grib_data = grib_data.expand_dims(['model', 'time'])
+
     return grib_data
 
 
-def _get_icon_metadata(xarray_var):
+def _get_icon_metadata(xarray_var: xarray.DataArray) -> dict:
     """Get projection of an Icon xarray.
 
     Args:
@@ -124,7 +138,7 @@ def _get_icon_metadata(xarray_var):
     return {'crs': crs_model}
 
 
-def read_moloch_grib(grib_file: str, variable: str) -> xarray.DataArray:
+def read_moloch_grib(grib_file: str, variable: str, model:str) -> xarray.DataArray:
     """Reads a Moloch grib file and transforms it into an xarray.DataArray.
 
     Args:
@@ -156,6 +170,13 @@ def read_moloch_grib(grib_file: str, variable: str) -> xarray.DataArray:
     grib_data = grib_data.assign_coords(x=x_coords, y=y_coords)
     grib_data = grib_data.drop_vars(['latitude', 'longitude'], errors='ignore')
 
+    # Let's expand the xarray with two variables: "time" so that we can later
+    # create a Dataxarray that contains this dimension to store everything
+    # the forecast of a day in a single object. The "model" variable is added
+    # also to later put all model outputs in one file.
+    grib_data = grib_data.assign_coords(model=model)
+    grib_data = grib_data.expand_dims(['model', 'time'])
+
     return grib_data
 
 
@@ -182,7 +203,7 @@ def _get_moloch_metadata(moloch_data: xarray.DataArray) -> dict:
             'y_size': moloch_data.attrs['GRIB_Ny']}
 
 
-def read_bolam_grib(grib_file: str, variable: str) -> xarray.DataArray:
+def read_bolam_grib(grib_file: str, variable: str, model: str) -> xarray.DataArray:
     """Reads a Bolam grib file and transforms it into an xarray.DataArray.
 
     Args:
@@ -214,6 +235,13 @@ def read_bolam_grib(grib_file: str, variable: str) -> xarray.DataArray:
     grib_data = grib_data.assign_coords(x=x_coords, y=y_coords)
     grib_data = grib_data.drop_vars(['latitude', 'longitude'], errors='ignore')
 
+    # Let's expand the xarray with two variables: "time" so that we can later
+    # create a Dataxarray that contains this dimension to store everything
+    # the forecast of a day in a single object. The "model" variable is added
+    # also to later put all model outputs in one file.
+    grib_data = grib_data.assign_coords(model=model)
+    grib_data = grib_data.expand_dims(['model', 'time'])
+
     return grib_data
 
 
@@ -240,7 +268,7 @@ def _get_bolam_metadata(bolam_data: xarray.DataArray) -> dict:
             'y_size': bolam_data.attrs['GRIB_Ny']}
 
 
-def read_arome_grib(grib_file: str, variable: str) -> xarray.DataArray:
+def read_arome_grib(grib_file: str, variable: str, model:str) -> xarray.DataArray:
     """Reads an AROME grib file and transforms it into an xarray.DataArray.
 
     Args:
@@ -262,6 +290,13 @@ def read_arome_grib(grib_file: str, variable: str) -> xarray.DataArray:
     # Rename coordinates for further reprojection
     grib_data = grib_data.rename({'longitude':'x','latitude':'y'})
 
+    # Let's expand the xarray with two variables: "time" so that we can later
+    # create a Dataxarray that contains this dimension to store everything
+    # the forecast of a day in a single object. The "model" variable is added
+    # also to later put all model outputs in one file.
+    grib_data = grib_data.assign_coords(model=model)
+    grib_data = grib_data.expand_dims(['model', 'time'])
+
     return grib_data
 
 
@@ -280,7 +315,7 @@ def _get_arome_metadata(arome_data: xarray.DataArray) -> dict:
     return {'crs': crs_model}
 
 
-def read_arpege_grib(grib_file: str, variable: str) -> xarray.DataArray:
+def read_arpege_grib(grib_file: str, variable: str, model: str) -> xarray.DataArray:
     """Reads an ARPEGE grib file and transforms it into an xarray.DataArray.
 
     Args:
@@ -302,6 +337,13 @@ def read_arpege_grib(grib_file: str, variable: str) -> xarray.DataArray:
 
     # Rename coordinates for further reprojection
     grib_data = grib_data.rename({'longitude':'x','latitude':'y'})
+
+    # Let's expand the xarray with two variables: "time" so that we can later
+    # create a Dataxarray that contains this dimension to store everything
+    # the forecast of a day in a single object. The "model" variable is added
+    # also to later put all model outputs in one file.
+    grib_data = grib_data.assign_coords(model=model)
+    grib_data = grib_data.expand_dims(['model', 'time'])
 
     return grib_data
 
