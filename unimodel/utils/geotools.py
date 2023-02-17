@@ -7,19 +7,67 @@ from rasterio import Affine
 from rasterio.warp import Resampling
 
 
-def _get_key(attribs, key, default=None):
-    """get key if it exists, otherwise return default value (default None)"""
+def reproject_xarray(xr_coarse: xarray.DataArray, dst_proj: str, shape: tuple,
+                     ul_corner: tuple, resolution: tuple,  
+                     resampling: Resampling = Resampling.cubic_spline) \
+                     -> xarray.DataArray:
+    """Reprojects an xarray based on crs, transform and shape of another xarray.
+
+    Args:
+        xr_coarse (xarray): xarray to reproject.
+        xr_hres (xarray): xarray with characteristics to reproject to.
+        resampling (Resampling, optional): Resampling method used for
+            interpolation processes. Defaults to Resampling.cubic_spline.
+
+    Returns:
+        xarray: Reprojected xarray.
+    """
+
+    transform=Affine.from_gdal(ul_corner[0], resolution[0], 0,
+                               ul_corner[1], 0, resolution[1])
+    xr_reproj = xr_coarse.rio.reproject(dst_proj, shape=(shape[0], shape[1]),
+                                        resampling=resampling,
+                                        transform=transform)
+
+    return xr_reproj
+
+
+def _get_key(attribs: dict, key: str, default=None):
+    """Get key if exists, otherwise return default value.
+
+    Args:
+        attribs (dict): Dictionary.
+        key (str): Dictionary key.
+        default (any, optional): Default value if key not exists. Defaults
+                                 to None.
+
+    Returns:
+        any: Key value.
+    """
     if key in attribs:
         return attribs[key]
-    else:
-        return default
+
+    return default
 
 
-def proj4_from_grib(ds_grib):
-    """
-    ES UNA COPIA DE UNA SUBRUTINA DEL PYGRIB
-    sets the ``projparams`` instance variable to a dictionary containing
-    proj4 key/value pairs describing the grid.
+def proj4_from_grib(ds_grib: xarray.DataArray) -> dict:
+    """Gets proj4 string parameters as a dict from an xarray containing data
+    from a NWP grib.
+
+    Copyright 2010 Jeffrey Whitaker
+
+    It is a copy of _set_proj_params from https://github.com/jswhit/pygrib
+    /blob/40558bfeb7fc5c2a042496c1ed10c500e706efeb/src/pygrib/_pygrib.pyx.
+
+    Args:
+        ds_grib (xarray.DataArray): NWP grib data array.
+
+    Raises:
+        ValueError: If shape of the earth is unknown.
+        KeyError: If projection center not found.
+
+    Returns:
+        dict: Projection params
     """
     projparams = {}
 
@@ -180,29 +228,3 @@ def proj4_from_grib(ds_grib):
         projparams = None
 
     return projparams
-
-
-
-def reproject_xarray(xr_coarse: xarray.DataArray, dst_proj: str, shape: tuple,
-                     ul_corner: tuple, resolution: tuple,  
-                     resampling: Resampling = Resampling.cubic_spline) -> xarray:
-    """Reproject an xarray based on crs, transform and shape of another xarray.
-
-    Args:
-        xr_coarse (xarray): xarray to reproject.
-        xr_hres (xarray): xarray with characteristics to reproject to.
-        resampling (Resampling, optional): Resampling method used for
-            interpolation processes. Defaults to Resampling.cubic_spline.
-
-    Returns:
-        xarray: Reprojected xarray.
-    """
-
-    transform=Affine.from_gdal(ul_corner[0], resolution[0], 0, 
-                               ul_corner[1], 0, resolution[1])
-    xr_reproj = xr_coarse.rio.reproject(dst_proj, shape=(shape[0], shape[1]),
-                                        resampling=resampling,
-                                        transform=transform)
-    
-    return xr_reproj
-

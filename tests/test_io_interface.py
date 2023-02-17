@@ -1,4 +1,5 @@
-"""Tests interface for I/O methods."""
+"""Tests interface for I/O methods.
+"""
 import unittest
 import unimodel.io
 from unimodel.io.readers_nwp import (read_arome_grib, read_arpege_grib,
