@@ -13,6 +13,7 @@ def read_wrf_prs(grib_file: str, variable: str, model:str) -> xarray.DataArray:
     Args:
         grib_file (string): Path to a WRF grib file.
         variable (string): Variable to extract.
+        model (str): Model to be read.
 
     Returns:
         xarray: WRF PRS grib file data.
@@ -100,6 +101,7 @@ def read_icon_grib(file: str, variable: str, model: str) -> xarray.DataArray:
     Args:
         grib_file (string): Path to a WRF grib file.
         variable (string): Variable to extract.
+        model (str): Model to be read.
     
     Returns:
         xarray: Icon grib file data.
@@ -144,6 +146,7 @@ def read_moloch_grib(grib_file: str, variable: str, model:str) -> xarray.DataArr
     Args:
         grib_file (str): Path to a Moloch grib file.
         variable (str): Variable to extract.
+        model (str): Model to be read.
 
     Returns:
         xarray: Moloch grib file data.
@@ -209,6 +212,7 @@ def read_bolam_grib(grib_file: str, variable: str, model: str) -> xarray.DataArr
     Args:
         grib_file (str): Path to a Bolam grib file.
         variable (str): Variable to extract.
+        model (str): Model to be read.
 
     Returns:
         xarray: Bolam grib file data.
@@ -274,6 +278,7 @@ def read_arome_grib(grib_file: str, variable: str, model:str) -> xarray.DataArra
     Args:
         grib_file (str): Path to an AROME grib file.
         variable (str): Variable to extract.
+        model (str): Model to be read.
 
     Returns:
         xarray: AROME grib file data.
@@ -321,6 +326,7 @@ def read_arpege_grib(grib_file: str, variable: str, model: str) -> xarray.DataAr
     Args:
         grib_file (str): Path to an ARPEGE grib file.
         variable (str): Variable to extract.
+        model (str): Model to be read.
 
     Returns:
         xarray: ARPEGE grib file data.
