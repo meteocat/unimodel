@@ -330,7 +330,7 @@ def read_ecmwf_hres_grib(file: str, variable: str, model: str):
         model (str): Model name.
 
     Returns:
-        xarray: AROME grib file data.
+        xarray: ECMWF-HRES grib file data.
     """
     grib_data = xarray.open_dataarray(file, engine='cfgrib',
                     backend_kwargs=dict(filter_by_keys={'shortName': variable}))
