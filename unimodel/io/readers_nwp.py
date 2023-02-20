@@ -319,3 +319,50 @@ def _get_arpege_metadata(arpege_data: xarray.DataArray) -> dict:
     crs_model = pyproj.crs.CRS.from_dict(projparams)
 
     return {'crs': crs_model}
+
+def read_ecmwf_hres_grib(file: str, variable: str, model: str):
+    """Reads an ECMWF-HRES grib file and transforms it into an
+    xarray.DataArray.
+
+    Args:
+        grib_file (str): Path to an AROME grib file.
+        variable (str): Variable to extract.
+        model (str): Model name.
+
+    Returns:
+        xarray: AROME grib file data.
+    """
+    grib_data = xarray.open_dataarray(file, engine='cfgrib',
+                    backend_kwargs=dict(filter_by_keys={'shortName': variable}))
+
+    if variable == 'tp':
+        grib_data.data = grib_data.data * 1000
+        grib_data.attrs['units'] = 'mm'
+        grib_data.attrs['GRIB_units'] = 'mm'
+
+
+    geographics = _get_ecmwf_hres_metadata(grib_data)
+    grib_data = grib_data.rio.write_crs(geographics['crs'])
+
+    # Rename coordinates for further reprojection
+    grib_data = grib_data.rename({'longitude':'x','latitude':'y'})
+
+    grib_data = grib_data.assign_coords(model=model)
+    grib_data = grib_data.expand_dims(['model', 'time'])
+
+    return grib_data
+
+
+def _get_ecmwf_hres_metadata(xarray_var):
+    """Gets projection of an ECMWF-HRES xarray.
+
+    Args:
+        xarray_var (xarray): ECMWF-HRES grib data.
+
+    Returns:
+        dict: Coordinate reference system.
+    """
+    projparams = proj4_from_grib(xarray_var)
+    crs_model = pyproj.crs.CRS.from_dict(projparams)
+
+    return {'crs': crs_model}
