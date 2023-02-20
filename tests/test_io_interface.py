@@ -15,8 +15,9 @@ class TestIOInterface(unittest.TestCase):
                         ("arpege", read_arpege_grib),
                         ("bolam", read_bolam_grib),
                         ("icon", read_icon_grib),
-                        ("moloch", read_moloch_grib),
-                        ("wrf", read_wrf_prs)]
+                        ("moloch_ecm", read_moloch_grib),
+                        ("moloch_gfs", read_moloch_grib),
+                        ("wrf_exp", read_wrf_prs)]
 
         for reader_pair in reader_pairs:
             reader_method = unimodel.io.get_reader(reader_pair[0])
@@ -27,4 +28,6 @@ class TestIOInterface(unittest.TestCase):
 
         self.assertEqual(err.exception.args[0], 'Unknown reader noaa\n '
                          'The available readers are: [\'arome\', \'arpege\', '
-                         '\'bolam\', \'icon\', \'moloch\', \'wrf\']')
+                         '\'bolam\', \'icon\', \'moloch_gfs\', \'moloch_ecm\','
+                         ' \'wrf_ecm\', \'wrf_exp\', \'wrf_gfs_3\', '
+                         '\'wrf_gfs_9\', \'ecmwf_hres\']')
