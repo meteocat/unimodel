@@ -25,7 +25,7 @@ def reproject_xarray(xr_coarse: xarray.DataArray, dst_proj: str, shape: tuple,
 
     transform=Affine.from_gdal(ul_corner[0], resolution[0], 0,
                                ul_corner[1], 0, -resolution[1])
-    xr_reproj = xr_coarse.rio.reproject(dst_proj, shape=(shape[0], shape[1]),
+    xr_reproj = xr_coarse.rio.reproject(dst_proj, shape=(shape[1], shape[0]),
                                         resampling=resampling,
                                         transform=transform)
 
