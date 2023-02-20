@@ -41,12 +41,8 @@ def read_wrf_prs(grib_file: str, variable: str, model:str) -> xarray.DataArray:
     grib_data = grib_data.assign_coords(x=x_coords, y=y_coords)
     grib_data = grib_data.drop_vars(['latitude', 'longitude'], errors='ignore')
 
-    # Let's expand the xarray with two variables: "time" so that we can later
-    # create a Dataxarray that contains this dimension to store everything
-    # the forecast of a day in a single object. The "model" variable is added
-    # also to later put all model outputs in one file.
-    grib_data = grib_data.assign_coords(model=model)
-    grib_data = grib_data.expand_dims(['model', 'time'])
+    # Add model name to attributes
+    grib_data.attrs['model'] = model
 
     return grib_data
 
@@ -115,12 +111,8 @@ def read_icon_grib(file: str, variable: str, model: str) -> xarray.DataArray:
     # Rename coordinates for further reprojection
     grib_data = grib_data.rename({'longitude':'x','latitude':'y'})
 
-    # Let's expand the xarray with two variables: "time" so that we can later
-    # create a Dataxarray that contains this dimension to store everything
-    # the forecast of a day in a single object. The "model" variable is added
-    # also to later put all model outputs in one file.
-    grib_data = grib_data.assign_coords(model=model)
-    grib_data = grib_data.expand_dims(['model', 'time'])
+    # Add model name to attributes
+    grib_data.attrs['model'] = model
 
     return grib_data
 
@@ -173,12 +165,8 @@ def read_moloch_grib(grib_file: str, variable: str, model:str) -> xarray.DataArr
     grib_data = grib_data.assign_coords(x=x_coords, y=y_coords)
     grib_data = grib_data.drop_vars(['latitude', 'longitude'], errors='ignore')
 
-    # Let's expand the xarray with two variables: "time" so that we can later
-    # create a Dataxarray that contains this dimension to store everything
-    # the forecast of a day in a single object. The "model" variable is added
-    # also to later put all model outputs in one file.
-    grib_data = grib_data.assign_coords(model=model)
-    grib_data = grib_data.expand_dims(['model', 'time'])
+    # Add model name to attributes
+    grib_data.attrs['model'] = model
 
     return grib_data
 
@@ -239,12 +227,8 @@ def read_bolam_grib(grib_file: str, variable: str, model: str) -> xarray.DataArr
     grib_data = grib_data.assign_coords(x=x_coords, y=y_coords)
     grib_data = grib_data.drop_vars(['latitude', 'longitude'], errors='ignore')
 
-    # Let's expand the xarray with two variables: "time" so that we can later
-    # create a Dataxarray that contains this dimension to store everything
-    # the forecast of a day in a single object. The "model" variable is added
-    # also to later put all model outputs in one file.
-    grib_data = grib_data.assign_coords(model=model)
-    grib_data = grib_data.expand_dims(['model', 'time'])
+    # Add model name to attributes
+    grib_data.attrs['model'] = model
 
     return grib_data
 
@@ -295,12 +279,8 @@ def read_arome_grib(grib_file: str, variable: str, model:str) -> xarray.DataArra
     # Rename coordinates for further reprojection
     grib_data = grib_data.rename({'longitude':'x','latitude':'y'})
 
-    # Let's expand the xarray with two variables: "time" so that we can later
-    # create a Dataxarray that contains this dimension to store everything
-    # the forecast of a day in a single object. The "model" variable is added
-    # also to later put all model outputs in one file.
-    grib_data = grib_data.assign_coords(model=model)
-    grib_data = grib_data.expand_dims(['model', 'time'])
+    # Add model name to attributes
+    grib_data.attrs['model'] = model
 
     return grib_data
 
@@ -344,12 +324,8 @@ def read_arpege_grib(grib_file: str, variable: str, model: str) -> xarray.DataAr
     # Rename coordinates for further reprojection
     grib_data = grib_data.rename({'longitude':'x','latitude':'y'})
 
-    # Let's expand the xarray with two variables: "time" so that we can later
-    # create a Dataxarray that contains this dimension to store everything
-    # the forecast of a day in a single object. The "model" variable is added
-    # also to later put all model outputs in one file.
-    grib_data = grib_data.assign_coords(model=model)
-    grib_data = grib_data.expand_dims(['model', 'time'])
+    # Add model name to attributes
+    grib_data.attrs['model'] = model
 
     return grib_data
 
