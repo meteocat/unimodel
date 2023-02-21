@@ -25,24 +25,23 @@ class TestExportersNWP(unittest.TestCase):
 
         netcdf_data= xarray.open_dataset(netcdf_file)
 
-        self.assertEqual(netcdf_data.dims['x'], 
-                         list_bolam_xarrays[0].x.shape[0])
-        self.assertEqual(netcdf_data.dims['y'], 
-                         list_bolam_xarrays[0].y.shape[0])
-        
+        self.assertEqual(netcdf_data.dims['x'], 620)
+        self.assertEqual(netcdf_data.dims['y'], 417)
+        self.assertEqual(netcdf_data.dims['valid_time'], 1)
+        self.assertEqual(netcdf_data.dims['model'], 2)
 
-        self.assertAlmostEqual(netcdf_data.rio.transform().a, 
-                               list_bolam_xarrays[0].rio.transform().a)
+        self.assertAlmostEqual(netcdf_data.rio.transform().a,
+                               0.010642497622783) 
         self.assertAlmostEqual(netcdf_data.rio.transform().b, 
-                               list_bolam_xarrays[0].rio.transform().b)
-        self.assertAlmostEqual(netcdf_data.rio.transform().c, 
-                               list_bolam_xarrays[0].rio.transform().c)
+                               0.0)
+        self.assertAlmostEqual(netcdf_data.rio.transform().c,
+                               -1.621137007661705) 
         self.assertAlmostEqual(netcdf_data.rio.transform().d, 
-                               list_bolam_xarrays[0].rio.transform().d)
+                               0.0)
         self.assertAlmostEqual(netcdf_data.rio.transform().e, 
-                               list_bolam_xarrays[0].rio.transform().e)
+                               -0.010642497622783)
         self.assertAlmostEqual(netcdf_data.rio.transform().f, 
-                               list_bolam_xarrays[0].rio.transform().f)
+                               43.455589042260094)
 
 
 
