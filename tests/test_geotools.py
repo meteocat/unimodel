@@ -33,11 +33,11 @@ class TestGeoTools(unittest.TestCase):
         grid_repr=reproject_xarray(self.data, dest_proj, grid_shape,
                                    corner_ul, grid_res)
 
-        self.assertEqual(grid_repr.shape, (620, 417))
+        self.assertEqual(grid_repr.shape, (417, 620))
 
         self.assertEqual(grid_repr.rio.crs.data['init'], 'epsg:4326')
 
         self.assertAlmostEqual(grid_repr.rio.transform().a, 0.0106,3)
         self.assertAlmostEqual(grid_repr.rio.transform().c, -1.6211,3)
-        self.assertAlmostEqual(grid_repr.rio.transform().e, 0.0106424,3)
+        self.assertAlmostEqual(grid_repr.rio.transform().e, -0.0106,3)
         self.assertAlmostEqual(grid_repr.rio.transform().f, 43.4555,3)
