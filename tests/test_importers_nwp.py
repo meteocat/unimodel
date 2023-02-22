@@ -19,12 +19,12 @@ class TestNWPImporter(unittest.TestCase):
                                     '_{lt}.grib2',
                              'compressed': True},
               'wrf43_prs': {'src': 'tests/data/nwp_src/wrf43_prs/'
-                                  'WRFPRS-03.{year}{month}{day}{run}_0{lt}'
-                                  '.grib',
+                                   'WRFPRS-03.{year}{month}{day}{run}_0{lt}'
+                                   '.grib',
                             'compressed': False},
               'wrf43_prs_tar': {'src': 'tests/data/nwp_src/wrf43_prs/'
-                                       'WRFPRS-03.{year}{month}{day}{run}_0{lt}'
-                                       '.grib',
+                                       'WRFPRS-03.{year}{month}{day}{run}_'
+                                       '0{lt}.grib',
                                 'compressed': True},
               'nwp_dir': 'tests/data/nwp_dir/'}
 
@@ -34,7 +34,6 @@ class TestNWPImporter(unittest.TestCase):
         open('tests/data/nwp_dir/moloch_ecm/example.grib2', 'wb')
 
         return super().setUp()
-
 
     def test_io_import_nwp_grib_compressed(self):
         """Tests import of a compressed grib file."""

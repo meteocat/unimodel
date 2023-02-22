@@ -1,4 +1,3 @@
-
 """Tests downscaling interpolation module.
 """
 import pickle
@@ -15,7 +14,7 @@ class TestInterpolation(unittest.TestCase):
         """Tests bilinear interpolation with and without projection."""
         # Test without specifying any projection, assuming the output
         # projection is the same as input
-        corner_ul = (-7.2375,-4.9875)
+        corner_ul = (-7.2375, -4.9875)
         grid_shape = (138, 194)
         grid_res = (0.0075, 0.0075)
 
@@ -28,10 +27,10 @@ class TestInterpolation(unittest.TestCase):
         self.assertEqual(grid_repr.rio.crs.data['o_lat_p'], 50)
         self.assertEqual(grid_repr.rio.crs.data['lon_0'], 358.5)
 
-        self.assertAlmostEqual(grid_repr.rio.transform().a, 0.0075,3)
-        self.assertAlmostEqual(grid_repr.rio.transform().c, -7.2375,3)
-        self.assertAlmostEqual(grid_repr.rio.transform().e, -0.0075,3)
-        self.assertAlmostEqual(grid_repr.rio.transform().f, -4.9875,3)
+        self.assertAlmostEqual(grid_repr.rio.transform().a, 0.0075, 3)
+        self.assertAlmostEqual(grid_repr.rio.transform().c, -7.2375, 3)
+        self.assertAlmostEqual(grid_repr.rio.transform().e, -0.0075, 3)
+        self.assertAlmostEqual(grid_repr.rio.transform().f, -4.9875, 3)
 
         # Test with a specified projection
         corner_ul = (-1.621137007661705, 43.4555890422600939)
@@ -69,15 +68,15 @@ class TestInterpolation(unittest.TestCase):
         self.assertEqual(grid_repr.rio.crs.data['o_lat_p'], 50)
         self.assertEqual(grid_repr.rio.crs.data['lon_0'], 358.5)
 
-        self.assertAlmostEqual(grid_repr.rio.transform().a, 0.0075,3)
-        self.assertAlmostEqual(grid_repr.rio.transform().c, -7.2375,3)
+        self.assertAlmostEqual(grid_repr.rio.transform().a, 0.0075, 3)
+        self.assertAlmostEqual(grid_repr.rio.transform().c, -7.2375, 3)
         self.assertAlmostEqual(grid_repr.rio.transform().e, -0.0075, 3)
-        self.assertAlmostEqual(grid_repr.rio.transform().f, -4.9875,3)
+        self.assertAlmostEqual(grid_repr.rio.transform().f, -4.9875, 3)
 
         self.assertNotEqual(grid_repr[2][4], None)
 
         # Test with a specified projection
-        corner_ul = (-1.621137007661705,43.4555890422600939)
+        corner_ul = (-1.621137007661705, 43.4555890422600939)
         grid_shape = (620, 417)
         grid_res = (0.010642497622783, 0.010642497622783)
         grid_repr = bilinear(self.data, corner_ul, grid_shape, grid_res,
@@ -85,9 +84,9 @@ class TestInterpolation(unittest.TestCase):
 
         self.assertEqual(grid_repr.shape, (417, 620))
         self.assertEqual(grid_repr.rio.crs.data['init'], 'epsg:4326')
-        self.assertAlmostEqual(grid_repr.rio.transform().a, 0.0106,3)
-        self.assertAlmostEqual(grid_repr.rio.transform().c, -1.6211,3)
-        self.assertAlmostEqual(grid_repr.rio.transform().e, -0.0106,3)
-        self.assertAlmostEqual(grid_repr.rio.transform().f, 43.4555,3)
+        self.assertAlmostEqual(grid_repr.rio.transform().a, 0.0106, 3)
+        self.assertAlmostEqual(grid_repr.rio.transform().c, -1.6211, 3)
+        self.assertAlmostEqual(grid_repr.rio.transform().e, -0.0106, 3)
+        self.assertAlmostEqual(grid_repr.rio.transform().f, 43.4555, 3)
 
         self.assertNotEqual(grid_repr[2][4], None)
