@@ -92,8 +92,12 @@ def import_nwp_grib(date_run: datetime, lead_time: int, model: str,
             remove(prev_file)
         # If NWP grib file is from a compressed source, it is extracted
         if config[model]['compressed']:
-            with tarfile.open(model_dir + basename(tar_file)) as tar:
-                tar.extract(nwp_file, path=model_dir)
+            with tarfile.open(model_dir + basename(tar_file), 'r:gz') as _tar:
+                for member in _tar:
+                    if nwp_file == member.path:
+                        _tar.makefile(member, model_dir + nwp_file)
+                        break
+
         # Otherwise, if exists, it is directly copied to stage directory
         elif exists(nwp_file):
             copy2(nwp_file, model_dir)
