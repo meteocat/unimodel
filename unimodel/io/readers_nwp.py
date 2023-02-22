@@ -7,7 +7,8 @@ import xarray
 from unimodel.utils.geotools import proj4_from_grib
 
 
-def read_wrf_prs(grib_file: str, variable: str, model:str) -> xarray.DataArray:
+def read_wrf_prs(grib_file: str, variable: str,
+                 model: str) -> xarray.DataArray:
     """Reads a WRF grib file and transforms it into an xarray.DataArray.
 
     Args:
@@ -18,8 +19,9 @@ def read_wrf_prs(grib_file: str, variable: str, model:str) -> xarray.DataArray:
     Returns:
         xarray: WRF PRS grib file data.
     """
-    grib_data = xarray.open_dataarray(grib_file, engine='cfgrib',
-                    backend_kwargs={'filter_by_keys': {'shortName': variable}})
+    grib_data = xarray.open_dataarray(
+        grib_file, engine='cfgrib',
+        backend_kwargs={'filter_by_keys': {'shortName': variable}})
     geographics = _get_wrf_prs_metadata(grib_data)
     grib_data = grib_data.rio.write_crs(geographics['crs'])
 
@@ -28,12 +30,12 @@ def read_wrf_prs(grib_file: str, variable: str, model:str) -> xarray.DataArray:
     # y coordinates must be created following the metadata obtained in
     # _get_wrf_prs_metedata.
     x_coords = np.linspace(geographics['x0'],
-                           geographics['x0'] + ((geographics['x_size'] -1) *
+                           geographics['x0'] + ((geographics['x_size'] - 1) *
                            geographics['dx']),
                            geographics['x_size'])
 
     y_coords = np.linspace(geographics['y0'],
-                           geographics['y0'] + ((geographics['y_size'] -1)*
+                           geographics['y0'] + ((geographics['y_size'] - 1) *
                            geographics['dy']),
                            geographics['y_size'])
     y_coords = y_coords[::-1]
@@ -98,18 +100,19 @@ def read_icon_grib(file: str, variable: str, model: str) -> xarray.DataArray:
         grib_file (string): Path to a WRF grib file.
         variable (string): Variable to extract.
         model (str): Model to be read.
-    
+
     Returns:
         xarray: Icon grib file data.
     """
-    grib_data = xarray.open_dataarray(file, engine='cfgrib',
-                    backend_kwargs=dict(filter_by_keys={'shortName': variable}))
+    grib_data = xarray.open_dataarray(
+        file, engine='cfgrib',
+        backend_kwargs={'filter_by_keys': {'shortName': variable}})
 
     geographics = _get_icon_metadata(grib_data)
     grib_data = grib_data.rio.write_crs(geographics['crs'])
 
     # Rename coordinates for further reprojection
-    grib_data = grib_data.rename({'longitude':'x','latitude':'y'})
+    grib_data = grib_data.rename({'longitude': 'x', 'latitude': 'y'})
 
     # Add model name to attributes
     grib_data.attrs['model'] = model
@@ -132,7 +135,8 @@ def _get_icon_metadata(xarray_var: xarray.DataArray) -> dict:
     return {'crs': crs_model}
 
 
-def read_moloch_grib(grib_file: str, variable: str, model:str) -> xarray.DataArray:
+def read_moloch_grib(grib_file: str, variable: str,
+                     model: str) -> xarray.DataArray:
     """Reads a Moloch grib file and transforms it into an xarray.DataArray.
 
     Args:
@@ -145,8 +149,9 @@ def read_moloch_grib(grib_file: str, variable: str, model:str) -> xarray.DataArr
     """
     grib_filter = {'shortName': variable}
 
-    grib_data = xarray.open_dataarray(grib_file, engine='cfgrib',
-                    backend_kwargs=dict(filter_by_keys=grib_filter))
+    grib_data = xarray.open_dataarray(
+        grib_file, engine='cfgrib',
+        backend_kwargs={'filter_by_keys': grib_filter})
 
     grib_md = _get_moloch_metadata(grib_data)
 
@@ -194,7 +199,8 @@ def _get_moloch_metadata(moloch_data: xarray.DataArray) -> dict:
             'y_size': moloch_data.attrs['GRIB_Ny']}
 
 
-def read_bolam_grib(grib_file: str, variable: str, model: str) -> xarray.DataArray:
+def read_bolam_grib(grib_file: str, variable: str,
+                    model: str) -> xarray.DataArray:
     """Reads a Bolam grib file and transforms it into an xarray.DataArray.
 
     Args:
@@ -207,8 +213,9 @@ def read_bolam_grib(grib_file: str, variable: str, model: str) -> xarray.DataArr
     """
     grib_filter = {'shortName': variable}
 
-    grib_data = xarray.open_dataarray(grib_file, engine='cfgrib',
-                    backend_kwargs=dict(filter_by_keys=grib_filter))
+    grib_data = xarray.open_dataarray(
+        grib_file, engine='cfgrib',
+        backend_kwargs={'filter_by_keys': grib_filter})
 
     grib_md = _get_bolam_metadata(grib_data)
 
@@ -256,7 +263,8 @@ def _get_bolam_metadata(bolam_data: xarray.DataArray) -> dict:
             'y_size': bolam_data.attrs['GRIB_Ny']}
 
 
-def read_arome_grib(grib_file: str, variable: str, model:str) -> xarray.DataArray:
+def read_arome_grib(grib_file: str, variable: str,
+                    model: str) -> xarray.DataArray:
     """Reads an AROME grib file and transforms it into an xarray.DataArray.
 
     Args:
@@ -269,15 +277,16 @@ def read_arome_grib(grib_file: str, variable: str, model:str) -> xarray.DataArra
     """
     grib_filter = {'shortName': variable}
 
-    grib_data = xarray.open_dataarray(grib_file, engine='cfgrib',
-                    backend_kwargs={'filter_by_keys': grib_filter})
+    grib_data = xarray.open_dataarray(
+        grib_file, engine='cfgrib',
+        backend_kwargs={'filter_by_keys': grib_filter})
 
     grib_md = _get_arome_metadata(grib_data)
 
     grib_data.rio.write_crs(grib_md['crs'], inplace=True)
 
     # Rename coordinates for further reprojection
-    grib_data = grib_data.rename({'longitude':'x','latitude':'y'})
+    grib_data = grib_data.rename({'longitude': 'x', 'latitude': 'y'})
 
     # Add model name to attributes
     grib_data.attrs['model'] = model
@@ -294,13 +303,14 @@ def _get_arome_metadata(arome_data: xarray.DataArray) -> dict:
     Returns:
         dict: Coordinate reference system.
     """
-    projparams=proj4_from_grib(arome_data)
-    crs_model= pyproj.crs.CRS.from_dict(projparams)
+    projparams = proj4_from_grib(arome_data)
+    crs_model = pyproj.crs.CRS.from_dict(projparams)
 
     return {'crs': crs_model}
 
 
-def read_arpege_grib(grib_file: str, variable: str, model: str) -> xarray.DataArray:
+def read_arpege_grib(grib_file: str, variable: str,
+                     model: str) -> xarray.DataArray:
     """Reads an ARPEGE grib file and transforms it into an xarray.DataArray.
 
     Args:
@@ -313,16 +323,16 @@ def read_arpege_grib(grib_file: str, variable: str, model: str) -> xarray.DataAr
     """
     grib_filter = {'shortName': variable}
 
-    grib_data = xarray.open_dataarray(grib_file, engine='cfgrib',
-                    backend_kwargs={'filter_by_keys': grib_filter})
+    grib_data = xarray.open_dataarray(
+        grib_file, engine='cfgrib',
+        backend_kwargs={'filter_by_keys': grib_filter})
 
     grib_md = _get_arpege_metadata(grib_data)
-
 
     grib_data.rio.write_crs(grib_md['crs'], inplace=True)
 
     # Rename coordinates for further reprojection
-    grib_data = grib_data.rename({'longitude':'x','latitude':'y'})
+    grib_data = grib_data.rename({'longitude': 'x', 'latitude': 'y'})
 
     # Add model name to attributes
     grib_data.attrs['model'] = model
@@ -344,6 +354,7 @@ def _get_arpege_metadata(arpege_data: xarray.DataArray) -> dict:
 
     return {'crs': crs_model}
 
+
 def read_ecmwf_hres_grib(file: str, variable: str, model: str):
     """Reads an ECMWF-HRES grib file and transforms it into an
     xarray.DataArray.
@@ -356,20 +367,20 @@ def read_ecmwf_hres_grib(file: str, variable: str, model: str):
     Returns:
         xarray: ECMWF-HRES grib file data.
     """
-    grib_data = xarray.open_dataarray(file, engine='cfgrib',
-                    backend_kwargs=dict(filter_by_keys={'shortName': variable}))
+    grib_data = xarray.open_dataarray(
+        file, engine='cfgrib',
+        backend_kwargs={'filter_by_keys': {'shortName': variable}})
 
     if variable == 'tp':
         grib_data.data = grib_data.data * 1000
         grib_data.attrs['units'] = 'mm'
         grib_data.attrs['GRIB_units'] = 'mm'
 
-
     geographics = _get_ecmwf_hres_metadata(grib_data)
     grib_data = grib_data.rio.write_crs(geographics['crs'])
 
     # Rename coordinates for further reprojection
-    grib_data = grib_data.rename({'longitude':'x','latitude':'y'})
+    grib_data = grib_data.rename({'longitude': 'x', 'latitude': 'y'})
 
     grib_data = grib_data.assign_coords(model=model)
     grib_data = grib_data.expand_dims(['model', 'time'])
