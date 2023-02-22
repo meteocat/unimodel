@@ -1,36 +1,39 @@
+"""Module to export xarray to different file formats.
+"""
 import xarray
 
-def concat_model(model: list, dim: str)-> xarray.DataArray:
-    """Takes a list of xarray of a model and concatenate it
+
+def concat_model(model: list, dim: str) -> xarray.DataArray:
+    """Concatenates a list of model xarrays.
 
     Args:
-        model (list): List of models to be concatenated
+        model (list): List of models xarrays.
         dim (str): Dimension over we want to concatenate
 
     Returns:
-        xarray.Datarray: Model concatenated through dim
+        xarray.Datarray: Model concatenated.
     """
-    # Concatenem el model segons la dimensio "dim"
     model_concat = xarray.concat(model, dim)
 
     return model_concat
 
 
-def merge_models(models: list)-> xarray.DataArray:
-    """Giving a list of various xarray of data of each
-    mode is merged into one Datarray.xarray
+def merge_models(models: list) -> xarray.DataArray:
+    """
+    Merges a list of different model xarray.DataArray into a single
+    xarray.DataArray with a new dimension named 'model'.
 
     Args:
-        models (list): List of xarray.Datarray for each model
+        models (list): List of models xarray.DataArray.
 
     Returns:
-        xarray.Datarray: _description_
+        xarray.Datarray: Merged data with new dimension 'model'.
     """
-    model_list=[]
+    model_list = []
     for model in models:
-        # Afegim la coordenada model
+        # Add 'model' coordinate
         model_new_coord = model.assign_coords(model=model.attrs['model'])
-        # La definim com a variable dimensional (varia)
+        # New coordinate 'model' as dimension
         model_new_coord = model_new_coord.expand_dims('model')
         model_list.append(model_new_coord)
 
@@ -38,41 +41,42 @@ def merge_models(models: list)-> xarray.DataArray:
 
     return model_merged
 
-def hourly_accumulations(model_concat: list):
-    """Calculate the hourly accumulations for each model
+
+def differences_by_lead_time(model_concat: list):
+    """Iteratively calculates the differences between the current lead time
+    and the previous. The 'upper' label of the difference is considered, that
+    is, (lt=1 - lt=0) -> lt=1.
 
     Args:
-        model_concat (list): list of xarray.Datarray of models.
+        model_concat (list): List of xarray.DataArray of a single model with
+                             different lead times.
 
     Returns:
-        xarray.Datarray: hourly acculumation of precipitation
+        xarray.Datarray: Iterative differences between lead times.
     """
-    hourly_data=model_concat.diff('valid_time')
-    hourly_data.attrs=model_concat.attrs
+    diff_data = model_concat.diff('valid_time')
+    diff_data.attrs = model_concat.attrs
 
-    return hourly_data
+    return diff_data
 
 
-def export_to_netcdf(file: str, models: list, var: str):
-    """Routine which given a list of models and leadtimes
-    convert it to a Netcdf to calculate the PME"
+def export_to_netcdf(models: list, out_file: str):
+    """Export a lists of model lists to netCDF."
 
     Args:
-        file (str):    Path and name of the netcd file where to put the
-                       reprojected data.
-        models (list): List of models and leadtimes which are the parts 
-                       to be used for calculate PME.
-
-        var (str): Variable which will be used.
+        models (list): List of xarray.DataArray model lists. Elements of the
+                       parent list correspond to different models, and elements
+                       of the child list to different lead times
+                       (i.e [[arome_lt0, arome_lt1, ...], [arpege_lt0,
+                       arpege_lt1, ...]]).
+        out_file (str): Output file path where model data are to be saved.
     """
-
     to_export = []
     for model in models:
-        model_concat=concat_model(model, dim='valid_time')
-        if var == 'tp':
-            to_export.append(hourly_accumulations(model_concat))
+        model_concat = concat_model(model, dim='valid_time')
+        if model_concat.attrs['GRIB_cfVarName'] == 'tp':
+            to_export.append(differences_by_lead_time(model_concat))
 
     to_export = merge_models(to_export)
 
-    to_export.to_netcdf(file)
-
+    to_export.to_netcdf(out_file)
