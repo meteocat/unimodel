@@ -26,6 +26,9 @@ class TestNWPImporter(unittest.TestCase):
                                        'WRFPRS-03.{year}{month}{day}{run}_'
                                        '0{lt}.grib',
                                 'compressed': True},
+              'ecmwf_hres': {'src': 'tests/data/nwp_src/ecmwf/A1S{month}{day}'
+                                    '{run}00{valid_time}',
+                             'compressed': False},
               'nwp_dir': 'tests/data/nwp_dir/'}
 
     def setUp(self) -> None:
@@ -85,6 +88,22 @@ class TestNWPImporter(unittest.TestCase):
 
         self.assertEqual(err.exception.args[0], 'src_tar must be included if '
                          'compressed is set to True.')
+
+    def test_io_import_nwp_grib_ecmwf_lt_0(self):
+        """Tests import of a ECMWF-HRES grib file corresponding to lt=0."""
+        nwp_file = import_nwp_grib(datetime(2023, 2, 20, 0), 0, 'ecmwf_hres',
+                                   self.config)
+
+        self.assertEqual(nwp_file, 'tests/data/nwp_dir/ecmwf_hres/'
+                         'A1S02200000022000011')
+
+    def test_io_import_nwp_grib_ecmwf_lt_not_0(self):
+        """Tests import of a ECMWF-HRES grib file corresponding to lt!=0."""
+        nwp_file = import_nwp_grib(datetime(2023, 2, 20, 0), 6, 'ecmwf_hres',
+                                   self.config)
+
+        self.assertEqual(nwp_file, 'tests/data/nwp_dir/ecmwf_hres/'
+                         'A1S02200000022006001')
 
     def tearDown(self) -> None:
         for f_dir in glob(self.config['nwp_dir'] + '/*'):

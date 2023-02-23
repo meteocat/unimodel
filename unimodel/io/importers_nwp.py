@@ -1,7 +1,7 @@
 """Module to import NWP grib files.
 """
 import tarfile
-from datetime import datetime
+from datetime import datetime, timedelta
 from glob import glob
 from os import makedirs, remove
 from posixpath import basename
@@ -53,6 +53,13 @@ def import_nwp_grib(date_run: datetime, lead_time: int, model: str,
 
     date_run_f = _get_datetime_formatted(date_run)
 
+    # Valid datetime is required for ECMWF-HRES files
+    valid_datetime = date_run + timedelta(hours=lead_time)
+    if lead_time == 0:
+        valid_datetime = valid_datetime.strftime('%m%d%H011')
+    else:
+        valid_datetime = valid_datetime.strftime('%m%d%H001')
+
     if config[model]['compressed']:
         # If model is informed as compressed (tar.gz), the key 'src_tar'
         # (tar source file) must be included in the configuration dictionary
@@ -83,6 +90,7 @@ def import_nwp_grib(date_run: datetime, lead_time: int, model: str,
                                                 'day': date_run_f['day'],
                                                 'hour': date_run_f['hour'],
                                                 'run': date_run_f['hour'],
+                                                'valid_time': valid_datetime,
                                                 'lt': str(lead_time).zfill(2)})
 
     # If NWP grib file already exists in stage directory, this part is skipped
