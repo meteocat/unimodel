@@ -1,5 +1,6 @@
+"""Tests load_config module.
+"""
 import unittest
-from datetime import datetime
 
 from unimodel.utils.load_config import load_config
 
