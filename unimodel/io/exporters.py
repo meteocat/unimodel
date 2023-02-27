@@ -76,7 +76,16 @@ def export_to_netcdf(models: list, out_file: str):
         model_concat = concat_model(model, dim='valid_time')
         if model_concat.name == 'tp':
             to_export.append(differences_by_lead_time(model_concat))
+        else:
+            to_export.append(model_concat)
 
-    to_export = merge_models(to_export)
+    if to_export[0].name == 'tp':
+        to_export = merge_models(to_export)
+        # Change the time coordinates in order to have hour since the
+        # time inicialization of the model
+        today=str(to_export.time.dt.strftime("%Y-%m-%d %H:%M:%S").data)
+        to_export.valid_time.encoding['units']= "hours since "+today
+    else:
+        to_export = merge_models(to_export)
 
-    to_export.tp.to_netcdf(out_file)
+    to_export.to_netcdf(out_file)
