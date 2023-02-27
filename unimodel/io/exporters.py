@@ -79,4 +79,4 @@ def export_to_netcdf(models: list, out_file: str):
 
     to_export = merge_models(to_export)
 
-    to_export.to_netcdf(out_file)
+    to_export.tp.to_netcdf(out_file)
