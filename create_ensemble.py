@@ -16,6 +16,10 @@ def process_model(model, date, config):
         rep_data = bilinear(nwp_data, config['corner_ul'],
                             config['grid_shape'], config['grid_res'],
                             'epsg:4326')
+        # Borrem els atributs GRIB que no necessitem
+        for attributes in list(rep_data.attrs):
+            if 'GRIB' in attributes:
+                del rep_data.attrs[attributes]
         out_model.append(rep_data)
     
     return out_model
@@ -24,12 +28,11 @@ def process_model(model, date, config):
 # config = load_config(ARGS.config)
 config = load_config('config_unimodel.json')
 
-models = ['moloch_ecm', 'moloch_gfs', 'bolam', 'ecmwf_hres', 'icon', 'arpege',
-          'arome', 'wrf_gfs_9', 'wrf_gfs_3', 'wrf_exp', 'wrf_ecm']
-
 models = ['wrf_gfs_9', 'wrf_gfs_3', 'wrf_exp', 'wrf_ecm',
           'moloch_ecm', 'moloch_gfs', 'ecmwf_hres', 'arome',
           'bolam', 'icon', 'arpege']
+
+models = ['moloch_ecm']
 
 date = datetime(2023, 2, 24)
 list_out_models=[]

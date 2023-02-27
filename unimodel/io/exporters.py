@@ -74,7 +74,7 @@ def export_to_netcdf(models: list, out_file: str):
     to_export = []
     for model in models:
         model_concat = concat_model(model, dim='valid_time')
-        if model_concat.attrs['GRIB_cfVarName'] == 'tp':
+        if model_concat.name == 'tp':
             to_export.append(differences_by_lead_time(model_concat))
 
     to_export = merge_models(to_export)
