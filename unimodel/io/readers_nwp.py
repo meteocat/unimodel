@@ -382,8 +382,8 @@ def read_ecmwf_hres_grib(file: str, variable: str, model: str):
     # Rename coordinates for further reprojection
     grib_data = grib_data.rename({'longitude': 'x', 'latitude': 'y'})
 
-    grib_data = grib_data.assign_coords(model=model)
-    grib_data = grib_data.expand_dims(['model', 'time'])
+    # Add model name to attributes
+    grib_data.attrs['model'] = model
 
     return grib_data
 
