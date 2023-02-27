@@ -4,21 +4,12 @@ from unimodel.io.importers_nwp import import_nwp_grib
 from unimodel.downscaling.interpolation import bilinear
 from unimodel.io.exporters import export_to_netcdf
 from unimodel.utils.load_config import load_config
+import dask
 
 
-# Definim variables a partir del fitxer de configuracio
-# config = load_config(ARGS.config)
-config = load_config('config_unimodel.json')
-
-models = ['moloch_ecm', 'arome']
-date = datetime(2023, 2, 22)
-list_out_models=[]
-for model in models:
-    time_0 = datetime.utcnow()
-    print(model)
+def process_model(model, date, config):
     out_model = []
     for lt in range(config['lead_times']):
-        print(lt)
         nwp_file = import_nwp_grib(date, lt, model, config)
         reader = unimodel.io.get_reader(model)
         nwp_data = reader(nwp_file, 'tp', model)
@@ -26,10 +17,33 @@ for model in models:
                             config['grid_shape'], config['grid_res'],
                             'epsg:4326')
         out_model.append(rep_data)
-    list_out_models.append(out_model)
-    time_1 = datetime.utcnow()
-    print((time_1 - time_0).total_seconds() / 60)
+    
+    return out_model
 
-export_to_netcdf(list_out_models, config['netcdf_output'])
+# Definim variables a partir del fitxer de configuracio
+# config = load_config(ARGS.config)
+config = load_config('config_unimodel.json')
 
-print(nwp_file)
+models = ['moloch_ecm', 'moloch_gfs', 'bolam', 'ecmwf_hres', 'icon', 'arpege',
+          'arome', 'wrf_gfs_9', 'wrf_gfs_3', 'wrf_exp', 'wrf_ecm']
+
+models = ['wrf_gfs_9', 'wrf_gfs_3', 'wrf_exp', 'wrf_ecm',
+          'moloch_ecm', 'moloch_gfs', 'ecmwf_hres', 'arome',
+          'bolam', 'icon', 'arpege']
+
+date = datetime(2023, 2, 24)
+list_out_models=[]
+
+time_total_0 = datetime.utcnow()
+lazy_results = []
+for model in models:
+    lazy_result = dask.delayed(process_model)(model, date, config)
+    lazy_results.append(lazy_result)
+
+processed = dask.compute(*lazy_results)
+
+export_to_netcdf(processed, config['netcdf_output'])
+
+
+time_total_1 = datetime.utcnow()
+print((time_total_1 - time_total_0).total_seconds() / 60)
