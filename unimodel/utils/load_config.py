@@ -1,7 +1,6 @@
 """Module to import configuration files.
 """
 import json
-from datetime import datetime
 from os.path import exists
 
 
@@ -20,8 +19,8 @@ def load_config(config_file):
     if not exists(config_file):
         raise FileNotFoundError(config_file + ' does not exist.')
 
-    with open(config_file, 'rb') as f:
-        config = json.load(f)
-        f.close()
+    with open(config_file, 'rb') as c_f:
+        config = json.load(c_f)
+        c_f.close()
 
     return config
