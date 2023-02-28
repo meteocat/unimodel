@@ -42,7 +42,7 @@ def merge_models(models: list) -> xarray.DataArray:
     return model_merged
 
 
-def differences_by_lead_time(model_concat: list):
+def differences_by_lead_time(model_concat: list) -> xarray.DataArray:
     """Iteratively calculates the differences between the current lead time
     and the previous. The 'upper' label of the difference is considered, that
     is, (lt=1 - lt=0) -> lt=1.
@@ -81,10 +81,9 @@ def export_to_netcdf(models: list, out_file: str):
 
     if to_export[0].name == 'tp':
         to_export = merge_models(to_export)
-        # Change the time coordinates in order to have hour since the
-        # time inicialization of the model
-        today=str(to_export.time.dt.strftime("%Y-%m-%d %H:%M:%S").data)
-        to_export.valid_time.encoding['units']= "hours since "+today
+        # Change units of 'valid_time' to NWP model run date
+        run_date = str(to_export.time.dt.strftime("%Y-%m-%d %H:%M:%S").data)
+        to_export.valid_time.encoding['units'] = "hours since " + run_date
     else:
         to_export = merge_models(to_export)
 
