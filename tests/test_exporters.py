@@ -30,6 +30,9 @@ class TestExporters(unittest.TestCase):
         self.assertEqual(netcdf_data.dims['valid_time'], 1)
         self.assertEqual(netcdf_data.dims['model'], 2)
 
+        self.assertEqual(netcdf_data.valid_time.encoding['units'],
+                         'hours since 2023-02-15')
+
         self.assertAlmostEqual(netcdf_data.rio.transform().a,
                                0.010642497622783)
         self.assertAlmostEqual(netcdf_data.rio.transform().b, 0.0)
