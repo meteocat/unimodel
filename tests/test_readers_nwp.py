@@ -158,8 +158,8 @@ class TestReadersNWP(unittest.TestCase):
         self.assertEqual(data_var.x.shape[0], 211)
         self.assertEqual(data_var.y.shape[0], 131)
 
-        self.assertAlmostEqual(data_var.values[0, 0, 50, 80], 0.503, 2)
-        self.assertAlmostEqual(data_var.values[0, 0, 80, 50], 0.0)
+        self.assertAlmostEqual(data_var.values[50, 80], 0.503, 2)
+        self.assertAlmostEqual(data_var.values[80, 50], 0.0)
 
         self.assertAlmostEqual(data_var.rio.transform().a, 0.1)
         self.assertAlmostEqual(data_var.rio.transform().b, 0.0)
