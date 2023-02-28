@@ -2,7 +2,10 @@
 """
 import xarray
 
+from unimodel.utils.decorators import xarray_attributes
 
+
+@xarray_attributes
 def concat_model(model: list, dim: str) -> xarray.DataArray:
     """Concatenates a list of model xarrays.
 
@@ -18,6 +21,7 @@ def concat_model(model: list, dim: str) -> xarray.DataArray:
     return model_concat
 
 
+@xarray_attributes
 def merge_models(models: list) -> xarray.DataArray:
     """
     Merges a list of different model xarray.DataArray into a single
@@ -57,6 +61,9 @@ def differences_by_lead_time(model_concat: list) -> xarray.DataArray:
     diff_data = model_concat.diff('valid_time')
     diff_data.attrs = model_concat.attrs
 
+    run_date = str(diff_data.time.dt.strftime("%Y-%m-%d %H:%M:%S").data)
+    diff_data.valid_time.encoding['units'] = "hours since " + run_date
+
     return diff_data
 
 
@@ -79,12 +86,6 @@ def export_to_netcdf(models: list, out_file: str):
         else:
             to_export.append(model_concat)
 
-    if to_export[0].name == 'tp':
-        to_export = merge_models(to_export)
-        # Change units of 'valid_time' to NWP model run date
-        run_date = str(to_export.time.dt.strftime("%Y-%m-%d %H:%M:%S").data)
-        to_export.valid_time.encoding['units'] = "hours since " + run_date
-    else:
-        to_export = merge_models(to_export)
+    to_export = merge_models(to_export)
 
-    to_export.to_netcdf(out_file)
+    to_export.to_netcdf(out_file, engine='netcdf4')
