@@ -30,10 +30,6 @@ def __process_model(model, date, config):
         rep_data = bilinear(nwp_data, config['corner_ul'],
                             config['grid_shape'], config['grid_res'],
                             'epsg:4326')
-        # Borrem els atributs GRIB que no necessitem
-        for attributes in list(rep_data.attrs):
-            if 'GRIB' in attributes:
-                del rep_data.attrs[attributes]
         out_model.append(rep_data)
 
     return out_model
