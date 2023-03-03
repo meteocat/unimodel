@@ -50,3 +50,7 @@ Thumbs.db
 
 # Tests data
 tests/data
+build
+unimodel.egg-info
+.pytest_cache
+__pycache__
