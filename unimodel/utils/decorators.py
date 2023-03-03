@@ -7,7 +7,6 @@ def xarray_attributes(func):
     '''Measure performance of a function'''
 
     def check_attributes(*args, **kwargs):
-
         xarray_data = func(*args, **kwargs)
 
         # Borrem els atributs GRIB que no necessitem
