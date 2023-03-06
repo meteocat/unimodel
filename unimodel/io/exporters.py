@@ -67,7 +67,7 @@ def differences_by_lead_time(model_concat: list) -> xarray.DataArray:
     return diff_data
 
 
-def export_to_netcdf(models: list, out_file: str):
+def concat_and_merge(models: list):
     """Export a lists of model lists to netCDF."
 
     Args:
@@ -76,16 +76,20 @@ def export_to_netcdf(models: list, out_file: str):
                        of the child list to different lead times
                        (i.e [[arome_lt0, arome_lt1, ...], [arpege_lt0,
                        arpege_lt1, ...]]).
-        out_file (str): Output file path where model data are to be saved.
+    Returns:
+        xarray: Returns an xarray of the models concatenated and  merged
     """
-    to_export = []
+    
+    data_xarray = []
     for model in models:
         model_concat = concat_model(model, dim='valid_time')
         if model_concat.name == 'tp':
-            to_export.append(differences_by_lead_time(model_concat))
+            data_xarray.append(differences_by_lead_time(model_concat))
         else:
-            to_export.append(model_concat)
+            data_xarray.append(model_concat)
 
-    to_export = merge_models(to_export)
+    data_xarray = merge_models(data_xarray)
 
-    to_export.to_netcdf(out_file, engine='netcdf4')
+    return data_xarray
+
+    

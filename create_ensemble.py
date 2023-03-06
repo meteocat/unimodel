@@ -6,7 +6,7 @@ import dask
 
 import unimodel.io
 from unimodel.downscaling.interpolation import bilinear
-from unimodel.io.exporters import export_to_netcdf
+from unimodel.io.exporters import concat_and_merge
 from unimodel.io.importers_nwp import import_nwp_grib
 from unimodel.utils.load_config import load_config
 
@@ -46,7 +46,7 @@ def main():
               'moloch_ecm', 'moloch_gfs', 'ecmwf_hres', 'arome',
               'bolam', 'icon', 'arpege']
 
-    models = ['moloch_ecm']
+    models = ['moloch_ecm','moloch_gfs']
 
     date = datetime(2023, 2, 24)
 
@@ -58,10 +58,16 @@ def main():
 
     processed = dask.compute(*lazy_results)
 
-    export_to_netcdf(processed, config['netcdf_output'])
+    xarray_data = concat_and_merge(processed)
+
+    # Convert xarray to netcdf
+    xarray_data.to_netcdf(config['netcdf_output'], engine='netcdf4')
 
     time_total_1 = datetime.utcnow()
     print((time_total_1 - time_total_0).total_seconds() / 60)
+
+
+
 
 
 if __name__ == '__main__':
