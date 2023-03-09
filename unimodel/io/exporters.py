@@ -67,8 +67,9 @@ def differences_by_lead_time(model_concat: list) -> xarray.DataArray:
     return diff_data
 
 
-def concat_and_merge(models: list):
-    """Export a lists of model lists to netCDF."
+def concat_and_merge(models: list) -> xarray.DataArray:
+    """Concats and mergres a list of model lists to a single xarray.Datarray.
+    If model variable is 'tp' `differences_by_lead_time` is applied."
 
     Args:
         models (list): List of xarray.DataArray model lists. Elements of the
@@ -77,7 +78,7 @@ def concat_and_merge(models: list):
                        (i.e [[arome_lt0, arome_lt1, ...], [arpege_lt0,
                        arpege_lt1, ...]]).
     Returns:
-        xarray: Returns an xarray of the models concatenated and  merged
+        xarray: Concatenated and merged models.
     """
     
     data_xarray = []
