@@ -77,8 +77,6 @@ def import_nwp_grib(date_run: datetime, lead_time: int, model: str,
             # If tar_file not exists, previous tar files are removed
             for prev_file in prev_files_tar:
                 remove(prev_file)
-            # for prev_file in prev_files:
-            #     remove(prev_file)
             # If tar_file exists in source folder, it is copied to stage
             # directory
             if exists(tar_file):

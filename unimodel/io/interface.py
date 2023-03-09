@@ -16,7 +16,6 @@ _readers['wrf_ecm'] = read_wrf_prs
 _readers['wrf_exp'] = read_wrf_prs
 _readers['wrf_gfs_3'] = read_wrf_prs
 _readers['wrf_gfs_9'] = read_wrf_prs
-_readers['wrf_gfs_9'] = read_wrf_prs
 _readers['ecmwf_hres'] = read_ecmwf_hres_grib
 
 
