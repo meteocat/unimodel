@@ -2,10 +2,12 @@
 """
 import tarfile
 from datetime import datetime, timedelta
+from collections import defaultdict
 from glob import glob
 from os import makedirs, remove
 from posixpath import basename
 from shutil import copy2
+import re
 
 from genericpath import exists
 
@@ -84,17 +86,31 @@ def import_nwp_grib(date_run: datetime, lead_time: int, model: str,
             else:
                 raise FileNotFoundError(tar_file + ' not found.')
 
-    # NWP grib file is formatted following informed run date and lead time
-    nwp_file = config[model]['src'].format_map({'year': date_run_f['year'],
-                                                'month': date_run_f['month'],
-                                                'day': date_run_f['day'],
-                                                'hour': date_run_f['hour'],
-                                                'run': date_run_f['hour'],
-                                                'valid_time': valid_datetime,
-                                                'lt': str(lead_time).zfill(2)})
+    # NWP grib file is formatted following informed run date and lead time.
+    # A default string ([0-9]*, it matches a single character in the range
+    # between 0 and 9 unlimited times) is assigned to named arguments not
+    # considered. This is done due to WRF-TL-ENS members, because their paths
+    # include the number of ensemble member.
+    nwp_file = config[model]['src'].format_map(
+        defaultdict(lambda: r"[0-9]*",
+                    year=date_run_f['year'],
+                    month=date_run_f['month'],
+                    day=date_run_f['day'],
+                    hour=date_run_f['hour'],
+                    run=date_run_f['hour'],
+                    valid_time=valid_datetime,
+                    lt=str(lead_time).zfill(2)))
 
-    # If NWP grib file already exists in stage directory, this part is skipped
-    if not exists(model_dir + basename(nwp_file)):
+    # Checks if NWP grib files already exist in stage directory. If exist, path
+    # is appended to nwp_files list.
+    nwp_files = []
+    for prev_file in prev_files:
+        if re.match(model_dir + basename(nwp_file), prev_file):
+            nwp_files.append(prev_file)
+
+    # If the previous list is empty, files must be copied from source or
+    # .tar.gz file
+    if len(nwp_files) == 0:
         # If NWP grib file not exists, previous grib files are removed
         for prev_file in prev_files:
             remove(prev_file)
@@ -103,11 +119,17 @@ def import_nwp_grib(date_run: datetime, lead_time: int, model: str,
             with tarfile.open(model_dir + basename(tar_file), 'r:gz') as _tar:
                 for member in _tar:
                     _tar.makefile(member, model_dir + member.path)
+                    if bool(re.match(basename(nwp_file), member.path)):
+                        nwp_files.append(model_dir + member.path)
 
         # Otherwise, if exists, it is directly copied to stage directory
         elif exists(nwp_file):
             copy2(nwp_file, model_dir)
+            nwp_files.append(model_dir + basename(nwp_file))
         else:
             raise FileNotFoundError(nwp_file + ' not found.')
 
-    return model_dir + basename(nwp_file)
+    if len(nwp_files) > 1:
+        return nwp_files
+
+    return nwp_files[0]
