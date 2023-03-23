@@ -1,5 +1,7 @@
 """Module to read NWP files and transfrom them to xarray.
 """
+import re
+
 import numpy as np
 import pyproj
 import xarray
@@ -398,6 +400,57 @@ def _get_ecmwf_hres_metadata(xarray_var):
         dict: Coordinate reference system.
     """
     projparams = proj4_from_grib(xarray_var)
+    crs_model = pyproj.crs.CRS.from_dict(projparams)
+
+    return {'crs': crs_model}
+
+
+def read_wrf_tl_ens_grib(grib_file: str, variable: str,
+                         model: str) -> xarray.DataArray:
+    """Reads an WRF-TL-ENS member grib file and transforms it into an
+    xarray.DataArray.
+
+    Args:
+        grib_file (str): Path to a WRF-TL-ENS member grib file.
+        variable (str): Variable to extract.
+        model (str): Model to be read.
+
+    Returns:
+        xarray: WRF-TL-ENS member grib file data.
+    """
+    grib_filter = {'shortName': variable}
+
+    grib_data = xarray.open_dataarray(
+        grib_file, engine='cfgrib',
+        backend_kwargs={'filter_by_keys': grib_filter})
+
+    grib_md = _get_wrf_tl_ens_metadata(grib_data)
+
+    grib_data.rio.write_crs(grib_md['crs'], inplace=True)
+
+    # Rename coordinates for further reprojection
+    grib_data = grib_data.rename({'longitude': 'x', 'latitude': 'y'})
+
+    # Add ensemble member coordinate
+    grib_data = grib_data.assign_coords(realization=int(re.search(
+        r"(?<=-).+?(?=\.)", grib_file).group()))
+
+    # Add model name to attributes
+    grib_data.attrs['model'] = model
+
+    return grib_data
+
+
+def _get_wrf_tl_ens_metadata(arpege_data: xarray.DataArray) -> dict:
+    """Get projection of a WRF-TL-ENS member xarray.
+
+    Args:
+        xarray_var (xarray): WRF-TL-ENS grib xarray.
+
+    Returns:
+        dict: Coordinate reference system.
+    """
+    projparams = proj4_from_grib(arpege_data)
     crs_model = pyproj.crs.CRS.from_dict(projparams)
 
     return {'crs': crs_model}
