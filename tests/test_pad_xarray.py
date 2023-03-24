@@ -12,7 +12,7 @@ class Test_Pad_xarary(unittest.TestCase):
         data = pickle.load(file)
 
     def test_pad_xarray(self):
-        xarray_padded = pad_xarray(self.data, lead_times=72)
+        xarray_padded = pad_xarray(self.data, lead_times=72, time_span=1)
 
         self.assertEqual(xarray_padded[0].shape[0], 138)
         self.assertEqual(xarray_padded[0].shape[1], 194)
