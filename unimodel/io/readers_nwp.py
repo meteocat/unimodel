@@ -360,7 +360,7 @@ def read_ecmwf_hres_grib(file: str, variable: str, model: str):
     xarray.DataArray.
 
     Args:
-        grib_file (str): Path to an AROME grib file.
+        grib_file (str): Path to an ECMWF-HRES grib file.
         variable (str): Variable to extract.
         model (str): Model name.
 
@@ -393,6 +393,49 @@ def _get_ecmwf_hres_metadata(xarray_var):
 
     Args:
         xarray_var (xarray): ECMWF-HRES grib data.
+
+    Returns:
+        dict: Coordinate reference system.
+    """
+    projparams = proj4_from_grib(xarray_var)
+    crs_model = pyproj.crs.CRS.from_dict(projparams)
+
+    return {'crs': crs_model}
+
+
+def read_unified_model_grib(file: str, variable: str, model: str):
+    """Reads an Unified Model grib file and transforms it into an
+    xarray.DataArray.
+
+    Args:
+        grib_file (str): Path to an Unified Moddel grib file.
+        variable (str): Variable to extract.
+        model (str): Model name.
+
+    Returns:
+        xarray: Unified Model grib file data.
+    """
+    grib_data = xarray.open_dataarray(
+        file, engine='cfgrib',
+        backend_kwargs={'filter_by_keys': {'shortName': variable}})
+
+    geographics = _get_unified_model_metadata(grib_data)
+    grib_data = grib_data.rio.write_crs(geographics['crs'])
+
+    # Rename coordinates for further reprojection
+    grib_data = grib_data.rename({'longitude': 'x', 'latitude': 'y'})
+
+    # Add model name to attributes
+    grib_data.attrs['model'] = model
+
+    return grib_data
+
+
+def _get_unified_model_metadata(xarray_var):
+    """Gets projection of an Unified Model xarray.
+
+    Args:
+        xarray_var (xarray): Unified Model grib data.
 
     Returns:
         dict: Coordinate reference system.

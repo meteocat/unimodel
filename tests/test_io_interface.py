@@ -1,10 +1,12 @@
 """Tests interface for I/O methods.
 """
 import unittest
+
 import unimodel.io
 from unimodel.io.readers_nwp import (read_arome_grib, read_arpege_grib,
-                                     read_bolam_grib, read_icon_grib,
-                                     read_moloch_grib, read_wrf_prs)
+                                     read_bolam_grib, read_ecmwf_hres_grib,
+                                     read_icon_grib, read_moloch_grib,
+                                     read_unified_model_grib, read_wrf_prs)
 
 
 class TestIOInterface(unittest.TestCase):
@@ -17,7 +19,9 @@ class TestIOInterface(unittest.TestCase):
                         ("icon", read_icon_grib),
                         ("moloch_ecm", read_moloch_grib),
                         ("moloch_gfs", read_moloch_grib),
-                        ("wrf_exp", read_wrf_prs)]
+                        ("wrf_exp", read_wrf_prs),
+                        ("ecmwf_hres", read_ecmwf_hres_grib),
+                        ("unified_model", read_unified_model_grib)]
 
         for reader_pair in reader_pairs:
             reader_method = unimodel.io.get_reader(reader_pair[0])
@@ -30,4 +34,4 @@ class TestIOInterface(unittest.TestCase):
                          'The available readers are: [\'arome\', \'arpege\', '
                          '\'bolam\', \'icon\', \'moloch_gfs\', \'moloch_ecm\','
                          ' \'wrf_ecm\', \'wrf_exp\', \'wrf_gfs_3\', '
-                         '\'wrf_gfs_9\', \'ecmwf_hres\']')
+                         '\'wrf_gfs_9\', \'ecmwf_hres\', \'unified_model\']')
