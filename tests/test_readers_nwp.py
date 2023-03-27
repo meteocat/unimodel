@@ -5,7 +5,8 @@ import unittest
 from unimodel.io.readers_nwp import (read_arome_grib, read_arpege_grib,
                                      read_bolam_grib, read_ecmwf_hres_grib,
                                      read_icon_grib, read_moloch_grib,
-                                     read_unified_model_grib, read_wrf_prs)
+                                     read_unified_model_grib, read_wrf_prs,
+                                     read_wrf_tl_ens_grib)
 
 
 class TestReadersNWP(unittest.TestCase):
@@ -187,3 +188,26 @@ class TestReadersNWP(unittest.TestCase):
 
         self.assertAlmostEqual(um_data.data[83, 148], 9.931, 2)
         self.assertAlmostEqual(um_data.data[137, 83], 0.0, 2)
+
+    def test_read_wrf_tl_ens_grib(self):
+        """Tests WRF-TL-ENS member grib to xarray."""
+        file = 'tests/data/nwp_src/wrf_tl_ens/ens-002.2023032009_01.grib'
+        variable = 'tp'
+        data_var = read_wrf_tl_ens_grib(file, variable, 'wrf_tl_ens')
+
+        self.assertEqual(data_var.rio.crs.data['proj'], 'longlat')
+        self.assertEqual(data_var.rio.crs.data['datum'], 'WGS84')
+        self.assertTrue('realization' in data_var.coords)
+
+        self.assertEqual(data_var.x.shape[0], 231)
+        self.assertEqual(data_var.y.shape[0], 161)
+
+        self.assertAlmostEqual(data_var.values[76, 160], 0.109, 2)
+        self.assertAlmostEqual(data_var.values[160, 72], 0.0)
+
+        self.assertAlmostEqual(data_var.rio.transform().a, 0.025)
+        self.assertAlmostEqual(data_var.rio.transform().b, 0.0)
+        self.assertAlmostEqual(data_var.rio.transform().c, -1.2625)
+        self.assertAlmostEqual(data_var.rio.transform().d, 0.0)
+        self.assertAlmostEqual(data_var.rio.transform().e, 0.025)
+        self.assertAlmostEqual(data_var.rio.transform().f, 39.2375)
