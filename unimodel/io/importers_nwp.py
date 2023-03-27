@@ -2,7 +2,6 @@
 """
 import tarfile
 from datetime import datetime, timedelta
-from collections import defaultdict
 from glob import glob
 from os import makedirs, remove
 from posixpath import basename
@@ -87,19 +86,17 @@ def import_nwp_grib(date_run: datetime, lead_time: int, model: str,
                 raise FileNotFoundError(tar_file + ' not found.')
 
     # NWP grib file is formatted following informed run date and lead time.
-    # A default string ([0-9]*, it matches a single character in the range
-    # between 0 and 9 unlimited times) is assigned to named arguments not
-    # considered. This is done due to WRF-TL-ENS members, because their paths
-    # include the number of ensemble member.
-    nwp_file = config[model]['src'].format_map(
-        defaultdict(lambda: r"[0-9]*",
-                    year=date_run_f['year'],
-                    month=date_run_f['month'],
-                    day=date_run_f['day'],
-                    hour=date_run_f['hour'],
-                    run=date_run_f['hour'],
-                    valid_time=valid_datetime,
-                    lt=str(lead_time).zfill(2)))
+    # Regular expression [0-9]* (it matches a single character in the range
+    # between 0 and 9 unlimited times) is assigned to 'member' named arguments
+    # since WRF-TL-ENS paths include the number of the ensemble member.
+    nwp_file = config[model]['src'].format_map({'year': date_run_f['year'],
+                                                'month': date_run_f['month'],
+                                                'day': date_run_f['day'],
+                                                'hour': date_run_f['hour'],
+                                                'run': date_run_f['hour'],
+                                                'valid_time': valid_datetime,
+                                                'lt': str(lead_time).zfill(2),
+                                                'member': r"[0-9]*"})
 
     # Checks if NWP grib files already exist in stage directory. If exist, path
     # is appended to nwp_files list.
