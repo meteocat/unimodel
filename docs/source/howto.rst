@@ -13,31 +13,35 @@ a `xarray.DataArray` es troben a :ref:`api-lectura`. La columna interfície corr
 que cal indicar per importar la funció a través de la funció ``get_reader`` de
 :ref:`api-interficie`.
 
-+-----------------+----------------+---------------------------------------------------------+
-| Model           | Interfície     | Funció                                                  | 
-+=================+================+=========================================================+
-| Arome           | 'arome'        | :py:func:`unimodel.io.readers_nwp.read_arome_grib`      | 
-+-----------------+----------------+---------------------------------------------------------+
-| Arpege          | 'arpege'       | :py:func:`unimodel.io.readers_nwp.read_arpege_grib`     | 
-+-----------------+----------------+---------------------------------------------------------+
-| Bolam           | 'bolam'        | :py:func:`unimodel.io.readers_nwp.read_bolam_grib`      | 
-+-----------------+----------------+---------------------------------------------------------+
-| ECMWF-HRES      | 'ecmwf_hres'   | :py:func:`unimodel.io.readers_nwp.read_ecmwf_hres_grib` | 
-+-----------------+----------------+---------------------------------------------------------+
-| ICON            | 'icon'         | :py:func:`unimodel.io.readers_nwp.read_icon_grib`       | 
-+-----------------+----------------+---------------------------------------------------------+
-| Moloch-GFS      | 'moloch_gfs'   | :py:func:`unimodel.io.readers_nwp.read_moloch_grib`     | 
-+-----------------+----------------+---------------------------------------------------------+
-| Moloch-ECMWF    | 'moloch_ecmwf' | :py:func:`unimodel.io.readers_nwp.read_moloch_grib`     | 
-+-----------------+----------------+---------------------------------------------------------+
-| WRF-ECM         | 'wrf_ecm'      | :py:func:`unimodel.io.readers_nwp.read_wrf_prs`         | 
-+-----------------+----------------+---------------------------------------------------------+
-| WRF-EXP         | 'wrf_exp'      | :py:func:`unimodel.io.readers_nwp.read_wrf_prs`         | 
-+-----------------+----------------+---------------------------------------------------------+
-| WRF-GFS-3km     | 'wrf_gfs_3'    | :py:func:`unimodel.io.readers_nwp.read_wrf_prs`         | 
-+-----------------+----------------+---------------------------------------------------------+
-| WRF-GFS-9km     | 'wrf_ecm'      | :py:func:`unimodel.io.readers_nwp.read_wrf_prs`         | 
-+-----------------+----------------+---------------------------------------------------------+
++-----------------+----------------+------------------------------------------------------------+
+| Model           | Interfície     | Funció                                                     | 
++=================+================+============================================================+
+| Arome           | 'arome'        | :py:func:`unimodel.io.readers_nwp.read_arome_grib`         | 
++-----------------+----------------+------------------------------------------------------------+
+| Arpege          | 'arpege'       | :py:func:`unimodel.io.readers_nwp.read_arpege_grib`        | 
++-----------------+----------------+------------------------------------------------------------+
+| Bolam           | 'bolam'        | :py:func:`unimodel.io.readers_nwp.read_bolam_grib`         | 
++-----------------+----------------+------------------------------------------------------------+
+| ECMWF-HRES      | 'ecmwf_hres'   | :py:func:`unimodel.io.readers_nwp.read_ecmwf_hres_grib`    | 
++-----------------+----------------+------------------------------------------------------------+
+| ICON            | 'icon'         | :py:func:`unimodel.io.readers_nwp.read_icon_grib`          | 
++-----------------+----------------+------------------------------------------------------------+
+| Moloch-GFS      | 'moloch_gfs'   | :py:func:`unimodel.io.readers_nwp.read_moloch_grib`        | 
++-----------------+----------------+------------------------------------------------------------+
+| Moloch-ECMWF    | 'moloch_ecmwf' | :py:func:`unimodel.io.readers_nwp.read_moloch_grib`        | 
++-----------------+----------------+------------------------------------------------------------+
+| Unified Model   | 'unified_model'| :py:func:`unimodel.io.readers_nwp.read_unified_model_grib` | 
++-----------------+----------------+------------------------------------------------------------+
+| WRF-ECM         | 'wrf_ecm'      | :py:func:`unimodel.io.readers_nwp.read_wrf_prs`            | 
++-----------------+----------------+------------------------------------------------------------+
+| WRF-EXP         | 'wrf_exp'      | :py:func:`unimodel.io.readers_nwp.read_wrf_prs`            | 
++-----------------+----------------+------------------------------------------------------------+
+| WRF-GFS-3km     | 'wrf_gfs_3'    | :py:func:`unimodel.io.readers_nwp.read_wrf_prs`            | 
++-----------------+----------------+------------------------------------------------------------+
+| WRF-GFS-9km     | 'wrf_ecm'      | :py:func:`unimodel.io.readers_nwp.read_wrf_prs`            | 
++-----------------+----------------+------------------------------------------------------------+
+| WRF-TL-ENS      | 'wrf_tl_ens'   | :py:func:`unimodel.io.readers_nwp.read_wrf_tl_ens_grib`    | 
++-----------------+----------------+------------------------------------------------------------+
 
 
 Fitxer de configuració
