@@ -13,31 +13,35 @@ a `xarray.DataArray` es troben a :ref:`api-lectura`. La columna interfície corr
 que cal indicar per importar la funció a través de la funció ``get_reader`` de
 :ref:`api-interficie`.
 
-+-----------------+----------------+---------------------------------------------------------+
-| Model           | Interfície     | Funció                                                  | 
-+=================+================+=========================================================+
-| Arome           | 'arome'        | :py:func:`unimodel.io.readers_nwp.read_arome_grib`      | 
-+-----------------+----------------+---------------------------------------------------------+
-| Arpege          | 'arpege'       | :py:func:`unimodel.io.readers_nwp.read_arpege_grib`     | 
-+-----------------+----------------+---------------------------------------------------------+
-| Bolam           | 'bolam'        | :py:func:`unimodel.io.readers_nwp.read_bolam_grib`      | 
-+-----------------+----------------+---------------------------------------------------------+
-| ECMWF-HRES      | 'ecmwf_hres'   | :py:func:`unimodel.io.readers_nwp.read_ecmwf_hres_grib` | 
-+-----------------+----------------+---------------------------------------------------------+
-| ICON            | 'icon'         | :py:func:`unimodel.io.readers_nwp.read_icon_grib`       | 
-+-----------------+----------------+---------------------------------------------------------+
-| Moloch-GFS      | 'moloch_gfs'   | :py:func:`unimodel.io.readers_nwp.read_moloch_grib`     | 
-+-----------------+----------------+---------------------------------------------------------+
-| Moloch-ECMWF    | 'moloch_ecmwf' | :py:func:`unimodel.io.readers_nwp.read_moloch_grib`     | 
-+-----------------+----------------+---------------------------------------------------------+
-| WRF-ECM         | 'wrf_ecm'      | :py:func:`unimodel.io.readers_nwp.read_wrf_prs`         | 
-+-----------------+----------------+---------------------------------------------------------+
-| WRF-EXP         | 'wrf_exp'      | :py:func:`unimodel.io.readers_nwp.read_wrf_prs`         | 
-+-----------------+----------------+---------------------------------------------------------+
-| WRF-GFS-3km     | 'wrf_gfs_3'    | :py:func:`unimodel.io.readers_nwp.read_wrf_prs`         | 
-+-----------------+----------------+---------------------------------------------------------+
-| WRF-GFS-9km     | 'wrf_ecm'      | :py:func:`unimodel.io.readers_nwp.read_wrf_prs`         | 
-+-----------------+----------------+---------------------------------------------------------+
++-----------------+----------------+------------------------------------------------------------+
+| Model           | Interfície     | Funció                                                     | 
++=================+================+============================================================+
+| Arome           | 'arome'        | :py:func:`unimodel.io.readers_nwp.read_arome_grib`         | 
++-----------------+----------------+------------------------------------------------------------+
+| Arpege          | 'arpege'       | :py:func:`unimodel.io.readers_nwp.read_arpege_grib`        | 
++-----------------+----------------+------------------------------------------------------------+
+| Bolam           | 'bolam'        | :py:func:`unimodel.io.readers_nwp.read_bolam_grib`         | 
++-----------------+----------------+------------------------------------------------------------+
+| ECMWF-HRES      | 'ecmwf_hres'   | :py:func:`unimodel.io.readers_nwp.read_ecmwf_hres_grib`    | 
++-----------------+----------------+------------------------------------------------------------+
+| ICON            | 'icon'         | :py:func:`unimodel.io.readers_nwp.read_icon_grib`          | 
++-----------------+----------------+------------------------------------------------------------+
+| Moloch-GFS      | 'moloch_gfs'   | :py:func:`unimodel.io.readers_nwp.read_moloch_grib`        | 
++-----------------+----------------+------------------------------------------------------------+
+| Moloch-ECMWF    | 'moloch_ecmwf' | :py:func:`unimodel.io.readers_nwp.read_moloch_grib`        | 
++-----------------+----------------+------------------------------------------------------------+
+| Unified Model   | 'unified_model'| :py:func:`unimodel.io.readers_nwp.read_unified_model_grib` | 
++-----------------+----------------+------------------------------------------------------------+
+| WRF-ECM         | 'wrf_ecm'      | :py:func:`unimodel.io.readers_nwp.read_wrf_prs`            | 
++-----------------+----------------+------------------------------------------------------------+
+| WRF-EXP         | 'wrf_exp'      | :py:func:`unimodel.io.readers_nwp.read_wrf_prs`            | 
++-----------------+----------------+------------------------------------------------------------+
+| WRF-GFS-3km     | 'wrf_gfs_3'    | :py:func:`unimodel.io.readers_nwp.read_wrf_prs`            | 
++-----------------+----------------+------------------------------------------------------------+
+| WRF-GFS-9km     | 'wrf_ecm'      | :py:func:`unimodel.io.readers_nwp.read_wrf_prs`            | 
++-----------------+----------------+------------------------------------------------------------+
+| WRF-TL-ENS      | 'wrf_tl_ens'   | :py:func:`unimodel.io.readers_nwp.read_wrf_tl_ens_grib`    | 
++-----------------+----------------+------------------------------------------------------------+
 
 
 Fitxer de configuració
@@ -53,17 +57,21 @@ A continuació indiquem què ha de tenir, com a mínim, aquest fitxer .json.
         
         "lead_times": "int amb el nombre d'horitzons de pronòstic a considerar",
 
-        "corner_ul": cantonada superio esquerra [coordenada-x, coordenada-y],
-        "grid_shape": mida de la matriu final [nombre-de-files, nombre-de-columnes],
-        "grid_res": resolució espacial de la matriu final [resolució-en-x, resolució-en-y]
+        "corner_ul": "cantonada superior esquerra [coordenada-x, coordenada-y]",
+        "grid_shape": "mida de la matriu final [nombre-de-files, nombre-de-columnes]",
+        "grid_res": "resolució espacial de la matriu final [resolució-en-x, resolució-en-y]",
 
-        "{nom-model-1}" : {"src_tar": Ruta a un fitxer .tar.gz,
-                           "src": Nom del fitxer grib dins del .tar.gz,
-                           "compressed": True, indica que s'ha d'importar i descomprimir}
+
+        "{nom-model-1}" : {
+                            "src_tar": "Ruta a un fitxer .tar.gz",
+                            "src": "Nom del fitxer grib dins del .tar.gz",
+                            "compressed": "True, indica que s'ha d'importar i descomprimir"
+                          },
         
-        "{nom-model-2}" : {"src": Nom del fitxer grib dins del .tar.gz,
-                           "compressed": False, indicant que només s'ha d'importar}
-        
+        "{nom-model-2}" : {
+                            "src": "Nom del fitxer grib dins del .tar.gz",
+                            "compressed": "False, indicant que només s'ha d'importar"
+                          }
     }
 
 Exemples
