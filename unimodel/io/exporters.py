@@ -80,7 +80,7 @@ def concat_and_merge(models: list) -> xarray.DataArray:
     Returns:
         xarray: Concatenated and merged models.
     """
-    
+
     data_xarray = []
     for model in models:
         model_concat = concat_model(model, dim='valid_time')
@@ -92,5 +92,3 @@ def concat_and_merge(models: list) -> xarray.DataArray:
     data_xarray = merge_models(data_xarray)
 
     return data_xarray
-
-    
