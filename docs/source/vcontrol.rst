@@ -7,9 +7,8 @@ v0.1.0 - 28/03/2023
 Aquesta nova versió incorpora els següents canvis:
 
 - Lectura dels fitxers de l'Unified Model (UM) mitjançant la funció :py:func:`unimodel.io.readers_nwp.read_unified_model_grib`.
-- Lectura dels fitxers del time-lagged ensemble del WRF (WRF-TL-ENS) mitjançant 
-la funció :py:func:`unimodel.io.readers_nwp.read_wrf_tl_ens_grib`.
-- Funció que permet allargar l'hortizó de pronòstic d'un model amb un valor constant de ``np.nan``.
+- Lectura dels fitxers del time-lagged ensemble del WRF (WRF-TL-ENS) mitjançant la funció :py:func:`unimodel.io.readers_nwp.read_wrf_tl_ens_grib`. 
+- Funció que permet allargar l'hortizó de pronòstic d'un model amb un valor constant de ``np.nan``. 
 
 v0.0.0 - 06/03/2023
 -------------------
