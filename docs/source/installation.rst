@@ -23,7 +23,7 @@ pip
 Tot i que l'**unimodel** no es troba encara al distribuïdor de paquets Pypi, sí que es pot
 instal·lar a partir de la següent comanda.
 
-``pip install [pymos path]``
+``pip install [unimodel path]``
 
 
 setup.py

@@ -272,8 +272,7 @@ els horitzons de pronòstic. S'utilitza també la llibreria `dask <https://www.d
     def main():
         """Creates an ensemble from different NWP model grib files.
         """
-        # Definim variables a partir del fitxer de configuracio
-        # config = load_config(ARGS.config)
+        # Definim variables a partir del fitxer de configuració
         config = load_config('config_unimodel.json')
 
         models = ['wrf_gfs_9', 'wrf_gfs_3', 'wrf_exp', 'wrf_ecm',
