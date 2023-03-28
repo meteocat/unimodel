@@ -53,17 +53,21 @@ A continuació indiquem què ha de tenir, com a mínim, aquest fitxer .json.
         
         "lead_times": "int amb el nombre d'horitzons de pronòstic a considerar",
 
-        "corner_ul": cantonada superio esquerra [coordenada-x, coordenada-y],
-        "grid_shape": mida de la matriu final [nombre-de-files, nombre-de-columnes],
-        "grid_res": resolució espacial de la matriu final [resolució-en-x, resolució-en-y]
+        "corner_ul": "cantonada superior esquerra [coordenada-x, coordenada-y]",
+        "grid_shape": "mida de la matriu final [nombre-de-files, nombre-de-columnes]",
+        "grid_res": "resolució espacial de la matriu final [resolució-en-x, resolució-en-y]",
 
-        "{nom-model-1}" : {"src_tar": Ruta a un fitxer .tar.gz,
-                           "src": Nom del fitxer grib dins del .tar.gz,
-                           "compressed": True, indica que s'ha d'importar i descomprimir}
+
+        "{nom-model-1}" : {
+                            "src_tar": "Ruta a un fitxer .tar.gz",
+                            "src": "Nom del fitxer grib dins del .tar.gz",
+                            "compressed": "True, indica que s'ha d'importar i descomprimir"
+                          },
         
-        "{nom-model-2}" : {"src": Nom del fitxer grib dins del .tar.gz,
-                           "compressed": False, indicant que només s'ha d'importar}
-        
+        "{nom-model-2}" : {
+                            "src": "Nom del fitxer grib dins del .tar.gz",
+                            "compressed": "False, indicant que només s'ha d'importar"
+                          }
     }
 
 Exemples

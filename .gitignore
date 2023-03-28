@@ -54,3 +54,6 @@ build
 unimodel.egg-info
 .pytest_cache
 __pycache__
+
+# Build
+.eggs
