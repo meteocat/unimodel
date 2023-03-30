@@ -23,7 +23,7 @@ def read_wrf_prs(grib_file: str, variable: str,
     """
     grib_data = xarray.open_dataarray(
         grib_file, engine='cfgrib',
-        backend_kwargs={'filter_by_keys': {'shortName': variable}})
+        backend_kwargs={'filter_by_keys': {'shortName': variable},'indexpath':''})
     geographics = _get_wrf_prs_metadata(grib_data)
     grib_data = grib_data.rio.write_crs(geographics['crs'])
 
@@ -108,7 +108,7 @@ def read_icon_grib(file: str, variable: str, model: str) -> xarray.DataArray:
     """
     grib_data = xarray.open_dataarray(
         file, engine='cfgrib',
-        backend_kwargs={'filter_by_keys': {'shortName': variable}})
+        backend_kwargs={'filter_by_keys': {'shortName': variable},'indexpath':''})
 
     geographics = _get_icon_metadata(grib_data)
     grib_data = grib_data.rio.write_crs(geographics['crs'])
@@ -153,7 +153,7 @@ def read_moloch_grib(grib_file: str, variable: str,
 
     grib_data = xarray.open_dataarray(
         grib_file, engine='cfgrib',
-        backend_kwargs={'filter_by_keys': grib_filter})
+        backend_kwargs={'filter_by_keys': grib_filter,'indexpath':''})
 
     grib_md = _get_moloch_metadata(grib_data)
 
@@ -217,7 +217,7 @@ def read_bolam_grib(grib_file: str, variable: str,
 
     grib_data = xarray.open_dataarray(
         grib_file, engine='cfgrib',
-        backend_kwargs={'filter_by_keys': grib_filter})
+        backend_kwargs={'filter_by_keys': grib_filter,'indexpath':''})
 
     grib_md = _get_bolam_metadata(grib_data)
 
@@ -281,7 +281,7 @@ def read_arome_grib(grib_file: str, variable: str,
 
     grib_data = xarray.open_dataarray(
         grib_file, engine='cfgrib',
-        backend_kwargs={'filter_by_keys': grib_filter})
+        backend_kwargs={'filter_by_keys': grib_filter,'indexpath':''})
 
     grib_md = _get_arome_metadata(grib_data)
 
@@ -327,7 +327,7 @@ def read_arpege_grib(grib_file: str, variable: str,
 
     grib_data = xarray.open_dataarray(
         grib_file, engine='cfgrib',
-        backend_kwargs={'filter_by_keys': grib_filter})
+        backend_kwargs={'filter_by_keys': grib_filter,'indexpath':''})
 
     grib_md = _get_arpege_metadata(grib_data)
 
@@ -371,7 +371,7 @@ def read_ecmwf_hres_grib(file: str, variable: str, model: str):
     """
     grib_data = xarray.open_dataarray(
         file, engine='cfgrib',
-        backend_kwargs={'filter_by_keys': {'shortName': variable}})
+        backend_kwargs={'filter_by_keys': {'shortName': variable},'indexpath':''})
 
     if variable == 'tp':
         grib_data.data = grib_data.data * 1000
@@ -419,7 +419,7 @@ def read_unified_model_grib(file: str, variable: str, model: str):
     """
     grib_data = xarray.open_dataarray(
         file, engine='cfgrib',
-        backend_kwargs={'filter_by_keys': {'shortName': variable}})
+        backend_kwargs={'filter_by_keys': {'shortName': variable},'indexpath':''})
 
     geographics = _get_unified_model_metadata(grib_data)
     grib_data = grib_data.rio.write_crs(geographics['crs'])
@@ -465,7 +465,7 @@ def read_wrf_tl_ens_grib(grib_file: str, variable: str,
 
     grib_data = xarray.open_dataarray(
         grib_file, engine='cfgrib',
-        backend_kwargs={'filter_by_keys': grib_filter})
+        backend_kwargs={'filter_by_keys': grib_filter,'indexpath':''})
 
     grib_md = _get_wrf_tl_ens_metadata(grib_data)
 
