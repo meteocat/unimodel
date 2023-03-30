@@ -17,14 +17,16 @@ class TestNWPImporter(unittest.TestCase):
                                         '.1p6.tar.gz',
                              'src': 'moloch-1p6-rep.{year}{month}{day}{run}'
                                     '_{lt}.grib2',
-                             'compressed': True},
+                             'compressed': True,
+                             'lead_time_digits': 2},
               'wrf43_prs': {'src': 'tests/data/nwp_src/wrf43_prs/'
-                                   'WRFPRS-03.{year}{month}{day}{run}_0{lt}'
+                                   'WRFPRS-03.{year}{month}{day}{run}_{lt}'
                                    '.grib',
-                            'compressed': False},
+                            'compressed': False,
+                            'lead_time_digits': 3},
               'wrf43_prs_tar': {'src': 'tests/data/nwp_src/wrf43_prs/'
                                        'WRFPRS-03.{year}{month}{day}{run}_'
-                                       '0{lt}.grib',
+                                       '{lt}.grib',
                                 'compressed': True},
               'ecmwf_hres': {'src': 'tests/data/nwp_src/ecmwf/A1S{month}{day}'
                                     '{run}00{valid_time}',
@@ -34,7 +36,12 @@ class TestNWPImporter(unittest.TestCase):
                                         '{day}{run}.tar.gz',
                              'src': 'ens-{member}.{year}{month}{day}{run}'
                                     '_{lt}.grib',
-                             'compressed': True},
+                             'compressed': True,
+                             'lead_time_digits': 2},
+              'no_lt_digits': {'src': 'tests/data/nwp_src/wrf43_prs/'
+                                      'WRFPRS-03.{year}{month}{day}{run}_{lt}'
+                                      '.grib',
+                               'compressed': False},
               'nwp_dir': 'tests/data/nwp_dir/'}
 
     def setUp(self) -> None:
@@ -127,6 +134,16 @@ class TestNWPImporter(unittest.TestCase):
         self.assertEqual(sorted(nwp_file)[0], 'tests/data/nwp_dir/wrf_tl_ens/'
                          'ens-001.2023032009_04.grib')
         self.assertEqual(len(nwp_file), 12)
+
+    def test_io_import_nwp_grib_model_not_lt_digits(self):
+        """Tests import of a comprsessed model without src_tar."""
+        with self.assertRaises(KeyError) as err:
+            import_nwp_grib(datetime(2022, 11, 7, 0), 2, 'no_lt_digits',
+                            self.config)
+
+        self.assertEqual(err.exception.args[0], 'If named argument {lt} in '
+                         '\'src\', then \'lead_time_digits\' must be '
+                         'specified.')
 
     def tearDown(self) -> None:
         for f_dir in glob(self.config['nwp_dir'] + '/*'):
