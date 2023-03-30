@@ -59,7 +59,7 @@ class TestNWPImporter(unittest.TestCase):
         self.assertEqual(nwp_file, 'tests/data/nwp_dir/moloch_ecm/'
                          'moloch-1p6-rep.2022110700_00.grib2')
 
-    def test_io_import_nwp_grib_compressed_not_found(self):
+    def test_io_import_nwp_grib_compressed_tar_not_found(self):
         """Tests import of a compressed grib file."""
         with self.assertRaises(FileNotFoundError) as err:
             import_nwp_grib(datetime(2022, 11, 15, 0), 0, 'moloch_ecm',
@@ -67,6 +67,17 @@ class TestNWPImporter(unittest.TestCase):
 
         self.assertEqual(err.exception.args[0], 'tests/data/nwp_src/moloch/'
                          'moloch-grib2.2022111500.1p6.tar.gz not found.')
+
+    def test_io_import_nwp_grib_compressed_src_not_found(self):
+        """Tests import of a compressed grib file."""
+        with self.assertRaises(FileNotFoundError) as err:
+            import_nwp_grib(datetime(2022, 11, 7, 0), 200, 'moloch_ecm',
+                            self.config)
+
+        self.assertEqual(err.exception.args[0],
+                         'moloch-1p6-rep.2022110700_200.grib2 not found in '
+                         'tests/data/nwp_src/moloch/'
+                         'moloch-grib2.2022110700.1p6.tar.gz.')
 
     def test_io_import_nwp_grib_not_compressed(self):
         """Tests import of a not compressed grib file."""
