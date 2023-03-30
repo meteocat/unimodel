@@ -123,7 +123,9 @@ def import_nwp_grib(date_run: datetime, lead_time: int, model: str,
                     _tar.makefile(member, model_dir + member.path)
                     if bool(re.match(basename(nwp_file), member.path)):
                         nwp_files.append(model_dir + member.path)
-
+            if len(nwp_files) == 0:
+                raise FileNotFoundError(nwp_file + ' not found in ' +
+                                        tar_file + '.')
         # Otherwise, if exists, it is directly copied to stage directory
         elif exists(nwp_file):
             copy2(nwp_file, model_dir)
