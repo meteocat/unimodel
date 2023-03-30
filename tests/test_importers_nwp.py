@@ -35,6 +35,8 @@ class TestNWPImporter(unittest.TestCase):
                              'src': 'ens-{member}.{year}{month}{day}{run}'
                                     '_{lt}.grib',
                              'compressed': True},
+              'wrf_gfs_3': {'src':'tests/data/nwp_src/wrf_gfs_3/WRFPRS_d01.{lt}',
+                             'compressed': False},
               'nwp_dir': 'tests/data/nwp_dir/'}
 
     def setUp(self) -> None:
@@ -127,6 +129,12 @@ class TestNWPImporter(unittest.TestCase):
         self.assertEqual(sorted(nwp_file)[0], 'tests/data/nwp_dir/wrf_tl_ens/'
                          'ens-001.2023032009_04.grib')
         self.assertEqual(len(nwp_file), 12)
+
+    def test_io_import_nwp_diff_lt(self):
+        "Tests import of files with conflicting leadtimes (ex: 12 and 120)"
+        nwp_file = import_nwp_grib(datetime(2022,11,19,0),12,"wrf_gfs_3",self.config)
+        self.assertTrue(isinstance(nwp_file,str))
+        self.assertNotEqual(nwp_file,"tests/data/nwp_dir/WRFPRS_d01.120")
 
     def tearDown(self) -> None:
         for f_dir in glob(self.config['nwp_dir'] + '/*'):
