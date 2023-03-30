@@ -1,6 +1,7 @@
 """Tests transformation of NWP grib to xarray.
 """
 import unittest
+import os
 
 from unimodel.io.readers_nwp import (read_arome_grib, read_arpege_grib,
                                      read_bolam_grib, read_ecmwf_hres_grib,
@@ -15,6 +16,7 @@ class TestReadersNWP(unittest.TestCase):
     def test_read_wrf_prs(self):
         """Test WRF grib to xarray."""
         file = 'tests/data/nwp_src/wrf43_prs/WRFPRS-03.2023020600_032.grib'
+        file_idx = file + '.02ccc.idx'
         variable = 'tp'
         model = 'wrf'
         data_var = read_wrf_prs(file, variable, model)
@@ -37,10 +39,13 @@ class TestReadersNWP(unittest.TestCase):
         self.assertAlmostEqual(data_var.rio.transform().d, 0.0)
         self.assertAlmostEqual(data_var.rio.transform().e, 3000.0)
         self.assertAlmostEqual(data_var.rio.transform().f, -385561.89591748564)
+        
+        self.assertFalse(os.path.isfile(file_idx))
 
     def test_read_icon(self):
         """Function to test the NWP reads"""
         file = 'tests/data/nwp_src/icon/icon-07.2023020700_10.grib2'
+        file_idx = file + '.02ccc.idx'
         variable = 'tp'
         model = 'icon'
         data_var = read_icon_grib(file, variable, model)
@@ -61,9 +66,12 @@ class TestReadersNWP(unittest.TestCase):
         self.assertAlmostEqual(data_var.rio.transform().e, 0.0625)
         self.assertAlmostEqual(data_var.rio.transform().f, 33.96875)
 
+        self.assertFalse(os.path.isfile(file_idx))
+
     def test_read_moloch_grib(self):
         """Tests Moloch grib to xarray."""
         file = 'tests/data/nwp_src/moloch/moloch-1p6.2022032100_48.grib2'
+        file_idx = file + '.02ccc.idx'
         variable = 'tp'
         model = 'moloch'
         moloch_data = read_moloch_grib(file, variable, model)
@@ -84,9 +92,12 @@ class TestReadersNWP(unittest.TestCase):
         self.assertAlmostEqual(moloch_data.data[5, 70], 13.779, 2)
         self.assertAlmostEqual(moloch_data.data[70, 5], 32.943, 2)
 
+        self.assertFalse(os.path.isfile(file_idx))
+
     def test_read_bolam_grib(self):
         """Tests Bolam grib to xarray."""
         file = 'tests/data/nwp_src/bolam/bolam-08.2023020600_32.grib2'
+        file_idx = file + '.02ccc.idx'
         variable = 'tp'
         model = 'bolam'
         bolam_data = read_bolam_grib(file, variable, model)
@@ -107,9 +118,12 @@ class TestReadersNWP(unittest.TestCase):
         self.assertAlmostEqual(bolam_data.data[20, 58], 11.087, 2)
         self.assertAlmostEqual(bolam_data.data[58, 20], 0.000, 2)
 
+        self.assertFalse(os.path.isfile(file_idx))
+
     def test_read_arome_grib(self):
         """Tests AROME grib to xarray."""
         file = 'tests/data/nwp_src/arome/arome-1p1.2023021000_10.grib2'
+        file_idx = file + '.02ccc.idx'
         variable = 'tp'
         model = 'arome'
         arome_data = read_arome_grib(file, variable, model)
@@ -127,9 +141,12 @@ class TestReadersNWP(unittest.TestCase):
         self.assertAlmostEqual(arome_data.data[500, 749], 0.204, 2)
         self.assertAlmostEqual(arome_data.data[0, 0], 0.0, 2)
 
+        self.assertFalse(os.path.isfile(file_idx))
+
     def test_read_arpege_grib(self):
         """Tests ARPEGE grib to xarray."""
         file = 'tests/data/nwp_src/arpege/arpege-11.2023020900_20.grib2'
+        file_idx = file + '.02ccc.idx'
         variable = 'tp'
         model = 'arpege'
         arpege_data = read_arpege_grib(file, variable, model)
@@ -147,9 +164,12 @@ class TestReadersNWP(unittest.TestCase):
         self.assertAlmostEqual(arpege_data.data[50, 73], 6.205, 2)
         self.assertAlmostEqual(arpege_data.data[3, 3], 0.0, 2)
 
+        self.assertFalse(os.path.isfile(file_idx))
+
     def test_read_ecmwf_hres_grib(self):
         """Tests ECMWF-HRES grib to xarray."""
         file = 'tests/data/nwp_src/ecmwf/A1S02200000022006001'
+        file_idx = file + '.02ccc.idx'
         variable = 'tp'
         data_var = read_ecmwf_hres_grib(file, variable, 'ecmwf_hres')
 
@@ -169,9 +189,12 @@ class TestReadersNWP(unittest.TestCase):
         self.assertAlmostEqual(data_var.rio.transform().e, -0.1)
         self.assertAlmostEqual(data_var.rio.transform().f, 47.05)
 
+        self.assertFalse(os.path.isfile(file_idx))
+
     def test_read_unified_model_grib(self):
         """Tests Unified Model grib to xarray."""
         file = 'tests/data/nwp_src/um/um-10.2023032700_03.grib2'
+        file_idx = file + '.02ccc.idx'
         variable = 'tp'
         model = 'um'
         um_data = read_unified_model_grib(file, variable, model)
@@ -189,9 +212,12 @@ class TestReadersNWP(unittest.TestCase):
         self.assertAlmostEqual(um_data.data[83, 148], 9.931, 2)
         self.assertAlmostEqual(um_data.data[137, 83], 0.0, 2)
 
+        self.assertFalse(os.path.isfile(file_idx))
+
     def test_read_wrf_tl_ens_grib(self):
         """Tests WRF-TL-ENS member grib to xarray."""
         file = 'tests/data/nwp_src/wrf_tl_ens/ens-002.2023032009_01.grib'
+        file_idx = file + '.02ccc.idx'
         variable = 'tp'
         data_var = read_wrf_tl_ens_grib(file, variable, 'wrf_tl_ens')
 
@@ -211,3 +237,5 @@ class TestReadersNWP(unittest.TestCase):
         self.assertAlmostEqual(data_var.rio.transform().d, 0.0)
         self.assertAlmostEqual(data_var.rio.transform().e, 0.025)
         self.assertAlmostEqual(data_var.rio.transform().f, 39.2375)
+
+        self.assertFalse(os.path.isfile(file_idx))
