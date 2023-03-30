@@ -38,7 +38,7 @@ que cal indicar per importar la funció a través de la funció ``get_reader`` d
 +-----------------+----------------+------------------------------------------------------------+
 | WRF-GFS-3km     | 'wrf_gfs_3'    | :py:func:`unimodel.io.readers_nwp.read_wrf_prs`            | 
 +-----------------+----------------+------------------------------------------------------------+
-| WRF-GFS-9km     | 'wrf_ecm'      | :py:func:`unimodel.io.readers_nwp.read_wrf_prs`            | 
+| WRF-GFS-9km     | 'wrf_gfs_9'    | :py:func:`unimodel.io.readers_nwp.read_wrf_prs`            | 
 +-----------------+----------------+------------------------------------------------------------+
 | WRF-TL-ENS      | 'wrf_tl_ens'   | :py:func:`unimodel.io.readers_nwp.read_wrf_tl_ens_grib`    | 
 +-----------------+----------------+------------------------------------------------------------+
