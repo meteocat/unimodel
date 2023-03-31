@@ -65,14 +65,18 @@ A continuació indiquem què ha de tenir, com a mínim, aquest fitxer .json.
         "{nom-model-1}" : {
                             "src_tar": "Ruta a un fitxer .tar.gz",
                             "src": "Nom del fitxer grib dins del .tar.gz",
-                            "compressed": "True, indica que s'ha d'importar i descomprimir"
+                            "compressed": "True, indica que s'ha d'importar i descomprimir",
+                            "lead_time_digits": "Nombre de digits que té el lead time al path (per exemple, 3 si és de la forma xxxxx_012.grib, o bé 2 si és de la forma xxxxx_12.grib)"
                           },
         
         "{nom-model-2}" : {
                             "src": "Nom del fitxer grib dins del .tar.gz",
                             "compressed": "False, indicant que només s'ha d'importar"
+                            "lead_time_digits": "Nombre de digits que té el lead time al path (per exemple, 3 si és de la forma xxxxx_012.grib, o bé 2 si és de la forma xxxxx_12.grib)"
                           }
     }
+
+El ``lead_time_digits`` és un paràmetre obligatori només per a aquells fitxers que tinguin l'argument ``{lt}`` al camp ``src`` del model.
 
 Exemples
 --------
