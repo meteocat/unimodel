@@ -107,7 +107,7 @@ def import_nwp_grib(date_run: datetime, lead_time: int, model: str,
     # is appended to nwp_files list.
     nwp_files = []
     for prev_file in prev_files:
-        if re.match(model_dir + basename(nwp_file), prev_file):
+        if re.match(model_dir + basename(nwp_file)+"$", prev_file):
             nwp_files.append(prev_file)
 
     # If the previous list is empty, files must be copied from source or

@@ -42,6 +42,10 @@ class TestNWPImporter(unittest.TestCase):
                                       'WRFPRS-03.{year}{month}{day}{run}_{lt}'
                                       '.grib',
                                'compressed': False},
+              'wrf_gfs_3': {'src': 'tests/data/nwp_src/wrf_gfs_3/'
+                            'WRFPRS_d01.{lt}',
+                            'compressed': False,
+                            'lead_time_digits': 3},
               'nwp_dir': 'tests/data/nwp_dir/'}
 
     def setUp(self) -> None:
@@ -155,6 +159,14 @@ class TestNWPImporter(unittest.TestCase):
         self.assertEqual(err.exception.args[0], 'If named argument {lt} in '
                          '\'src\', then \'lead_time_digits\' must be '
                          'specified.')
+
+    def test_io_import_nwp_conflicting_lead_times(self):
+        """Tests importing files with conflicting lead times
+        (ex 12 and 120)."""
+        nwp_file = import_nwp_grib(datetime(2022, 11, 19, 0), 12, 'wrf_gfs_3',
+                                   self.config)
+        self.assertTrue(isinstance(nwp_file, str))
+        self.assertNotEqual(nwp_file, 'tests/data/nwp_dir/WRFPRS_d01.120')
 
     def tearDown(self) -> None:
         for f_dir in glob(self.config['nwp_dir'] + '/*'):
