@@ -27,6 +27,7 @@ class TestNWPImporter(unittest.TestCase):
               'wrf43_prs_tar': {'src': 'tests/data/nwp_src/wrf43_prs/'
                                        'WRFPRS-03.{year}{month}{day}{run}_'
                                        '{lt}.grib',
+                                'lead_time_digits': 3,
                                 'compressed': True},
               'ecmwf_hres': {'src': 'tests/data/nwp_src/ecmwf/A1S{month}{day}'
                                     '{run}00{valid_time}',
@@ -52,6 +53,10 @@ class TestNWPImporter(unittest.TestCase):
         makedirs('tests/data/nwp_dir/moloch_ecm')
         open('tests/data/nwp_dir/moloch_ecm/example.tar.gz', 'wb')
         open('tests/data/nwp_dir/moloch_ecm/example.grib2', 'wb')
+
+        makedirs('tests/data/nwp_dir/wrf43_prs')
+        open('tests/data/nwp_dir/wrf43_prs/WRFPRS_d01.001', 'wb')
+        open('tests/data/nwp_dir/wrf43_prs/WRFPRS_d01.000', 'wb')
 
         return super().setUp()
 
