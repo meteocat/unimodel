@@ -1,12 +1,12 @@
 """Module to import NWP grib files.
 """
+import re
 import tarfile
 from datetime import datetime, timedelta
 from glob import glob
 from os import makedirs, remove
 from posixpath import basename
 from shutil import copy2
-import re
 
 from genericpath import exists
 
@@ -61,30 +61,6 @@ def import_nwp_grib(date_run: datetime, lead_time: int, model: str,
     else:
         valid_datetime = valid_datetime.strftime('%m%d%H001')
 
-    if config[model]['compressed']:
-        # If model is informed as compressed (tar.gz), the key 'src_tar'
-        # (tar source file) must be included in the configuration dictionary
-        if 'src_tar' not in config[model].keys():
-            raise KeyError('src_tar must be included if compressed is set to '
-                           'True.')
-        tar_file = config[model]['src_tar'].format(year=date_run_f['year'],
-                                                   month=date_run_f['month'],
-                                                   day=date_run_f['day'],
-                                                   run=date_run_f['hour'])
-
-        # If tar file is already copied in stage directory, program execution
-        # continues
-        if not exists(model_dir + basename(tar_file)):
-            # If tar_file not exists, previous tar files are removed
-            for prev_file in prev_files_tar:
-                remove(prev_file)
-            # If tar_file exists in source folder, it is copied to stage
-            # directory
-            if exists(tar_file):
-                copy2(tar_file, model_dir)
-            else:
-                raise FileNotFoundError(tar_file + ' not found.')
-
     if r'{lt}' in config[model]['src']:
         if 'lead_time_digits' not in config[model].keys():
             raise KeyError('If named argument {lt} in \'src\', then '
@@ -103,21 +79,33 @@ def import_nwp_grib(date_run: datetime, lead_time: int, model: str,
          'run': date_run_f['hour'], 'valid_time': valid_datetime,
          'lt': str(lead_time).zfill(lt_digits), 'member': r"[0-9]*"})
 
-    # Checks if NWP grib files already exist in stage directory. If exist, path
-    # is appended to nwp_files list.
     nwp_files = []
-    for prev_file in prev_files:
-        if re.match(model_dir + basename(nwp_file)+"$", prev_file):
-            nwp_files.append(prev_file)
 
-    # If the previous list is empty, files must be copied from source or
-    # .tar.gz file
-    if len(nwp_files) == 0:
-        # If NWP grib file not exists, previous grib files are removed
-        for prev_file in prev_files:
-            remove(prev_file)
-        # If NWP grib file is from a compressed source, it is extracted
-        if config[model]['compressed']:
+    if config[model]['compressed']:
+        # If model is informed as compressed (tar.gz), the key 'src_tar'
+        # (tar source file) must be included in the configuration dictionary
+        if 'src_tar' not in config[model].keys():
+            raise KeyError('src_tar must be included if compressed is set to '
+                           'True.')
+        tar_file = config[model]['src_tar'].format(year=date_run_f['year'],
+                                                   month=date_run_f['month'],
+                                                   day=date_run_f['day'],
+                                                   run=date_run_f['hour'])
+
+        # If tar file is already copied in stage directory, program execution
+        # continues
+        if not exists(model_dir + basename(tar_file)):
+            # If tar_file not exists, previous tar and non-tar files are
+            # removed
+            for prev_file in prev_files_tar + prev_files:
+                remove(prev_file)
+            # If tar_file exists in source folder, it is copied to stage
+            # directory
+            if exists(tar_file):
+                copy2(tar_file, model_dir)
+            else:
+                raise FileNotFoundError(tar_file + ' not found.')
+
             with tarfile.open(model_dir + basename(tar_file), 'r:gz') as _tar:
                 for member in _tar:
                     _tar.makefile(member, model_dir + member.path)
@@ -126,8 +114,16 @@ def import_nwp_grib(date_run: datetime, lead_time: int, model: str,
             if len(nwp_files) == 0:
                 raise FileNotFoundError(nwp_file + ' not found in ' +
                                         tar_file + '.')
-        # Otherwise, if exists, it is directly copied to stage directory
-        elif exists(nwp_file):
+        else:
+            for prev_file in prev_files:
+                if re.match(model_dir + basename(nwp_file) + "$", prev_file):
+                    nwp_files.append(prev_file)
+    else:
+        # If NWP grib file not compressed, previous grib files are removed
+        for prev_file in prev_files:
+            remove(prev_file)
+        # IF NWP grib file exists in source directory, it is copied
+        if exists(nwp_file):
             copy2(nwp_file, model_dir)
             nwp_files.append(model_dir + basename(nwp_file))
         else:
