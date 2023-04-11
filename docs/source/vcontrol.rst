@@ -1,6 +1,12 @@
 Control de versions
 ===================
 
+
+v0.1.2 - 11/04/2023
+-------------------
+
+- S'adapta la importació dels gribs tenint en compte que hi pot haver fitxer descomprimits que tinguin el mateix nom, ja que poden no contenir informació de la data i només de l'horitzó de pronòstic (``{lt}``). Així és el cas d'alguns gribs del model WRF.
+
 v0.1.1 - 31/03/2023
 -------------------
 
