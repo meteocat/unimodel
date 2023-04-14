@@ -1,6 +1,6 @@
 import os
 
-class Ecorrection:
+class Ecorrection():
 
     def __init__(self, variable: str, config: dict) -> None:
         
