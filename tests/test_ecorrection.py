@@ -11,6 +11,13 @@ class TestEcorrection(unittest.TestCase):
     config_wrong = {'hres_dem_file': 'tests/data/test_data/hres_dummy.txt'}
     config_nofile = {'hres_dem_file': 'tests/data/test_data/nofile.txt', 'neighbours_file': 'tests/data/test_data/nofile.txt'}
 
+    def test_init(self):
+
+        ecor = Ecorrection('2t', self.config)
+
+        self.assertEqual(ecor.variable, '2t')
+        self.assertEqual(ecor.config, self.config)
+
     def test_init_not_2t_variable(self):
 
         with self.assertRaises(ValueError) as err:
