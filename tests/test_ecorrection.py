@@ -5,7 +5,7 @@ import unittest
 
 from unimodel.downscaling.ecorrection import Ecorrection
 
-config = {'hres_dem_file': 'tests/data/neighbours_wrf3_ecm.npz', 'neighbours_file': 'tests/data/hres_dem_25831.tif'}
+config = {'hres_dem_file': '', 'neighbours_file': ''}
 config_wrong = {'hres_dem_file': 'ecorr/tests/data/not_found.tif'}
 
 class TestEcorrection(unittest.TestCase):
