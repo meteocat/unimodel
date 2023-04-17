@@ -44,7 +44,7 @@ class Ecorrection():
                                     neigh_needed=neigh_needed,
                                     neigh_candidates=neigh_candidates)
                 
-                neigh_summary = {'indices': indices, 'neigh_neeed': neigh_needed, 'neigh_candidates': neigh_candidates}
+                neigh_summary = {'indices': indices, 'neigh_needed': neigh_needed, 'neigh_candidates': neigh_candidates}
             
             return neigh_summary
             
