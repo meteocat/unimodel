@@ -25,40 +25,38 @@ class Ecorrection():
         
         self.result = None
 
-    def __get_neighbours(land_binary_mask: xr.Dataset, out_file: str, neighbours: int):
+    def __get_neighbours(self, land_binary_mask: xr.Dataset, out_file: str, neighbours: int):
 
-        try:
-
-            if not os.path.exists(out_file):
-
-                neigh_candidates = np.where(land_binary_mask == 1)
-                neigh_candidates = np.vstack((neigh_candidates[0], neigh_candidates[1])).T
-                neigh_needed = np.where(land_binary_mask >= 0)
-                neigh_needed = np.vstack((neigh_needed[0], neigh_needed[1])).T
-
-                nbrs = NearestNeighbors(n_neighbors=neighbours, algorithm='ball_tree').fit(neigh_candidates)
-                _, indices = nbrs.kneighbors(neigh_needed)
-
-                np.savez_compressed(out_file,
-                                    indices=indices,
-                                    neigh_needed=neigh_needed,
-                                    neigh_candidates=neigh_candidates)
-                
-                neigh_summary = {'indices': indices, 'neigh_needed': neigh_needed, 'neigh_candidates': neigh_candidates}
-                
-            else:
-
-                out_data = np.load(out_file)
-
-                indices = out_data['indices']
-                neigh_needed = out_data['neigh_needed']
-                neigh_candidates = out_data['neigh_candidates']
-
-                neigh_summary = {'indices': indices, 'neigh_needed': neigh_needed, 'neigh_candidates': neigh_candidates}
-            
-            return neigh_summary
-            
-        except Exception:
+        if land_binary_mask.attrs['standard_name'] != 'land_binary_mask':
 
             raise ValueError(f'\'land_binary_mask\' variable does not exist')
+
+        if not os.path.exists(out_file):
+
+            neigh_candidates = np.where(land_binary_mask == 1)
+            neigh_candidates = np.vstack((neigh_candidates[0], neigh_candidates[1])).T
+            neigh_needed = np.where(land_binary_mask >= 0)
+            neigh_needed = np.vstack((neigh_needed[0], neigh_needed[1])).T
+
+            nbrs = NearestNeighbors(n_neighbors=neighbours, algorithm='ball_tree').fit(neigh_candidates)
+            _, indices = nbrs.kneighbors(neigh_needed)
+
+            np.savez_compressed(out_file,
+                                indices=indices,
+                                neigh_needed=neigh_needed,
+                                neigh_candidates=neigh_candidates)
+            
+            neigh_summary = {'indices': indices, 'neigh_needed': neigh_needed, 'neigh_candidates': neigh_candidates}
+            
+        else:
+
+            out_data = np.load(out_file)
+
+            indices = out_data['indices']
+            neigh_needed = out_data['neigh_needed']
+            neigh_candidates = out_data['neigh_candidates']
+
+            neigh_summary = {'indices': indices, 'neigh_needed': neigh_needed, 'neigh_candidates': neigh_candidates}
+        
+        return neigh_summary
 
