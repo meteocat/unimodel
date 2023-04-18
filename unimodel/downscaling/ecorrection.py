@@ -13,9 +13,9 @@ class Ecorrection():
         
         self.variable = variable
 
-        if not config.keys() <= {'hres_dem_file', 'neighbours_file'}:
+        if not config.keys() >= {'hres_dem_file', 'neighbours_file'}:
 
-            raise KeyError(f'At least \'hres_dem_file\' and \'neighbours_file\' must be in the config dictionary')
+            raise KeyError('At least \'hres_dem_file\' and \'neighbours_file\' must be in the config dictionary')
         
         self.config = config
 
@@ -45,10 +45,20 @@ class Ecorrection():
                                     neigh_candidates=neigh_candidates)
                 
                 neigh_summary = {'indices': indices, 'neigh_needed': neigh_needed, 'neigh_candidates': neigh_candidates}
+                
+            else:
+
+                out_data = np.load(out_file)
+
+                indices = out_data['indices']
+                neigh_needed = out_data['neigh_needed']
+                neigh_candidates = out_data['neigh_candidates']
+
+                neigh_summary = {'indices': indices, 'neigh_needed': neigh_needed, 'neigh_candidates': neigh_candidates}
             
             return neigh_summary
             
         except Exception:
 
-            raise NameError(f'\'land_binary_mask\' variable not defined')
+            raise ValueError(f'\'land_binary_mask\' variable does not exist')
 
