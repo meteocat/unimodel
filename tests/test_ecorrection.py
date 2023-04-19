@@ -51,11 +51,14 @@ class TestEcorrection(unittest.TestCase):
 
         ds_lsm = read_wrf_prs('tests/data/nwp_src/wrf43_prs/WRFPRS-03.2023020600_032.grib',
                               'lsm', 'WRF')
+        
         out_file = 'tests/data/test_data/neighbours.npz'
 
         ecor = Ecorrection('2t', self.config)
 
         neigh = ecor._Ecorrection__get_neighbours(land_binary_mask=ds_lsm, out_file=out_file, neighbours=64)
+
+        self.assertEqual(neigh.keys(), dict.fromkeys(['indices', 'neigh_needed', 'neigh_candidates']).keys())
 
     def test_get_neighbours_lsm_not_found(self):
 
