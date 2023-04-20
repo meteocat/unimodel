@@ -51,7 +51,7 @@ class TestEcorrection(unittest.TestCase):
 
             Ecorrection('2t', self.config_wrong)
 
-        self.assertEqual(err.exception.args[0],"At least 'hres_dem_file' and"
+        self.assertEqual(err.exception.args[0],"At least 'hres_dem_file' and "
                          "'neighbours_file' must be in the config dictionary")
 
 
@@ -75,7 +75,7 @@ class TestEcorrection(unittest.TestCase):
 
         self.assertEqual(neigh.keys(),
                          dict.fromkeys(['indices', 'neigh_needed', 'neigh_candidates']).keys())
-        
+
 
     def test_neighbours_on_land(self):
         """Tests if neighbours are on land
@@ -100,8 +100,8 @@ class TestEcorrection(unittest.TestCase):
         with self.assertRaises(ValueError) as err:
 
             ecor = Ecorrection('2t', self.config)
-            ecor.get_neighbours(land_binary_mask=self.da_lsm_wrong, 
-                                out_file=self.out_file, 
+            ecor.get_neighbours(land_binary_mask=self.da_lsm_wrong,
+                                out_file=self.out_file,
                                 neighbours=64)
 
         self.assertEqual(err.exception.args[0], '\'land_binary_mask\' variable does not exist')
