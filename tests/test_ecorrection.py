@@ -16,6 +16,15 @@ class TestEcorrection(unittest.TestCase):
     config_nofile = {'hres_dem_file': 'tests/data/test_data/nofile.txt',
                      'neighbours_file': 'tests/data/test_data/nofile.txt'}
 
+    with open('tests/data/test_data/lsm_xarray.pkl', 'rb') as file:
+
+        da_lsm = pickle.load(file)
+        file.close()
+
+    out_file = 'tests/data/test_data/neighbours.npz'
+    da_lsm_wrong = read_wrf_prs('tests/data/nwp_src/wrf43_prs/WRFPRS-03.2023020600_032.grib',
+                                '2t', 'WRF')
+
     def test_init(self):
         """Tests function to initialize the object's attributes
         """
@@ -59,30 +68,41 @@ class TestEcorrection(unittest.TestCase):
     def test_get_neighbours(self):
         """Tests function for calculate neighbours 
         """
-        with open('tests/data/test_data/lsm_xarray.pkl', 'rb') as file:
-            
-            da_lsm = pickle.load(file)
-            file.close()
-
-        out_file = 'tests/data/test_data/neighbours.npz'
-
         ecor = Ecorrection('2t', self.config)
-        neigh = ecor.get_neighbours(land_binary_mask=da_lsm, out_file=out_file, neighbours=64)
+        neigh = ecor.get_neighbours(land_binary_mask=self.da_lsm,
+                                    out_file=self.out_file,
+                                    neighbours=64)
 
-        self.assertEqual(neigh.keys(), 
+        self.assertEqual(neigh.keys(),
                          dict.fromkeys(['indices', 'neigh_needed', 'neigh_candidates']).keys())
+        
+
+    def test_neighbours_on_land(self):
+        """Tests if neighbours are on land
+        """
+        ecor = Ecorrection('2t', self.config)
+        neigh = ecor.get_neighbours(land_binary_mask=self.da_lsm,
+                                    out_file=self.out_file,
+                                    neighbours=64)
+
+        index_point = neigh['neigh_needed'].tolist().index([123,105])
+        index_indices = neigh['indices'][index_point]
+        test_point = neigh['neigh_candidates'][index_indices].tolist()
+
+        for i in range(64):
+
+            self.assertEqual(self.da_lsm[test_point[i][0], test_point[i][1]].values, 1.0)
+
 
     def test_get_neighbours_lsm_not_found(self):
         """Land binary mask dataArray not found
         """
-        da_lsm_wrong = read_wrf_prs('tests/data/nwp_src/wrf43_prs/WRFPRS-03.2023020600_032.grib',
-                                    '2t', 'WRF')
-        out_file = 'tests/data/test_data/neighbours.npz'
-
         with self.assertRaises(ValueError) as err:
-            
+
             ecor = Ecorrection('2t', self.config)
-            ecor.get_neighbours(land_binary_mask=da_lsm_wrong, out_file=out_file, neighbours=64)
+            ecor.get_neighbours(land_binary_mask=self.da_lsm_wrong, 
+                                out_file=self.out_file, 
+                                neighbours=64)
 
         self.assertEqual(err.exception.args[0], '\'land_binary_mask\' variable does not exist')
    
