@@ -16,9 +16,12 @@ class TestEcorrection(unittest.TestCase):
     config_nofile = {'hres_dem_file': 'tests/data/test_data/nofile.txt',
                      'neighbours_file': 'tests/data/test_data/nofile.txt'}
 
-    with open('tests/data/test_data/lsm_xarray.pkl', 'rb') as file:
+    neigh_wrong = {'indices_wrong': 'nodata', 'neigh_needed_wrong': 'nodata', 
+                   'candidates_wrong': 'nodata'}
 
-        da_lsm = pickle.load(file)
+    with open('tests/data/test_data/var_xarray.pkl', 'rb') as file:
+
+        da_var = pickle.load(file)
         file.close()
 
     out_file = 'tests/data/test_data/neighbours.npz'
@@ -69,19 +72,19 @@ class TestEcorrection(unittest.TestCase):
         """Tests function for calculate neighbours 
         """
         ecor = Ecorrection('2t', self.config)
-        neigh = ecor.get_neighbours(land_binary_mask=self.da_lsm,
+        neigh = ecor.get_neighbours(land_binary_mask=self.da_var[0],
                                     out_file=self.out_file,
                                     neighbours=64)
 
         self.assertEqual(neigh.keys(),
-                         dict.fromkeys(['indices', 'neigh_needed', 'neigh_candidates']).keys())
+                         {'indices', 'neigh_needed', 'neigh_candidates'})
 
 
     def test_neighbours_on_land(self):
         """Tests if neighbours are on land
         """
         ecor = Ecorrection('2t', self.config)
-        neigh = ecor.get_neighbours(land_binary_mask=self.da_lsm,
+        neigh = ecor.get_neighbours(land_binary_mask=self.da_var[0],
                                     out_file=self.out_file,
                                     neighbours=64)
 
@@ -91,7 +94,7 @@ class TestEcorrection(unittest.TestCase):
 
         for i in range(64):
 
-            self.assertEqual(self.da_lsm[test_point[i][0], test_point[i][1]].values, 1.0)
+            self.assertEqual(self.da_var[0][test_point[i][0], test_point[i][1]].values, 1.0)
 
 
     def test_get_neighbours_lsm_not_found(self):
@@ -105,4 +108,32 @@ class TestEcorrection(unittest.TestCase):
                                 neighbours=64)
 
         self.assertEqual(err.exception.args[0], '\'land_binary_mask\' variable does not exist')
+
+
+    def test_calculate_lapse_rate(self):
+        """Tests Calculate_lapse_rate function
+        """
+
+    def test_lapse_rate_neighbours_dict(self):
+        """Neighbours dictionary without mandatory keys 
+        """
+        with self.assertRaises(KeyError) as err:
+
+            ecor = Ecorrection('2t', self.config)
+            ecor.calculate_lapse_rate(self.neigh_wrong, self.da_var[1], self.da_var[2])
+
+        self.assertEqual(err.exception.args[0], "'indices', 'neigh_needed' and 'neigh_candidates' "
+                         "must be in the neigh_info dictionary")
+
+
+    def test_lapse_rate_not_2t_dataaray(self):
+        """datarray without the desired variable (2t)
+        """
+
+
+
+    def test_lapse_rate_not_height_dataaray(self):
+        """Datarray without the desired variable (height)
+        """
+
    
