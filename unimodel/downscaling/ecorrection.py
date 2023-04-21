@@ -41,7 +41,7 @@ class Ecorrection():
 
 
     def get_neighbours(self, land_binary_mask: xr.DataArray, out_file: str,
-                       neighbours: int=64) -> dict:
+                       neighbours: int=64, save_out: bool=False) -> dict:
         """Function for calculating the nearest neighbours of points to be used in a linear
         regression fitting. Neighbours are selected from those points which 
         landsea_mask is 1. The result is saved in a .npz file
@@ -51,6 +51,8 @@ class Ecorrection():
             out_file (str): File path where neighbours information is saved
             neighbours (int, optional): Number of neighbours to consider for each
             point. Default is 64.
+            save_out (bool, optional): Save neighbours information to a file. 
+            Default is False
 
         Raises:
             ValueError: If \'land_binary_mask\' variable does not exist
@@ -77,10 +79,12 @@ class Ecorrection():
 
             _, indices = nbrs.kneighbors(neigh_needed)
 
-            np.savez_compressed(out_file,
-                                indices=indices,
-                                neigh_needed=neigh_needed,
-                                neigh_candidates=neigh_candidates)
+            if save_out:
+
+                np.savez_compressed(out_file,
+                                    indices=indices,
+                                    neigh_needed=neigh_needed,
+                                    neigh_candidates=neigh_candidates)
 
             neigh_summary = {'indices': indices,
                              'neigh_needed': neigh_needed, 
@@ -99,4 +103,3 @@ class Ecorrection():
                              'neigh_candidates': neigh_candidates}
 
         return neigh_summary
-    
