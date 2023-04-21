@@ -103,3 +103,62 @@ class Ecorrection():
                              'neigh_candidates': neigh_candidates}
 
         return neigh_summary
+
+    def calculate_lapse_rate(self, neigh_info: dict,
+                             da_2t: xr.DataArray, da_h: xr.DataArray) -> tuple:
+        """Calculates the lapse rates for each WRF pixel from a mask_file,
+        which includes the nearest neighbors for each pixel. Only pixels
+        with the aid of WRF LANDMASK value of 1 are considered.
+
+        Args:
+            neigh_info (dict): Dictionary with info about neighbours.
+            da_2t (xarray.DataArray): 2t variable DataArray
+            da_h (xarray.DataArray): height variable DataArray
+
+        Returns:
+            numpy.arrays: Two arrays with gradients and residues from linear
+            regression calculations.
+        """
+
+        if neigh_info.keys() != {'indices', 'neigh_needed', 'neigh_candidates'}:
+
+            raise KeyError("'indices', 'neigh_needed' and 'neigh_candidates' "
+                           "must be in the neigh_info dictionary")
+
+        if da_2t.attrs['GRIB_cfVarName'] != 't2m':
+
+            raise ValueError('2t variable does not exist')
+
+        if da_h.attrs['GRIB_shortName'] != 'ghrea':
+
+            raise ValueError('height variable does not exist')
+
+        indices = neigh_info['indices']
+        neigh_candidates = neigh_info['neigh_candidates']
+        neigh_needed = neigh_info['neigh_needed']
+
+        gradients = np.ones(nwp_var.shape)
+        residues = np.zeros(nwp_var.shape)
+        for i, neigh_n in enumerate(neigh_needed):
+            idxs = np.hsplit(neigh_candidates[indices[i]], 2)
+            idx_row = idxs[0].reshape((1, len(idxs[0])))[0]
+            idx_col = idxs[1].reshape((1, len(idxs[1])))[0]
+
+            var_sel = nwp_var.values[idx_row, idx_col]
+            dem_sel = nwp_dem.values[idx_row, idx_col]
+            dem_sel = np.vstack([dem_sel, np.ones(len(dem_sel))]).T
+
+            gradient, residue = np.linalg.lstsq(dem_sel, var_sel, rcond=None)[0]
+
+            gradients[neigh_n[0], neigh_n[1]] = gradient
+            residues[neigh_n[0], neigh_n[1]] = residue
+
+        gradients[gradients == 1] = 0
+        gradients[gradients < -0.0098] = -0.0098
+        gradients[gradients > 0.0294] = 0.0294
+
+        xr_gradients = nwp_var.copy(data=gradients)
+        xr_residues = nwp_var.copy(data=residues)
+
+        return xr_gradients, xr_residues
+
