@@ -16,7 +16,8 @@ class TestEcorrection(unittest.TestCase):
     config_nofile = {'hres_dem_file': 'tests/data/test_data/nofile.txt',
                      'neighbours_file': 'tests/data/test_data/nofile.txt'}
 
-    neigh_wrong = {'indices_wrong': 'nodata', 'neigh_needed_wrong': 'nodata', 
+    neigh = {'indices': 'nodata', 'neigh_needed': 'nodata', 'neigh_candidates': 'nodata'}
+    neigh_wrong = {'indices_wrong': 'nodata', 'neigh_needed_wrong': 'nodata',
                    'candidates_wrong': 'nodata'}
 
     with open('tests/data/test_data/var_xarray.pkl', 'rb') as file:
@@ -113,8 +114,15 @@ class TestEcorrection(unittest.TestCase):
     def test_calculate_lapse_rate(self):
         """Tests Calculate_lapse_rate function
         """
+        ecor = Ecorrection('2t', self.config)
+        neigh_info = ecor.get_neighbours(land_binary_mask=self.da_var[0],
+                                         out_file=self.out_file,
+                                         neighbours=64)
+        ecor.calculate_lapse_rate(neigh_info, self.da_var[1], self.da_var[2])
+        self.assertEqual()
 
-    def test_lapse_rate_neighbours_dict(self):
+
+    def test_lapse_rate_not_neigh_dict(self):
         """Neighbours dictionary without mandatory keys 
         """
         with self.assertRaises(KeyError) as err:
@@ -127,13 +135,24 @@ class TestEcorrection(unittest.TestCase):
 
 
     def test_lapse_rate_not_2t_dataaray(self):
-        """datarray without the desired variable (2t)
+        """Datarray without the desired variable (2t)
         """
+        with self.assertRaises(ValueError) as err:
+
+            ecor = Ecorrection('2t', self.config)
+            ecor.calculate_lapse_rate(self.neigh, self.da_var[2], self.da_var[2])
+
+        self.assertEqual(err.exception.args[0], '2t variable does not exist')
 
 
-
-    def test_lapse_rate_not_height_dataaray(self):
-        """Datarray without the desired variable (height)
+    def test_lapse_rate_not_orog_dataaray(self):
+        """Datarray without the desired variable (orography)
         """
+        with self.assertRaises(ValueError) as err:
+
+            ecor = Ecorrection('2t', self.config)
+            ecor.calculate_lapse_rate(self.neigh, self.da_var[1], self.da_var[1])
+
+        self.assertEqual(err.exception.args[0], 'orography variable does not exist')
 
    
