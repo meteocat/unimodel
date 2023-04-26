@@ -52,7 +52,8 @@ class TestEcorrection(unittest.TestCase):
         """
         ecor = Ecorrection(self.da_var[0], self.dem_file)
         lapse_rate = ecor.calculate_lapse_rate(self.da_var[1], self.da_var[2])
-        
+
+        self.assertEqual(np.round(lapse_rate[162,72].values, 6), -0.001777)
         self.assertFalse(np.any(lapse_rate.values > 0.0294))
         self.assertFalse(np.any(lapse_rate.values < -0.0098))
 
