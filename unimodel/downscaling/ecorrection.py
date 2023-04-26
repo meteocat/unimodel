@@ -8,104 +8,74 @@ from sklearn.neighbors import NearestNeighbors
 class Ecorrection():
     """Class for applying elevation correction to a given xarray
     """
-    def __init__(self, variable: str, config: dict) -> None:
-        """Function for checking the input parameters for initializing the object's attributes
+    def __init__(self, land_binary_mask: xr.DataArray, dem_file: str) -> None:
+        """Function for initializing the object's attributes
 
         Args:
-            variable (str): must be '2t'
-            config (dict): configuration dictionary
+            land_binary_mask (xarray): NWP landsea mask variable
+            dem_file (str): path to hres_dem_file
 
         Raises:
-            ValueError: If variable is not \'2t\' 
-            KeyError: If \'hres_dem_file\' not in the configuration dictionary
+            ValueError: If 'land_binary_mask' DataArray does not exist
+            KeyError: If 'indices', 'neigh_needed' and 'neigh_candidates' are not dict keys
             FileNotFoundError: If hres_dem_file not found
         """
-        if variable != '2t':
 
-            raise ValueError(f'{variable} must be \'2t\'')
+        if land_binary_mask.attrs['standard_name'] != 'land_binary_mask':
 
-        self.variable = variable
+            raise ValueError("'land_binary_mask' dataArray does not exist")
 
-        if not config.keys() >= {'hres_dem_file', 'neighbours_file'}:
+        self.land_binary_mask = land_binary_mask
 
-            raise KeyError('At least \'hres_dem_file\' and \'neighbours_file\' '
-                           'must be in the config dictionary')
+        neigh_info = self.__calculate_neighbours(land_binary_mask)
 
-        self.config = config
+        if neigh_info.keys() != {'indices', 'neigh_needed', 'neigh_candidates'}:
 
-        if not os.path.exists(config['hres_dem_file']):
+            raise KeyError("'indices', 'neigh_needed' and 'neigh_candidates' "
+                           "must be in the neigh_info dictionary")
 
-            raise FileNotFoundError(f'{config["hres_dem_file"]} not found')
+        self.neigh_info = neigh_info
+
+        if not os.path.exists(dem_file):
+
+            raise FileNotFoundError('dem_file not found')
 
         self.result = None
 
 
-    def get_neighbours(self, land_binary_mask: xr.DataArray, out_file: str,
-                       neighbours: int=64, save_out: bool=False) -> dict:
+    def __calculate_neighbours(self, land_binary_mask: xr.DataArray, neighbours: int=64) -> dict:
         """Function for calculating the nearest neighbours of points to be used in a linear
         regression fitting. Neighbours are selected from those points which 
-        landsea_mask is 1. The result is saved in a .npz file
+        landsea_mask is 1.
 
         Args:
             landsea_mask (xarray): NWP landsea mask variable.
-            out_file (str): File path where neighbours information is saved
             neighbours (int, optional): Number of neighbours to consider for each
             point. Default is 64.
-            save_out (bool, optional): Save neighbours information to a file. 
-            Default is False
-
-        Raises:
-            ValueError: If \'land_binary_mask\' variable does not exist
 
         Returns:
             dict: with calculated neighbours information
         """
 
-        if land_binary_mask.attrs['standard_name'] != 'land_binary_mask':
+        neigh_candidates = np.where(land_binary_mask == 1)
+        neigh_candidates = np.vstack((neigh_candidates[1],
+                                      neigh_candidates[0])).T
+        neigh_needed = np.where(land_binary_mask >= 0)
+        neigh_needed = np.vstack((neigh_needed[1],
+                                  neigh_needed[0])).T
 
-            raise ValueError('\'land_binary_mask\' variable does not exist')
+        nbrs = NearestNeighbors(n_neighbors=neighbours,
+                                algorithm='ball_tree').fit(neigh_candidates)
 
-        if not os.path.exists(out_file):
+        _, indices = nbrs.kneighbors(neigh_needed)
 
-            neigh_candidates = np.where(land_binary_mask == 1)
-            neigh_candidates = np.vstack((neigh_candidates[0],
-                                          neigh_candidates[1])).T
-            neigh_needed = np.where(land_binary_mask >= 0)
-            neigh_needed = np.vstack((neigh_needed[0],
-                                      neigh_needed[1])).T
-
-            nbrs = NearestNeighbors(n_neighbors=neighbours,
-                                    algorithm='ball_tree').fit(neigh_candidates)
-
-            _, indices = nbrs.kneighbors(neigh_needed)
-
-            if save_out:
-
-                np.savez_compressed(out_file,
-                                    indices=indices,
-                                    neigh_needed=neigh_needed,
-                                    neigh_candidates=neigh_candidates)
-
-            neigh_summary = {'indices': indices,
-                             'neigh_needed': neigh_needed, 
-                             'neigh_candidates': neigh_candidates}
-
-        else:
-
-            out_data = np.load(out_file)
-
-            indices = out_data['indices']
-            neigh_needed = out_data['neigh_needed']
-            neigh_candidates = out_data['neigh_candidates']
-
-            neigh_summary = {'indices': indices,
-                             'neigh_needed': neigh_needed, 
-                             'neigh_candidates': neigh_candidates}
+        neigh_summary = {'indices': indices,
+                         'neigh_needed': neigh_needed,
+                         'neigh_candidates': neigh_candidates}
 
         return neigh_summary
 
-    def calculate_lapse_rate(self, neigh_info: dict,
-                             da_2t: xr.DataArray, da_orog: xr.DataArray) -> tuple:
+    def calculate_lapse_rate(self, da_2t: xr.DataArray, da_orog: xr.DataArray) -> tuple:
         """Calculates the lapse rates for each WRF pixel from a mask_file,
         which includes the nearest neighbors for each pixel. Only pixels
         with the aid of WRF LANDMASK value of 1 are considered.
@@ -120,11 +90,6 @@ class Ecorrection():
             regression calculations.
         """
 
-        if neigh_info.keys() != {'indices', 'neigh_needed', 'neigh_candidates'}:
-
-            raise KeyError("'indices', 'neigh_needed' and 'neigh_candidates' "
-                           "must be in the neigh_info dictionary")
-
         if da_2t.attrs['GRIB_shortName'] != '2t':
 
             raise ValueError('2t variable does not exist')
@@ -133,9 +98,9 @@ class Ecorrection():
 
             raise ValueError('orography variable does not exist')
 
-        indices = neigh_info['indices']
-        neigh_candidates = neigh_info['neigh_candidates']
-        neigh_needed = neigh_info['neigh_needed']
+        indices = self.neigh_info['indices']
+        neigh_candidates = self.neigh_info['neigh_candidates']
+        neigh_needed = self.neigh_info['neigh_needed']
 
         gradients = np.ones(da_2t.values.shape)
         residues = np.zeros(da_2t.values.shape)
@@ -147,7 +112,7 @@ class Ecorrection():
             idx_col = idxs[1].reshape((1, len(idxs[1])))[0]
 
             var_sel = da_2t.values[idx_row, idx_col]
-            dem_sel = da_orog.values.values[idx_row, idx_col]
+            dem_sel = da_orog.values[idx_row, idx_col]
             dem_sel = np.vstack([dem_sel, np.ones(len(dem_sel))]).T
 
             gradient, residue = np.linalg.lstsq(dem_sel, var_sel, rcond=None)[0]
@@ -159,8 +124,7 @@ class Ecorrection():
         gradients[gradients < -0.0098] = -0.0098
         gradients[gradients > 0.0294] = 0.0294
 
-        xr_gradients = da_2t.values.copy(data=gradients)
-        xr_residues = da_2t.values.copy(data=residues)
+        xr_gradients = da_2t.copy(data=gradients)
 
-        return xr_gradients, xr_residues
+        return xr_gradients
 
