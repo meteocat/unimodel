@@ -3,7 +3,10 @@
 import os
 import numpy as np
 import xarray as xr
+import rasterio
 from sklearn.neighbors import NearestNeighbors
+
+from unimodel.utils.geotools import reproject_xarray
 
 class Ecorrection():
     """Class for applying elevation correction to a given xarray
@@ -128,3 +131,53 @@ class Ecorrection():
 
         return xr_gradients
 
+
+    def apply_correction(self, dem_file: str, da_2t: xr.DataArray,
+                         da_orog: xr.DataArray) -> xr.DataArray:
+        """Apply the elevation correction of 2t field.
+
+        Args:
+            dem_file (str): path to hres_dem_file
+            da_2t (xarray.DataArray): 2t variable DataArray
+            da_orog (xarray.DataArray): orography variable DataArray
+
+        Raises:
+            ValueError: If '2t' DataArray does not exist
+            ValueError: If 'orography' DataArray does not exist
+
+        Returns:
+            xr.DataArray: DataArray with field corrected
+        """
+
+        if da_2t.attrs['GRIB_shortName'] != '2t':
+
+            raise ValueError('2t variable does not exist')
+
+        if da_orog.attrs['GRIB_shortName'] != 'orog':
+
+            raise ValueError('orography variable does not exist')
+
+        gradients = self.calculate_lapse_rate(da_2t, da_orog)
+
+        hres_dem = rasterio.open(dem_file)
+        shape = hres_dem.shape
+        # ul_corner = (xmin, ymax)
+        ul_corner = (hres_dem.transform[2], hres_dem.transform[5])
+        #resolution = (delta_x, delta_y)
+        resolution = (hres_dem.transform[0], hres_dem.transform[4])
+
+
+        hres_2t = reproject_xarray(xr_coarse=da_2t, dst_proj=hres_dem,
+                                   shape=shape, ul_corner=ul_corner,
+                                   resolution=resolution)
+        hres_orog = reproject_xarray(xr_coarse=da_orog, dst_proj=hres_dem,
+                                     shape=shape, ul_corner=ul_corner,
+                                     resolution=resolution)
+        hres_gradients = reproject_xarray(xr_coarse=gradients, dst_proj=hres_dem,
+                                          shape=shape, ul_corner=ul_corner,
+                                          resolution=resolution)
+
+        corrected_field = hres_2t + hres_gradients * (hres_dem - hres_orog) - 273.15
+
+        return corrected_field
+    
