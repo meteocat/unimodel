@@ -79,4 +79,33 @@ class TestEcorrection(unittest.TestCase):
 
         self.assertEqual(err.exception.args[0], 'orography variable does not exist')
 
-   
+    def test_apply_correction(self):
+        """Tests apply correction function
+        """
+        ecor = Ecorrection(self.da_var[0], self.dem_file)
+        var_correction = ecor.apply_correction(self.dem_file, self.da_var[1], self.da_var[2])
+        
+        self.assertEqual(np.round(var_correction[162,72].values, 6), 0.050095)
+
+
+    def test_apply_correction_not_2t_dataarray(self):
+        """Datarray without the desired variable (2t)
+        """
+        with self.assertRaises(ValueError) as err:
+
+            ecor = Ecorrection(self.da_var[0], self.dem_file)
+            ecor.apply_correction(self.dem_file, self.da_var[2],self.da_var[2])
+
+        self.assertEqual(err.exception.args[0], '2t variable does not exist')
+
+
+    def test_apply_correction_not_orog_dataarray(self):
+        """Datarray without the desired variable (orography)
+        """
+        with self.assertRaises(ValueError) as err:
+
+            ecor = Ecorrection(self.da_var[0], self.dem_file)
+            ecor.apply_correction(self.dem_file, self.da_var[1], self.da_var[1])
+
+        self.assertEqual(err.exception.args[0], 'orography variable does not exist')
+        
