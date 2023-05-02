@@ -16,12 +16,15 @@ def reproject_xarray(xr_coarse: xarray.DataArray, dst_proj: str, shape: tuple,
 
     Args:
         xr_coarse (xarray): xarray to reproject.
-        xr_hres (xarray): xarray with characteristics to reproject to.
-        resampling (Resampling, optional): Resampling method used for
-            interpolation processes. Defaults to Resampling.cubic_spline.
+        dst_proj (str): destination grid's projection
+        shape (tuple): destination grid's shape
+        ul_corner (tuple): destination grid's upper left corner
+        resolution (tuple): destination grid's resolution in (x,y) directions
+        resampling (Resampling, optional): Resampling method used for 
+            interpolation processes. Defaults to Resampling.cubic_spline
 
     Returns:
-        xarray: Reprojected xarray.
+        xarray: Reprojected xarray
     """
 
     transform = Affine.from_gdal(ul_corner[0], resolution[0], 0,
