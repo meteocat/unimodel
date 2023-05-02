@@ -164,20 +164,28 @@ class Ecorrection():
         # ul_corner = (xmin, ymax)
         ul_corner = (hres_dem.transform[2], hres_dem.transform[5])
         #resolution = (delta_x, delta_y)
-        resolution = (hres_dem.transform[0], hres_dem.transform[4])
+        resolution = (hres_dem.transform[0], abs(hres_dem.transform[4]))
+        dst_proj = hres_dem.crs
 
-
-        hres_2t = reproject_xarray(xr_coarse=da_2t, dst_proj=hres_dem,
+        hres_2t = reproject_xarray(xr_coarse=da_2t, dst_proj=dst_proj,
                                    shape=shape, ul_corner=ul_corner,
                                    resolution=resolution)
-        hres_orog = reproject_xarray(xr_coarse=da_orog, dst_proj=hres_dem,
+        hres_orog = reproject_xarray(xr_coarse=da_orog, dst_proj=dst_proj,
                                      shape=shape, ul_corner=ul_corner,
                                      resolution=resolution)
-        hres_gradients = reproject_xarray(xr_coarse=gradients, dst_proj=hres_dem,
+        hres_gradients = reproject_xarray(xr_coarse=gradients, dst_proj=dst_proj,
                                           shape=shape, ul_corner=ul_corner,
                                           resolution=resolution)
+        
+        corrected_field = hres_2t + hres_gradients * (hres_dem.read(1) - hres_orog)
 
-        corrected_field = hres_2t + hres_gradients * (hres_dem - hres_orog) - 273.15
+        if hres_2t.units == 'K':
+
+            corrected_field = corrected_field - 273.15
+
+        else:
+
+            corrected_field = corrected_field
 
         return corrected_field
     
