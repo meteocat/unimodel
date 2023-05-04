@@ -6,9 +6,6 @@ import xarray as xr
 import rasterio
 import rasterio.fill
 import pandas as pd
-import shapefile
-from shapely.geometry import shape
-import json
 from sklearn.neighbors import NearestNeighbors
 
 from unimodel.utils.geotools import reproject_xarray, landsea_mask_from_shp
@@ -82,42 +79,6 @@ class Ecorrection():
                          'neigh_candidates': neigh_candidates}
 
         return neigh_summary
-    
-    def __get_geometry_from_shp(self):
-        """Function for getting geometry from shapefile
-
-        Returns:
-            pd.DataFrame: dataframe with Shapely geometry objects
-        """
-    
-        # Open the shapefile in read mode
-        with shapefile.Reader('tests/data/coastline/coastline_weurope') as shp:
-            # Get the fields and shapes from the shapefile
-            shapes = shp.shapes()
-
-            # Create a list to store the geometries
-            geometries = []
-            # Loop through each shape and extract its geometry
-            for shp_shape in shapes:
-                # Extract the geometry from the shape
-                geometry = shape(shp_shape.__geo_interface__)
-                geometries.append({"geometry": geometry})
-
-            # Convert the list of geometries to a GeoJSON-like dict
-            feature_collection = {"type": "FeatureCollection", "features": []}
-            for feature in geometries:
-                geometry = feature["geometry"]
-                feature_dict = {"geometry": json.dumps(geometry.__geo_interface__)}
-                feature_collection["features"].append(feature_dict)
-
-        # Convert the GeoJSON-like dict to a pandas dataframe
-        df_geometry = pd.json_normalize(feature_collection["features"])
-
-        # Convert the "geometry" column to Shapely geometry objects
-        df_geometry["geometry"] = df_geometry["geometry"].apply(lambda x: shape(json.loads(x)))
-
-        return df_geometry
-
 
     def calculate_lapse_rate(self, da_2t: xr.DataArray, da_orog: xr.DataArray) -> xr.DataArray:
         """Calculates the lapse rates for each WRF pixel from a mask_file,
@@ -224,8 +185,7 @@ class Ecorrection():
 
         if landsea_mask:
 
-            df_lsm_shp = self.__get_geometry_from_shp()
-            hres_lsm = landsea_mask_from_shp(df_lsm_shp, hres_dem)
+            hres_lsm = landsea_mask_from_shp(hres_dem)
 
             var_2t = da_2t * self.land_binary_mask
             var_2t.attrs['_FillValue'] = 0
