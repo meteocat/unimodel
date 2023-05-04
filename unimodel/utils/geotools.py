@@ -1,7 +1,9 @@
 """Module to deal with projection features.
 """
 import numpy as np
+import pandas as pd
 import rioxarray
+import rasterio
 import xarray
 from rasterio import Affine
 from rasterio.warp import Resampling
@@ -243,3 +245,24 @@ def proj4_from_grib(ds_grib: xarray.DataArray) -> dict:
         projparams = None
 
     return projparams
+
+
+def landsea_mask_from_shp(coastline_shp: pd.DataFrame,
+                          hres_dem: xarray) -> np.array:
+    """"Rasterize a shapefile based on metadata from an xarray
+
+    Args:
+        coastline_shp (pd.DataFrame): Shapefile with high
+            resolution coast line or land sea limits
+        hres_dem (xarray): xarray to get metadata from
+
+    Returns:
+        np.array: Rasterized shapefile
+    """
+
+    hres_lsm = rasterio.features.rasterize(coastline_shp['geometry'],
+                                           out_shape=hres_dem.shape,
+                                           transform=hres_dem.transform,
+                                           all_touched=True)
+
+    return hres_lsm
