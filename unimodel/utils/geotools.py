@@ -2,9 +2,14 @@
 """
 import numpy as np
 import pandas as pd
+import xarray
+
+import shapefile
+from shapely.geometry import shape
+import json
+
 import rioxarray
 import rasterio
-import xarray
 from rasterio import Affine
 from rasterio.warp import Resampling
 
@@ -246,9 +251,43 @@ def proj4_from_grib(ds_grib: xarray.DataArray) -> dict:
 
     return projparams
 
+def __get_geometry_from_shp() -> pd.DataFrame:
+    """Function for getting geometry from shapefile
 
-def landsea_mask_from_shp(coastline_shp: pd.DataFrame,
-                          hres_dem: xarray) -> np.array:
+    Returns:
+        pd.DataFrame: dataframe with Shapely geometry objects
+    """
+
+    # Open the shapefile in read mode
+    with shapefile.Reader('tests/data/coastline/coastline_weurope') as shp:
+        # Get the shapes from the shapefile
+        shapes = shp.shapes()
+
+        # Create a list to store the geometries
+        geometries = []
+        # Loop through each shape and extract its geometry
+        for shp_shape in shapes:
+            # Extract the geometry from the shape
+            geometry = shape(shp_shape.__geo_interface__)
+            geometries.append({"geometry": geometry})
+
+        # Convert the list of geometries to a GeoJSON-like dict
+        feature_collection = {"type": "FeatureCollection", "features": []}
+        for feature in geometries:
+            geometry = feature["geometry"]
+            feature_dict = {"geometry": json.dumps(geometry.__geo_interface__)}
+            feature_collection["features"].append(feature_dict)
+
+    # Convert the GeoJSON-like dict to a pandas dataframe
+    df_geometry = pd.json_normalize(feature_collection["features"])
+
+    # Convert the "geometry" column to Shapely geometry objects
+    df_geometry["geometry"] = df_geometry["geometry"].apply(lambda x: shape(json.loads(x)))
+
+    return df_geometry
+
+
+def landsea_mask_from_shp(hres_dem: xarray) -> np.array:
     """"Rasterize a shapefile based on metadata from an xarray
 
     Args:
@@ -259,6 +298,8 @@ def landsea_mask_from_shp(coastline_shp: pd.DataFrame,
     Returns:
         np.array: Rasterized shapefile
     """
+
+    coastline_shp = __get_geometry_from_shp()
 
     hres_lsm = rasterio.features.rasterize(coastline_shp['geometry'],
                                            out_shape=hres_dem.shape,
