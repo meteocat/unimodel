@@ -5,7 +5,7 @@ import unittest
 
 import pyproj
 
-from unimodel.utils.geotools import proj4_from_grib, reproject_xarray
+from unimodel.utils.geotools import proj4_from_grib, reproject_xarray, landsea_mask_from_shp
 
 
 class TestGeoTools(unittest.TestCase):
