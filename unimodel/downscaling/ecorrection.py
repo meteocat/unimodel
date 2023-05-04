@@ -4,9 +4,14 @@ import os
 import numpy as np
 import xarray as xr
 import rasterio
+import rasterio.fill
+import pandas as pd
+import shapefile
+from shapely.geometry import shape
+import json
 from sklearn.neighbors import NearestNeighbors
 
-from unimodel.utils.geotools import reproject_xarray
+from unimodel.utils.geotools import reproject_xarray, landsea_mask_from_shp
 
 class Ecorrection():
     """Class for applying elevation correction to a given xarray
@@ -77,6 +82,42 @@ class Ecorrection():
                          'neigh_candidates': neigh_candidates}
 
         return neigh_summary
+    
+    def __get_geometry_from_shp(self):
+        """Function for getting geometry from shapefile
+
+        Returns:
+            pd.DataFrame: dataframe with Shapely geometry objects
+        """
+    
+        # Open the shapefile in read mode
+        with shapefile.Reader('tests/data/coastline/coastline_weurope') as shp:
+            # Get the fields and shapes from the shapefile
+            shapes = shp.shapes()
+
+            # Create a list to store the geometries
+            geometries = []
+            # Loop through each shape and extract its geometry
+            for shp_shape in shapes:
+                # Extract the geometry from the shape
+                geometry = shape(shp_shape.__geo_interface__)
+                geometries.append({"geometry": geometry})
+
+            # Convert the list of geometries to a GeoJSON-like dict
+            feature_collection = {"type": "FeatureCollection", "features": []}
+            for feature in geometries:
+                geometry = feature["geometry"]
+                feature_dict = {"geometry": json.dumps(geometry.__geo_interface__)}
+                feature_collection["features"].append(feature_dict)
+
+        # Convert the GeoJSON-like dict to a pandas dataframe
+        df_geometry = pd.json_normalize(feature_collection["features"])
+
+        # Convert the "geometry" column to Shapely geometry objects
+        df_geometry["geometry"] = df_geometry["geometry"].apply(lambda x: shape(json.loads(x)))
+
+        return df_geometry
+
 
     def calculate_lapse_rate(self, da_2t: xr.DataArray, da_orog: xr.DataArray) -> xr.DataArray:
         """Calculates the lapse rates for each WRF pixel from a mask_file,
@@ -133,13 +174,17 @@ class Ecorrection():
 
 
     def apply_correction(self, dem_file: str, da_2t: xr.DataArray,
-                         da_orog: xr.DataArray) -> xr.DataArray:
+                         da_orog: xr.DataArray, landsea_mask: bool = False) -> xr.DataArray:
         """Apply the elevation correction of 2t field.
 
         Args:
             dem_file (str): path to hres_dem_file
             da_2t (xarray.DataArray): 2t variable DataArray
             da_orog (xarray.DataArray): orography variable DataArray
+            landsea_mask (bool, optional): If True reprojection to destination
+                                           resolution is done accounting for
+                                           landsea mask values. Default is
+                                           False.
 
         Raises:
             ValueError: If '2t' DataArray does not exist
@@ -176,7 +221,26 @@ class Ecorrection():
         hres_gradients = reproject_xarray(xr_coarse=gradients, dst_proj=dst_proj,
                                           shape=shape, ul_corner=ul_corner,
                                           resolution=resolution)
+
+        if landsea_mask:
+
+            df_lsm_shp = self.__get_geometry_from_shp()
+            hres_lsm = landsea_mask_from_shp(df_lsm_shp, hres_dem)
+
+            var_2t = da_2t * self.land_binary_mask
+            var_2t.attrs['_FillValue'] = 0
+
+            hres_2t_mask = reproject_xarray(xr_coarse=var_2t, dst_proj=dst_proj,
+                                       shape=shape, ul_corner=ul_corner,
+                                       resolution=resolution)
+            
+            hres_2t_mask.values = rasterio.fill.fillnodata(hres_2t_mask.values,
+                                                           hres_2t_mask.values,
+                                                           max_search_distance=50)
         
+            hres_2t.values = np.where(hres_lsm == 0, hres_2t.values,
+                                      hres_2t_mask.values)
+            
         corrected_field = hres_2t + hres_gradients * (hres_dem.read(1) - hres_orog)
 
         if hres_2t.units == 'K':
@@ -188,4 +252,6 @@ class Ecorrection():
             corrected_field = corrected_field
 
         return corrected_field
+    
+
     
