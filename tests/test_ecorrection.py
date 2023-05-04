@@ -53,7 +53,7 @@ class TestEcorrection(unittest.TestCase):
         ecor = Ecorrection(self.da_var[0], self.dem_file)
         lapse_rate = ecor.calculate_lapse_rate(self.da_var[1], self.da_var[2])
 
-        self.assertEqual(np.round(lapse_rate[162,72].values, 6), -0.001777)
+        self.assertAlmostEqual(float(lapse_rate[162,72].values), -0.0017771)
         self.assertFalse(np.any(lapse_rate.values > 0.0294))
         self.assertFalse(np.any(lapse_rate.values < -0.0098))
 
@@ -85,17 +85,17 @@ class TestEcorrection(unittest.TestCase):
         ecor = Ecorrection(self.da_var[0], self.dem_file)
         var_correction = ecor.apply_correction(self.dem_file, self.da_var[1], self.da_var[2])
         
-        self.assertEqual(np.round(var_correction[162,72].values, 6), 0.050095)
+        self.assertAlmostEqual(float(var_correction[162,72].values), 0.0500952)
 
 
     def test_apply_correction_lsm_true(self):
-            """Tests apply correction function when lsm=True
-            """
-            ecor = Ecorrection(self.da_var[0], self.dem_file)
-            var_correction = ecor.apply_correction(self.dem_file, self.da_var[1],
-                                                   self.da_var[2], landsea_mask=True)
+        """Tests apply correction function when lsm=True
+        """
+        ecor = Ecorrection(self.da_var[0], self.dem_file)
+        var_correction = ecor.apply_correction(self.dem_file, self.da_var[1],
+                                                self.da_var[2], landsea_mask=True)
 
-            self.assertEqual(np.round(var_correction[162,72].values, 6), 0.050095)
+        self.assertAlmostEqual(float(var_correction[1105,676].values), 9.6675980)
 
         
     def test_apply_correction_not_2t_dataarray(self):
