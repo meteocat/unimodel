@@ -1,12 +1,13 @@
 """Module to deal with projection features.
 """
+import json
+
 import numpy as np
 import pandas as pd
 import xarray
 
 import shapefile
 from shapely.geometry import shape
-import json
 
 import rioxarray
 import rasterio
@@ -251,7 +252,7 @@ def proj4_from_grib(ds_grib: xarray.DataArray) -> dict:
 
     return projparams
 
-def __get_geometry_from_shp() -> pd.DataFrame:
+def __get_geometry_from_shp(shapefile_path) -> pd.DataFrame:
     """Function for getting geometry from shapefile
 
     Returns:
@@ -259,14 +260,17 @@ def __get_geometry_from_shp() -> pd.DataFrame:
     """
 
     # Open the shapefile in read mode
-    with shapefile.Reader('tests/data/coastline/coastline_weurope') as shp:
+    with shapefile.Reader(shapefile_path) as shp:
+
         # Get the shapes from the shapefile
         shapes = shp.shapes()
 
         # Create a list to store the geometries
         geometries = []
+
         # Loop through each shape and extract its geometry
         for shp_shape in shapes:
+
             # Extract the geometry from the shape
             geometry = shape(shp_shape.__geo_interface__)
             geometries.append({"geometry": geometry})
@@ -299,7 +303,7 @@ def landsea_mask_from_shp(hres_dem: xarray) -> np.array:
         np.array: Rasterized shapefile
     """
 
-    coastline_shp = __get_geometry_from_shp()
+    coastline_shp = __get_geometry_from_shp('tests/data/coastline/coastline_weurope')
 
     hres_lsm = rasterio.features.rasterize(coastline_shp['geometry'],
                                            out_shape=hres_dem.shape,
