@@ -39,7 +39,7 @@ class TestReadersNWP(unittest.TestCase):
         self.assertAlmostEqual(data_var.rio.transform().d, 0.0)
         self.assertAlmostEqual(data_var.rio.transform().e, 3000.0)
         self.assertAlmostEqual(data_var.rio.transform().f, -385561.89591748564)
-        
+
         self.assertFalse(os.path.isfile(file_idx))
 
     def test_read_icon(self):
