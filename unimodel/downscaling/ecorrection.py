@@ -5,7 +5,6 @@ import numpy as np
 import xarray as xr
 import rasterio
 import rasterio.fill
-import pandas as pd
 from sklearn.neighbors import NearestNeighbors
 
 from unimodel.utils.geotools import reproject_xarray, landsea_mask_from_shp
@@ -113,7 +112,6 @@ class Ecorrection():
         for i, neigh_n in enumerate(neigh_needed):
 
             idxs = np.hsplit(neigh_candidates[indices[i]], 2)
-            
             idx_col = idxs[0].reshape((1, len(idxs[0])))[0]
             idx_row = idxs[1].reshape((1, len(idxs[1])))[0]
 
@@ -193,25 +191,18 @@ class Ecorrection():
             hres_2t_mask = reproject_xarray(xr_coarse=var_2t, dst_proj=dst_proj,
                                        shape=shape, ul_corner=ul_corner,
                                        resolution=resolution)
-            
+
             hres_2t_mask.values = rasterio.fill.fillnodata(hres_2t_mask.values,
                                                            hres_2t_mask.values,
                                                            max_search_distance=50)
-        
+
             hres_2t.values = np.where(hres_lsm == 0, hres_2t.values,
                                       hres_2t_mask.values)
-            
+
         corrected_field = hres_2t + hres_gradients * (hres_dem.read(1) - hres_orog)
 
         if hres_2t.units == 'K':
 
             corrected_field = corrected_field - 273.15
 
-        else:
-
-            corrected_field = corrected_field
-
         return corrected_field
-    
-
-    
