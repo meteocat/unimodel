@@ -57,13 +57,14 @@ on :math:`T` és la temperatura, :math:`\\gamma` és el lapse rate, :math:`z_{1k
 donada per un model de terreny digital (dem) amb 1 km de longitud de quadrícula i :math:`z_{3km}`
 l'altitud del model NWP natiu amb una resolució de 3 km.
 
-El lapse rate per a cada pixel es calcula a partir dels píxels els veïns més propers. Aquests 
-pixels són només aquells que estàn a terra. Es calcula utilitzant el mètode dels mínims quadrats.
+El lapse rate per a cada pixel es calcula a partir dels píxels dels veïns més propers. Aquests 
+pixels són només aquells que estàn a terra. Es calcula utilitzant el mètode dels mínims quadrats
+tenint en compte la temperatura i l'altitut.
 
 En aquest exemple importarem i llegirem la simulació de les 00 UTC del model WRF del 24 de febrer 
-del 2022 per a l'horitzó de pronòstic 10. Es carregarà un `xarray.DataArray` per a cada variable 
-`nwp_lsm`, per inicialitzar la classe, i `da_2t` i `da_orog`, com a paràmetres de la funció que aplica
-la correcció :ref:`apply_correction`
+del 2022 per a l'horitzó de pronòstic 10. Es carregarà un `xarray.DataArray` per a cada variable: 
+land_sea_mask, `nwp_lsm`, per inicialitzar la classe, i temperatura, `da_2t` i orografia, `da_orog`, 
+com a paràmetres de la funció que aplica la correcció :ref:`apply_correction`.
 
 .. code-block:: python
 
@@ -78,7 +79,7 @@ la correcció :ref:`apply_correction`
 
         # Definim els paràmetres inicials
         date = datetime(2022, 2, 24, 0)
-        model = 'WRF'
+        model = 'wrf_ecm'
         lead_time = 10
         config = load_config('path-al-config')
         
@@ -86,7 +87,7 @@ la correcció :ref:`apply_correction`
         nwp_file = import_nwp_grib(date, lead_time, model, config)
         
         # Importem el lector a través de la interfície, el 'reader' és 
-        # equivalent a 'read_arome_grib'
+        # equivalent a 'read_wrf_grib_prs'
         reader = unimodel.io.get_reader(model)
         
         # Cridem la funció reader on llegim la variable 'lsm'
@@ -99,7 +100,7 @@ la correcció :ref:`apply_correction`
         da_2t = reader(nwp_file, '2t', model)
         da_orog = reader(nwp_file, 'orog', model)
 
-        ecorr.apply_correction(da_2t, da_orog)
+        da_2t_corrected = ecorr.apply_correction(da_2t, da_orog)
 
 En cas de que volguéssim tenir en compte el land_sea_mask, a la funció :ref:`apply_correction`,
 posaríem `land_sea_mask=True`.
