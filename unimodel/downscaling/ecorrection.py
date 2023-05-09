@@ -204,7 +204,7 @@ class Ecorrection():
                                                            hres_2t_mask.values,
                                                            max_search_distance=50)
 
-            # Fill the new hres coastline (new lsm=1 values) with surrounding data
+            # Fill the new hres data (with new lsm=1 values) with surrounding data
             hres_2t.values = np.where(hres_lsm == 0, hres_2t.values,
                                       hres_2t_mask.values)
 
