@@ -43,6 +43,8 @@ class Ecorrection():
         if not os.path.exists(dem_file):
 
             raise FileNotFoundError('dem_file not found')
+        
+        self.dem_file = dem_file
 
         self.result = None
 
@@ -132,12 +134,11 @@ class Ecorrection():
         return xr_gradients
 
 
-    def apply_correction(self, dem_file: str, da_2t: xr.DataArray,
-                         da_orog: xr.DataArray, landsea_mask: bool = False) -> xr.DataArray:
+    def apply_correction(self, da_2t: xr.DataArray, da_orog: xr.DataArray,
+                         landsea_mask: bool = False) -> xr.DataArray:
         """Apply the elevation correction of 2t field.
 
         Args:
-            dem_file (str): path to hres_dem_file
             da_2t (xarray.DataArray): 2t variable DataArray
             da_orog (xarray.DataArray): orography variable DataArray
             landsea_mask (bool, optional): If True reprojection to destination
@@ -163,7 +164,7 @@ class Ecorrection():
 
         gradients = self.calculate_lapse_rate(da_2t, da_orog)
 
-        hres_dem = rasterio.open(dem_file)
+        hres_dem = rasterio.open(self.dem_file)
         shape = hres_dem.shape
         # ul_corner = (xmin, ymax)
         ul_corner = (hres_dem.transform[2], hres_dem.transform[5])
