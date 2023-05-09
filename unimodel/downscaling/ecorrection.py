@@ -43,7 +43,7 @@ class Ecorrection():
         if not os.path.exists(dem_file):
 
             raise FileNotFoundError('dem_file not found')
-        
+
         self.dem_file = dem_file
 
         self.result = None
@@ -82,9 +82,9 @@ class Ecorrection():
         return neigh_summary
 
     def calculate_lapse_rate(self, da_2t: xr.DataArray, da_orog: xr.DataArray) -> xr.DataArray:
-        """Calculates the lapse rates for each WRF pixel from a mask_file,
-        which includes the nearest neighbors for each pixel. Only pixels
-        with the aid of WRF LANDMASK value of 1 are considered.
+        """Calculates the lapse rates for each WRF pixel selecting the nearest neighbors for 
+        each pixel. Only pixels where  WRF LANDMASK value equals 1 are considered, those that 
+        are over land.
 
         Args:
             neigh_info (dict): Dictionary with info about neighbours.
@@ -121,11 +121,13 @@ class Ecorrection():
             dem_sel = da_orog.values[idx_row, idx_col]
             dem_sel = np.vstack([dem_sel, np.ones(len(dem_sel))]).T
 
+            # Apply the least-squares method
             gradient, residue = np.linalg.lstsq(dem_sel, var_sel, rcond=None)[0]
 
             gradients[neigh_n[1], neigh_n[0]] = gradient
             residues[neigh_n[1], neigh_n[0]] = residue
 
+        # Set
         gradients[gradients < -0.0098] = -0.0098
         gradients[gradients > 0.0294] = 0.0294
 
