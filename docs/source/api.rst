@@ -31,12 +31,14 @@ grib i transformar-los a `xarray.DataArray` amb les coordenades i projecció nat
 Downscaling
 -----------
 
-Aquest mòdul incorpora només dues metodolgies per obtenir un camp a una resolució
-més elevada: interpolació bilinear i del veí més proper. De moment no disposa de
-mètodes que aportin informació a l'hora d'augmentar la resolució, però és una línia
-de treball.
+Aquest mòdul incorpora tres metodolgies per obtenir un camp a una resolució
+més elevada: interpolació bilinear i del veí més proper i la correcció 
+per elevació.
 
 .. automodule:: unimodel.downscaling.interpolation
+    :members:
+
+.. automodule:: unimodel.downscaling.ecorrection
     :members:
 
 Útils
