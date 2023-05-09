@@ -127,7 +127,7 @@ class Ecorrection():
             gradients[neigh_n[1], neigh_n[0]] = gradient
             residues[neigh_n[1], neigh_n[0]] = residue
 
-        # Set
+        # Set upper- and lower-limits
         gradients[gradients < -0.0098] = -0.0098
         gradients[gradients > 0.0294] = 0.0294
 
@@ -188,20 +188,27 @@ class Ecorrection():
 
             hres_lsm = landsea_mask_from_shp(hres_dem)
 
+            # Select only data over land
             var_2t = da_2t * self.land_binary_mask
+            # Data over sea redefine as NoData
             var_2t.attrs['_FillValue'] = 0
 
+            # Reproject data that is only over land  
             hres_2t_mask = reproject_xarray(xr_coarse=var_2t, dst_proj=dst_proj,
-                                       shape=shape, ul_corner=ul_corner,
-                                       resolution=resolution)
+                                            shape=shape, ul_corner=ul_corner,
+                                            resolution=resolution)
 
+            # Fill NoData (sea) with the surrounding data (land),
+            # up to 50 pixels (from the coastline)
             hres_2t_mask.values = rasterio.fill.fillnodata(hres_2t_mask.values,
                                                            hres_2t_mask.values,
                                                            max_search_distance=50)
 
+            # Fill the new hres coastline (new lsm=1 values) with surrounding data
             hres_2t.values = np.where(hres_lsm == 0, hres_2t.values,
                                       hres_2t_mask.values)
 
+        # Apply correction
         corrected_field = hres_2t + hres_gradients * (hres_dem.read(1) - hres_orog)
 
         if hres_2t.units == 'K':
