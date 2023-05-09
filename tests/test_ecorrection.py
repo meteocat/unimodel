@@ -92,8 +92,8 @@ class TestEcorrection(unittest.TestCase):
         """Tests apply correction function when lsm=True
         """
         ecor = Ecorrection(self.da_var[0], self.dem_file)
-        var_correction = ecor.apply_correction(self.dem_file, self.da_var[1],
-                                                self.da_var[2], landsea_mask=True)
+        var_correction = ecor.apply_correction(self.da_var[1], 
+                                               self.da_var[2], landsea_mask=True)
 
         self.assertAlmostEqual(float(var_correction[1105,676].values), 9.6675980)
 
@@ -104,7 +104,7 @@ class TestEcorrection(unittest.TestCase):
         with self.assertRaises(ValueError) as err:
 
             ecor = Ecorrection(self.da_var[0], self.dem_file)
-            ecor.apply_correction(self.dem_file, self.da_var[2],self.da_var[2])
+            ecor.apply_correction(self.da_var[2],self.da_var[2])
 
         self.assertEqual(err.exception.args[0], '2t variable does not exist')
 
@@ -115,6 +115,6 @@ class TestEcorrection(unittest.TestCase):
         with self.assertRaises(ValueError) as err:
 
             ecor = Ecorrection(self.da_var[0], self.dem_file)
-            ecor.apply_correction(self.dem_file, self.da_var[1], self.da_var[1])
+            ecor.apply_correction(self.da_var[1], self.da_var[1])
 
         self.assertEqual(err.exception.args[0], 'orography variable does not exist')
