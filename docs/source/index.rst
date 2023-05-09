@@ -27,6 +27,7 @@ l'`xarray.DataArray` pot incloure més d'un horitzó de pronòstic i més d'un m
 
    installation
    howto
+   downscaling
    api
    vcontrol
 
