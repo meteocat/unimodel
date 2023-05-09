@@ -78,11 +78,11 @@ A continuació indiquem què ha de tenir, com a mínim, aquest fitxer .json.
 
 El ``lead_time_digits`` és un paràmetre obligatori només per a aquells fitxers que tinguin l'argument ``{lt}`` al camp ``src`` del model.
 
-Exemples
---------
+Exemples per llegir fitxers
+---------------------------
 
-En aquest apartat mostrem alguns exemples amb l'execució de diverses funcions que inclou el
-paquet **unimodel**.
+En aquest apartat mostrem alguns exemples de com llegir fitxers amb l'execució de diverses funcions 
+que inclou el paquet **unimodel**.
 
 Definim primer el fitxer de configuració, en el qual inclourem dos models, l'Arome i l'Arpege.
 
@@ -188,51 +188,11 @@ els unirem en un sol xarray.DataArray i ho exportarem a netcdf.
     # I si ho volguéssim exportar a netcdf només ens cal fer el següent:
     model_data.to_netcdf('fitxer-de-sortida', engine='netcdf4')
 
-
-Exemple 3: reprojeccions i interpolacions
-*****************************************
-
-En aquest exemple suposarem que ja tenim carregat un `xarray.DataArray` a la variable `nwp_data`.
-
-Comencem primer amb dues interpolacions (bilinear i nearest) que no impliquen una reprojecció,
-sinó que es treballa en la projecció de l'`xarray.DataArray` d'entrada. Això s'aconsegueix no
-informant de la projecció a les funcions :py:func:`unimodel.downscaling.interpolation.bilinear` i
-:py:func:`unimodel.downscaling.interpolation.nearest`.
-
-.. code-block:: python
-    
-    from unimodel.downscaling.interpolation import bilinear, nearest
-
-    rep_data = bilinear(nwp_data, config['corner_ul'], config['grid_shape'],
-                        config['grid_res'])
-
-    rep_data = nearest(nwp_data, config['corner_ul'], config['grid_shape'],
-                       config['grid_res'])
-
-Repetim l'exemple anterior, però en aquest cas, informant una projecció. Així, a part de la
-interpolació es farà una reprojecció mitjançant una de les dues metodologies que indiquem,
-bilinear o nearest.
-
-.. code-block:: python
-    
-    from unimodel.downscaling.interpolation import bilinear, nearest
-
-    rep_data = bilinear(nwp_data, config['corner_ul'], config['grid_shape'],
-                        config['grid_res'], 'epsg:4326')
-
-    rep_data = nearest(nwp_data, config['corner_ul'], config['grid_shape'],
-                       config['grid_res'], 'epsg:4326')
-
-Les funcions :py:func:`unimodel.downscaling.interpolation.bilinear` i
-:py:func:`unimodel.downscaling.interpolation.nearest` no deixen de ser un cas concret de 
-l'aplicació de la funció :py:func:`unimodel.utils.geotools.reproject_xarray`.
-
 Exemple 4: script obtenció PME
 ******************************
 
 El darrer exemple és una prova per obtenir tots els models del Poor Man's Ensemble en
-un sol `xarray.DataArray`. L'exemple és similar a :ref:`exemple-2`, però amb més models i tots
-els horitzons de pronòstic. S'utilitza també la llibreria `dask <https://www.dask.org/>`_.
+un sol `xarray.DataArray`. S'utilitza també la llibreria `dask <https://www.dask.org/>`_.
 
 .. code-block:: python
 
