@@ -41,6 +41,8 @@ per elevació.
 .. automodule:: unimodel.downscaling.ecorrection
     :members:
 
+.. _api-downscaling:
+
 Útils
 -----
 

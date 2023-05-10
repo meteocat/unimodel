@@ -43,7 +43,7 @@ Exemple 2: Correcció per elevació
 *********************************
 
 En aquest apartat es mostra el funcionament de la classe 
-:py:class:`unimodel.downscaling.ecorrection.Ecorrection` del mòdul :ref:`Downscaling` 
+:py:class:`unimodel.downscaling.ecorrection.Ecorrection` del mòdul :ref:`api-downscaling` 
 del paquet **unimodel**.
 
 La idea de aquesta funció és aplicar una correcció per elevació al camp de la temperatura.
