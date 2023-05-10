@@ -13,6 +13,7 @@ class TestEcorrection(unittest.TestCase):
     """
     dem_file = 'tests/data/test_data/hres_dem_25831.tif'
     dem_file_wrong = 'tests/data/hres_dem_25831.tif'
+    lsm_shp = 'tests/data/coastline/coastline_weurope'
 
     with open('tests/data/test_data/var_xarray.pkl', 'rb') as file:
 
@@ -88,12 +89,12 @@ class TestEcorrection(unittest.TestCase):
         self.assertAlmostEqual(float(var_correction[162,72].values), 0.0500952)
 
 
-    def test_apply_correction_lsm_true(self):
+    def test_apply_correction_lsm(self):
         """Tests apply correction function when lsm=True
         """
         ecor = Ecorrection(self.da_var[0], self.dem_file)
         var_correction = ecor.apply_correction(self.da_var[1], 
-                                               self.da_var[2], landsea_mask=True)
+                                               self.da_var[2], landsea_mask=self.lsm_shp)
 
         self.assertAlmostEqual(float(var_correction[1105,676].values), 9.6675980)
 
