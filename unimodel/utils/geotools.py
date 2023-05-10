@@ -291,7 +291,7 @@ def __get_geometry_from_shp(shapefile_path) -> pd.DataFrame:
     return df_geometry
 
 
-def landsea_mask_from_shp(hres_dem: xarray) -> np.array:
+def landsea_mask_from_shp(hres_dem: xarray.DataArray, coastline_file: str) -> np.array:
     """"Rasterize a shapefile based on metadata from an xarray
 
     Args:
@@ -303,7 +303,7 @@ def landsea_mask_from_shp(hres_dem: xarray) -> np.array:
         np.array: Rasterized shapefile
     """
 
-    coastline_shp = __get_geometry_from_shp('tests/data/coastline/coastline_weurope')
+    coastline_shp = __get_geometry_from_shp(coastline_file)
 
     hres_lsm = rasterio.features.rasterize(coastline_shp['geometry'],
                                            out_shape=hres_dem.shape,
