@@ -137,7 +137,7 @@ class Ecorrection():
 
 
     def apply_correction(self, da_2t: xr.DataArray, da_orog: xr.DataArray,
-                         landsea_mask: bool = False) -> xr.DataArray:
+                         landsea_mask=None) -> xr.DataArray:
         """Apply the elevation correction of 2t field.
 
         Args:
@@ -184,9 +184,9 @@ class Ecorrection():
                                           shape=shape, ul_corner=ul_corner,
                                           resolution=resolution)
 
-        if landsea_mask:
+        if landsea_mask is not None:
 
-            hres_lsm = landsea_mask_from_shp(hres_dem)
+            hres_lsm = landsea_mask_from_shp(hres_dem, landsea_mask)
 
             # Select only data over land
             var_2t = da_2t * self.land_binary_mask
