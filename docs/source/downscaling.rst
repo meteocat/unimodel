@@ -43,7 +43,7 @@ Exemple 2: Correcció per elevació
 *********************************
 
 En aquest apartat es mostra el funcionament de la classe :py:class:`Ecorrection` 
-del mòdul :py:module:`Downscaling` del paquet **unimodel**.
+del mòdul :py:mod:`Downscaling` del paquet **unimodel**.
 
 La idea de aquesta funció és aplicar una correcció per elevació al camp de la temperatura.
 Per això, s'aplica un lapse rate de temperatura a les diferències d'altitud entre 
@@ -64,7 +64,7 @@ tenint en compte la temperatura i l'altitut.
 En aquest exemple importarem i llegirem la simulació de les 00 UTC del model WRF del 24 de febrer 
 del 2022 per a l'horitzó de pronòstic 10. Es carregarà un `xarray.DataArray` per a cada variable: 
 land_sea_mask, `nwp_lsm`, per inicialitzar la classe, i temperatura, `da_2t` i orografia, `da_orog`, 
-com a paràmetres de la funció que aplica la correcció :py:function:`apply_correction`.
+com a paràmetres de la funció que aplica la correcció :py:func:`apply_correction`.
 
 .. code-block:: python
 
@@ -102,5 +102,5 @@ com a paràmetres de la funció que aplica la correcció :py:function:`apply_cor
 
         da_2t_corrected = ecorr.apply_correction(da_2t, da_orog)
 
-En cas de que volguéssim tenir en compte el land_sea_mask, a la funció :py:function:`apply_correction`,
+En cas de que volguéssim tenir en compte el land_sea_mask, a la funció :py:func:`apply_correction`,
 posaríem `land_sea_mask=True`.
