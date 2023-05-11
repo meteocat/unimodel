@@ -29,6 +29,8 @@ class Ecorrection():
 
             raise ValueError("'land_binary_mask' dataArray does not exist")
 
+        # Values greater than 0.5 are considered land
+        land_binary_mask.data = np.where(land_binary_mask.data > 0.5, 1, 0)
         self.land_binary_mask = land_binary_mask
 
         neigh_info = self.__calculate_neighbours(land_binary_mask)
@@ -100,7 +102,7 @@ class Ecorrection():
 
             raise ValueError('2t variable does not exist')
 
-        if da_orog.attrs['GRIB_shortName'] != 'orog':
+        if da_orog.attrs['GRIB_shortName'] not in ['orog', 'mterh']:
 
             raise ValueError('orography variable does not exist')
 
@@ -137,16 +139,15 @@ class Ecorrection():
 
 
     def apply_correction(self, da_2t: xr.DataArray, da_orog: xr.DataArray,
-                         landsea_mask=None) -> xr.DataArray:
+                         lsm_shp: str=None) -> xr.DataArray:
         """Apply the elevation correction of 2t field.
 
         Args:
             da_2t (xarray.DataArray): 2t variable DataArray
             da_orog (xarray.DataArray): orography variable DataArray
-            landsea_mask (bool, optional): If True reprojection to destination
-                                           resolution is done accounting for
-                                           landsea mask values. Default is
-                                           False.
+            lsm_shp (str, optional): If not None reprojection to destination
+                                        resolution is done accounting for
+                                        landsea mask values. Defaults to None.
 
         Raises:
             ValueError: If '2t' DataArray does not exist
@@ -160,7 +161,7 @@ class Ecorrection():
 
             raise ValueError('2t variable does not exist')
 
-        if da_orog.attrs['GRIB_shortName'] != 'orog':
+        if da_orog.attrs['GRIB_shortName'] not in ['orog', 'mterh']:
 
             raise ValueError('orography variable does not exist')
 
@@ -184,9 +185,9 @@ class Ecorrection():
                                           shape=shape, ul_corner=ul_corner,
                                           resolution=resolution)
 
-        if landsea_mask is not None:
+        if lsm_shp is not None:
 
-            hres_lsm = landsea_mask_from_shp(hres_dem, landsea_mask)
+            hres_lsm = landsea_mask_from_shp(hres_dem, lsm_shp)
 
             # Select only data over land
             var_2t = da_2t * self.land_binary_mask
@@ -205,8 +206,8 @@ class Ecorrection():
                                                            max_search_distance=50)
 
             # Fill the new hres data (with new lsm=1 values) with surrounding data
-            hres_2t.values = np.where(hres_lsm == 0, hres_2t.values,
-                                      hres_2t_mask.values)
+            hres_2t.values = np.where(hres_lsm == 1, hres_2t_mask.values,
+                                      hres_2t.values)
 
         # Apply correction
         corrected_field = hres_2t + hres_gradients * (hres_dem.read(1) - hres_orog)
