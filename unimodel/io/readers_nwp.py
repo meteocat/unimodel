@@ -289,8 +289,14 @@ def read_arome_grib(grib_file: str, variable: str,
     # Rename coordinates for further reprojection
     grib_data = grib_data.rename({'longitude': 'x', 'latitude': 'y'})
 
+    grib_data = grib_data.assign_coords({'x': np.round(grib_data.x.data, 2),
+                                         'y': np.round(grib_data.y.data, 2)})
+
     # Add model name to attributes
     grib_data.attrs['model'] = model
+ 
+    # Cut out xarray
+    grib_data = grib_data.sel(y=slice(44.005, 39.0), x=slice(-1.5, 6.005))
 
     return grib_data
 
@@ -333,9 +339,14 @@ def read_arpege_grib(grib_file: str, variable: str,
 
     # Rename coordinates for further reprojection
     grib_data = grib_data.rename({'longitude': 'x', 'latitude': 'y'})
+    grib_data = grib_data.assign_coords({'x': np.round(grib_data.x.data, 1),
+                                         'y': np.round(grib_data.y.data, 1)})
 
     # Add model name to attributes
     grib_data.attrs['model'] = model
+
+    # Cut out xarray
+    grib_data = grib_data.sel(y=slice(44.05, 38.95), x=slice(-1.55, 6.05))
 
     return grib_data
 
