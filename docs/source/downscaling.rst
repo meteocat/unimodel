@@ -105,7 +105,7 @@ com a paràmetres de la funció que aplica la correcció
 
 En cas de que volguéssim tenir en compte el land_sea_mask, a la funció 
 :py:func:`unimodel.downscaling.ecorrection.Ecorrection.apply_correction`, 
-posaríem `land_sea_mask=path-a-la-carpeta-shp`:
+posaríem `lsm_shp=path-a-la-carpeta-shp`:
 
 .. code-block:: python
 
@@ -142,4 +142,4 @@ posaríem `land_sea_mask=path-a-la-carpeta-shp`:
         da_2t = reader(nwp_file, '2t', model)
         da_orog = reader(nwp_file, 'orog', model)
 
-        da_2t_corrected = ecorr.apply_correction(da_2t, da_orog, land_sea_mask=land_sea_mask_shp)
+        da_2t_corrected = ecorr.apply_correction(da_2t, da_orog, lsm_shp=land_sea_mask_shp)
