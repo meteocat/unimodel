@@ -5,6 +5,7 @@ import re
 import numpy as np
 import pyproj
 import xarray
+import pickle
 
 from unimodel.utils.geotools import proj4_from_grib
 
@@ -133,8 +134,11 @@ def _get_icon_metadata(xarray_var: xarray.DataArray) -> dict:
     Returns:
         dict: Coordinate reference system.
     """
-    projparams = proj4_from_grib(xarray_var)
-    crs_model = pyproj.crs.CRS.from_dict(projparams)
+    # projparams = proj4_from_grib(xarray_var)
+    # crs_model = pyproj.crs.CRS.from_dict(projparams)
+
+    with open('crs_icon.pkl', 'rb') as f:
+        crs_model = pickle.load(f)
 
     return {'crs': crs_model}
 
@@ -366,7 +370,7 @@ def _get_arpege_metadata(arpege_data: xarray.DataArray) -> dict:
     return {'crs': crs_model}
 
 
-def read_ecmwf_hres_grib(file: str, variable: str, model: str):
+def read_ecmwf_hres_grib(grib_file: str, variable: str, model: str):
     """Reads an ECMWF-HRES grib file and transforms it into an
     xarray.DataArray.
 
@@ -379,7 +383,7 @@ def read_ecmwf_hres_grib(file: str, variable: str, model: str):
         xarray: ECMWF-HRES grib file data.
     """
     grib_data = xarray.open_dataarray(
-        file, engine='cfgrib',
+        grib_file, engine='cfgrib',
         backend_kwargs={'filter_by_keys': {'shortName': variable},
                         'indexpath': ''})
 
@@ -415,7 +419,7 @@ def _get_ecmwf_hres_metadata(xarray_var):
     return {'crs': crs_model}
 
 
-def read_unified_model_grib(file: str, variable: str, model: str):
+def read_unified_model_grib(grib_file: str, variable: str, model: str):
     """Reads an Unified Model grib file and transforms it into an
     xarray.DataArray.
 
@@ -427,10 +431,16 @@ def read_unified_model_grib(file: str, variable: str, model: str):
     Returns:
         xarray: Unified Model grib file data.
     """
+    backend_kwargs = {'filter_by_keys': {'shortName': variable},
+                          'indexpath': ''}
+    
+    if variable == '2t':
+
+        backend_kwargs = {'filter_by_keys': {'stepType': 'instant', 'shortName': variable},
+                          'indexpath': ''}
     grib_data = xarray.open_dataarray(
-        file, engine='cfgrib',
-        backend_kwargs={'filter_by_keys': {'shortName': variable},
-                        'indexpath': ''})
+        grib_file, engine='cfgrib',
+        backend_kwargs=backend_kwargs)
 
     geographics = _get_unified_model_metadata(grib_data)
     grib_data = grib_data.rio.write_crs(geographics['crs'])
