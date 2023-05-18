@@ -28,7 +28,7 @@ def reproject_xarray(xr_coarse: xarray.DataArray, dst_proj: str, shape: tuple,
         shape (tuple): destination grid's shape
         ul_corner (tuple): destination grid's upper left corner
         resolution (tuple): destination grid's resolution in (x,y) directions
-        resampling (Resampling, optional): Resampling method used for 
+        resampling (Resampling, optional): Resampling method used for
             interpolation processes. Defaults to Resampling.cubic_spline
 
     Returns:
@@ -252,13 +252,16 @@ def proj4_from_grib(ds_grib: xarray.DataArray) -> dict:
 
     return projparams
 
-def __get_geometry_from_shp(shapefile_path) -> pd.DataFrame:
-    """Function for getting geometry from shapefile
+
+def __get_geometry_from_shp(shapefile_path: str) -> pd.DataFrame:
+    """Gets geometry from shapefile.
+
+    Args:
+        shapefile_path (str): Path to a shape file.
 
     Returns:
         pd.DataFrame: dataframe with Shapely geometry objects
     """
-
     # Open the shapefile in read mode
     with shapefile.Reader(shapefile_path) as shp:
 
@@ -286,12 +289,14 @@ def __get_geometry_from_shp(shapefile_path) -> pd.DataFrame:
     df_geometry = pd.json_normalize(feature_collection["features"])
 
     # Convert the "geometry" column to Shapely geometry objects
-    df_geometry["geometry"] = df_geometry["geometry"].apply(lambda x: shape(json.loads(x)))
+    df_geometry["geometry"] = df_geometry["geometry"].apply(
+        lambda x: shape(json.loads(x)))
 
     return df_geometry
 
 
-def landsea_mask_from_shp(hres_dem: xarray.DataArray, coastline_file: str) -> np.array:
+def landsea_mask_from_shp(hres_dem: xarray.DataArray,
+                          coastline_file: str) -> np.array:
     """"Rasterize a shapefile based on metadata from an xarray
 
     Args:
