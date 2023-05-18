@@ -51,7 +51,8 @@ class Ecorrection():
         self.result = None
 
 
-    def __calculate_neighbours(self, land_binary_mask: xr.DataArray, neighbours: int=64) -> dict:
+    def __calculate_neighbours(self, land_binary_mask: xr.DataArray, 
+                               neighbours: int=64) -> dict:
         """Function for calculating the nearest neighbours of points to be used in a linear
         regression fitting. Neighbours are selected from those points which 
         landsea_mask is 1.
@@ -97,14 +98,6 @@ class Ecorrection():
             numpy.arrays: Two arrays with gradients and residues from linear
             regression calculations.
         """
-
-        if da_2t.attrs['GRIB_shortName'] != '2t':
-
-            raise ValueError('2t variable does not exist')
-
-        if da_orog.attrs['GRIB_shortName'] not in ['orog', 'mterh', 'h', 'HSURF']:
-
-            raise ValueError('orography variable does not exist')
 
         indices = self.neigh_info['indices']
         neigh_candidates = self.neigh_info['neigh_candidates']
@@ -163,7 +156,8 @@ class Ecorrection():
 
         if da_orog.attrs['GRIB_shortName'] not in ['orog', 'mterh', 'h', 'HSURF']:
 
-            raise ValueError('orography variable does not exist')
+            raise ValueError("orography variable names supported: 'orog', 'mterh', " 
+                             "'h' and 'HSURF'")
 
         gradients = self.calculate_lapse_rate(da_2t, da_orog)
 
