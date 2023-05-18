@@ -5,7 +5,6 @@ import re
 import numpy as np
 import pyproj
 import xarray
-import pickle
 
 from unimodel.utils.geotools import proj4_from_grib
 
@@ -97,11 +96,12 @@ def _get_wrf_prs_metadata(xarray_var: xarray.DataArray) -> dict:
             'x_size': n_x, 'y_size': n_y}
 
 
-def read_icon_grib(grib_file: str, variable: str, model: str) -> xarray.DataArray:
-    """Read wrf variable chosen in a ICON grib file
+def read_icon_grib(grib_file: str, variable: str,
+                   model: str) -> xarray.DataArray:
+    """Read variable chosen in a ICON grib file
 
     Args:
-        grib_file (string): Path to a WRF grib file.
+        grib_file (string): Path to an ICON grib file.
         variable (string): Variable to extract.
         model (str): Model to be read.
 
@@ -122,16 +122,14 @@ def read_icon_grib(grib_file: str, variable: str, model: str) -> xarray.DataArra
     # Add model name to attributes
     grib_data.attrs['model'] = model
 
-    grib_data = grib_data.sel(y=slice(33.9687500, 47.0312500), x=slice(-12.0312500, 9.0312500))
-
     return grib_data
 
 
 def _get_icon_metadata(xarray_var: xarray.DataArray) -> dict:
-    """Get projection of an Icon xarray.
+    """Gets projection of an ICON xarray.
 
     Args:
-        xarray_var (xarray): Icon grib data.
+        xarray_var (xarray): ICON grib data.
 
     Returns:
         dict: Coordinate reference system.
@@ -246,7 +244,7 @@ def read_bolam_grib(grib_file: str, variable: str,
 
 
 def _get_bolam_metadata(bolam_data: xarray.DataArray) -> dict:
-    """Get projection and geographic extent of a Bolam xarray.
+    """Gets projection and geographic extent of a Bolam xarray.
 
     Args:
         xarray_var (xarray): Bolam grib data.
@@ -297,7 +295,7 @@ def read_arome_grib(grib_file: str, variable: str,
 
     # Add model name to attributes
     grib_data.attrs['model'] = model
- 
+
     # Cut out xarray
     grib_data = grib_data.sel(y=slice(44.005, 39.0), x=slice(-1.5, 6.005))
 
@@ -305,7 +303,7 @@ def read_arome_grib(grib_file: str, variable: str,
 
 
 def _get_arome_metadata(arome_data: xarray.DataArray) -> dict:
-    """Get projection of an AROME xarray.
+    """Gets projection of an AROME xarray.
 
     Args:
         xarray_var (xarray): AROME grib data.
@@ -431,12 +429,11 @@ def read_unified_model_grib(grib_file: str, variable: str, model: str):
         xarray: Unified Model grib file data.
     """
     backend_kwargs = {'filter_by_keys': {'shortName': variable},
-                          'indexpath': ''}
-    
-    if variable == '2t':
+                      'indexpath': ''}
 
-        backend_kwargs = {'filter_by_keys': {'stepType': 'instant', 'shortName': variable},
-                          'indexpath': ''}
+    if variable == '2t':
+        backend_kwargs['filter_by_keys']['stepType'] = 'instant'
+
     grib_data = xarray.open_dataarray(
         grib_file, engine='cfgrib',
         backend_kwargs=backend_kwargs)
