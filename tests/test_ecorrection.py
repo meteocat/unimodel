@@ -11,11 +11,11 @@ from unimodel.downscaling.ecorrection import Ecorrection
 class TestEcorrection(unittest.TestCase):
     """Test function to apply elevation correction to a given xarray
     """
-    dem_file = 'tests/data/test_data/hres_dem_25831.tif'
-    dem_file_wrong = 'tests/data/hres_dem_25831.tif'
+    dem_file = 'tests/data/hres_dem_25831.tif'
+    dem_file_wrong = 'tests/hres_dem_25831.tif'
     lsm_shp = 'tests/data/coastline/coastline_weurope'
 
-    with open('tests/data/test_data/var_xarray.pkl', 'rb') as file:
+    with open('tests/data/var_xarray.pkl', 'rb') as file:
 
         da_var = pickle.load(file)
         file.close()
@@ -35,7 +35,8 @@ class TestEcorrection(unittest.TestCase):
 
             Ecorrection(self.da_var[1], self.dem_file)
 
-        self.assertEqual(err.exception.args[0], "'land_binary_mask' dataArray does not exist")
+        self.assertEqual(err.exception.args[0], "'land_binary_mask' dataArray "
+                         "does not exist")
 
 
     def test_init_not_dem_file(self):
@@ -54,39 +55,17 @@ class TestEcorrection(unittest.TestCase):
         ecor = Ecorrection(self.da_var[0], self.dem_file)
         lapse_rate = ecor.calculate_lapse_rate(self.da_var[1], self.da_var[2])
 
-        self.assertAlmostEqual(float(lapse_rate[162,72].values), -0.0017771)
+        self.assertAlmostEqual(float(lapse_rate[162, 72].values), -0.0017771)
         self.assertFalse(np.any(lapse_rate.values > 0.0294))
         self.assertFalse(np.any(lapse_rate.values < -0.0098))
-
-
-    def test_lapse_rate_not_2t_dataarray(self):
-        """Datarray without the desired variable (2t)
-        """
-        with self.assertRaises(ValueError) as err:
-
-            ecor = Ecorrection(self.da_var[0], self.dem_file)
-            ecor.calculate_lapse_rate(self.da_var[2], self.da_var[2])
-
-        self.assertEqual(err.exception.args[0], '2t variable does not exist')
-
-
-    def test_lapse_rate_not_orog_dataarray(self):
-        """Datarray without the desired variable (orography)
-        """
-        with self.assertRaises(ValueError) as err:
-
-            ecor = Ecorrection(self.da_var[0], self.dem_file)
-            ecor.calculate_lapse_rate(self.da_var[1], self.da_var[1])
-
-        self.assertEqual(err.exception.args[0], 'orography variable does not exist')
 
     def test_apply_correction(self):
         """Tests apply correction function
         """
         ecor = Ecorrection(self.da_var[0], self.dem_file)
-        var_correction = ecor.apply_correction(self.dem_file, self.da_var[1], self.da_var[2])
+        var_correction = ecor.apply_correction(self.da_var[1], self.da_var[2])
         
-        self.assertAlmostEqual(float(var_correction[162,72].values), 0.0500952)
+        self.assertAlmostEqual(float(var_correction[162, 72].values), 0.0500952)
 
 
     def test_apply_correction_lsm(self):
@@ -94,9 +73,9 @@ class TestEcorrection(unittest.TestCase):
         """
         ecor = Ecorrection(self.da_var[0], self.dem_file)
         var_correction = ecor.apply_correction(self.da_var[1], 
-                                               self.da_var[2], landsea_mask=self.lsm_shp)
+                                               self.da_var[2], lsm_shp=self.lsm_shp)
 
-        self.assertAlmostEqual(float(var_correction[1105,676].values), 9.6675980)
+        self.assertAlmostEqual(float(var_correction[1105, 676].values), 9.6675980)
 
         
     def test_apply_correction_not_2t_dataarray(self):
@@ -105,7 +84,7 @@ class TestEcorrection(unittest.TestCase):
         with self.assertRaises(ValueError) as err:
 
             ecor = Ecorrection(self.da_var[0], self.dem_file)
-            ecor.apply_correction(self.da_var[2],self.da_var[2])
+            ecor.apply_correction(self.da_var[2], self.da_var[2])
 
         self.assertEqual(err.exception.args[0], '2t variable does not exist')
 
@@ -118,4 +97,5 @@ class TestEcorrection(unittest.TestCase):
             ecor = Ecorrection(self.da_var[0], self.dem_file)
             ecor.apply_correction(self.da_var[1], self.da_var[1])
 
-        self.assertEqual(err.exception.args[0], 'orography variable does not exist')
+        self.assertEqual(err.exception.args[0], "orography variable names supported: 'orog', "
+                         "'mterh', 'h' and 'HSURF'")
