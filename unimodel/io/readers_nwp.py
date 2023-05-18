@@ -97,7 +97,7 @@ def _get_wrf_prs_metadata(xarray_var: xarray.DataArray) -> dict:
             'x_size': n_x, 'y_size': n_y}
 
 
-def read_icon_grib(file: str, variable: str, model: str) -> xarray.DataArray:
+def read_icon_grib(grib_file: str, variable: str, model: str) -> xarray.DataArray:
     """Read wrf variable chosen in a ICON grib file
 
     Args:
@@ -109,7 +109,7 @@ def read_icon_grib(file: str, variable: str, model: str) -> xarray.DataArray:
         xarray: Icon grib file data.
     """
     grib_data = xarray.open_dataarray(
-        file, engine='cfgrib',
+        grib_file, engine='cfgrib',
         backend_kwargs={'filter_by_keys': {'shortName': variable},
                         'indexpath': ''})
 
@@ -121,6 +121,8 @@ def read_icon_grib(file: str, variable: str, model: str) -> xarray.DataArray:
 
     # Add model name to attributes
     grib_data.attrs['model'] = model
+
+    grib_data = grib_data.sel(y=slice(33.9687500, 47.0312500), x=slice(-12.0312500, 9.0312500))
 
     return grib_data
 
