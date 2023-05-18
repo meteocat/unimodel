@@ -1,8 +1,16 @@
 """Module to deal with projection features.
 """
+import json
+
 import numpy as np
-import rioxarray
+import pandas as pd
 import xarray
+
+import shapefile
+from shapely.geometry import shape
+
+import rioxarray
+import rasterio
 from rasterio import Affine
 from rasterio.warp import Resampling
 
@@ -16,17 +24,20 @@ def reproject_xarray(xr_coarse: xarray.DataArray, dst_proj: str, shape: tuple,
 
     Args:
         xr_coarse (xarray): xarray to reproject.
-        xr_hres (xarray): xarray with characteristics to reproject to.
-        resampling (Resampling, optional): Resampling method used for
-            interpolation processes. Defaults to Resampling.cubic_spline.
+        dst_proj (str): destination grid's projection
+        shape (tuple): destination grid's shape
+        ul_corner (tuple): destination grid's upper left corner
+        resolution (tuple): destination grid's resolution in (x,y) directions
+        resampling (Resampling, optional): Resampling method used for 
+            interpolation processes. Defaults to Resampling.cubic_spline
 
     Returns:
-        xarray: Reprojected xarray.
+        xarray: Reprojected xarray
     """
 
     transform = Affine.from_gdal(ul_corner[0], resolution[0], 0,
                                  ul_corner[1], 0, -resolution[1])
-    xr_reproj = xr_coarse.rio.reproject(dst_proj, shape=(shape[1], shape[0]),
+    xr_reproj = xr_coarse.rio.reproject(dst_proj, shape=(shape[0], shape[1]),
                                         resampling=resampling,
                                         transform=transform)
 
@@ -240,3 +251,63 @@ def proj4_from_grib(ds_grib: xarray.DataArray) -> dict:
         projparams = None
 
     return projparams
+
+def __get_geometry_from_shp(shapefile_path) -> pd.DataFrame:
+    """Function for getting geometry from shapefile
+
+    Returns:
+        pd.DataFrame: dataframe with Shapely geometry objects
+    """
+
+    # Open the shapefile in read mode
+    with shapefile.Reader(shapefile_path) as shp:
+
+        # Get the shapes from the shapefile
+        shapes = shp.shapes()
+
+        # Create a list to store the geometries
+        geometries = []
+
+        # Loop through each shape and extract its geometry
+        for shp_shape in shapes:
+
+            # Extract the geometry from the shape
+            geometry = shape(shp_shape.__geo_interface__)
+            geometries.append({"geometry": geometry})
+
+        # Convert the list of geometries to a GeoJSON-like dict
+        feature_collection = {"type": "FeatureCollection", "features": []}
+        for feature in geometries:
+            geometry = feature["geometry"]
+            feature_dict = {"geometry": json.dumps(geometry.__geo_interface__)}
+            feature_collection["features"].append(feature_dict)
+
+    # Convert the GeoJSON-like dict to a pandas dataframe
+    df_geometry = pd.json_normalize(feature_collection["features"])
+
+    # Convert the "geometry" column to Shapely geometry objects
+    df_geometry["geometry"] = df_geometry["geometry"].apply(lambda x: shape(json.loads(x)))
+
+    return df_geometry
+
+
+def landsea_mask_from_shp(hres_dem: xarray.DataArray, coastline_file: str) -> np.array:
+    """"Rasterize a shapefile based on metadata from an xarray
+
+    Args:
+        coastline_shp (pd.DataFrame): Shapefile with high
+            resolution coast line or land sea limits
+        hres_dem (xarray): xarray to get metadata from
+
+    Returns:
+        np.array: Rasterized shapefile
+    """
+
+    coastline_shp = __get_geometry_from_shp(coastline_file)
+
+    hres_lsm = rasterio.features.rasterize(coastline_shp['geometry'],
+                                           out_shape=hres_dem.shape,
+                                           transform=hres_dem.transform,
+                                           all_touched=True)
+
+    return hres_lsm
