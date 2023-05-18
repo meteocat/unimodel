@@ -1,6 +1,11 @@
 Control de versions
 ===================
 
+v0.2.0 - 19/05/2023
+-------------------
+
+- Incorporació d'una metodologia per a obtenir un refinament del camp de temperatura :py:func:`unimodel.downscaling.ecorrection.Ecorrection`. Un exemple d'implementació d'aquesta nova funció es pot torbar a :ref:`downscaling-ecorr`.
+- Correcció bug a l'hora de fer la reprojecció, el shape es passava com (columnes, files) i ara s'ha corregit a (files, columnes). Afecta a la reprojecció de sortida.
 
 v0.1.2 - 11/04/2023
 -------------------

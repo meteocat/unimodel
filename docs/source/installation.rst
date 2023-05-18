@@ -14,6 +14,9 @@ O bé, en un entorn conda ja creat, tenir en compte que el paquet **unimodel** n
 - pyproj
 - rioxarray
 - xarray
+- shapely
+- pyshp
+- scikit-learn
 
 Per ara, aquest paquet es pot instal·lar de la forma tradicional i a través de pip.
 

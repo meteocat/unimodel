@@ -39,33 +39,40 @@ Les funcions :py:func:`unimodel.downscaling.interpolation.bilinear` i
 :py:func:`unimodel.downscaling.interpolation.nearest` no deixen de ser un cas concret de 
 l'aplicació de la funció :py:func:`unimodel.utils.geotools.reproject_xarray`.
 
-Exemple 2: Correcció per elevació
+.. _downscaling-ecorr:
+
+Exemple 2: correcció per elevació
 *********************************
 
 En aquest apartat es mostra el funcionament de la classe 
 :py:class:`unimodel.downscaling.ecorrection.Ecorrection` del mòdul :ref:`api-downscaling` 
 del paquet **unimodel**.
 
-La idea de aquesta funció és aplicar una correcció per elevació al camp de la temperatura.
+La idea d'aquesta funció és aplicar una correcció per elevació al camp de temperatura.
 Per això, s'aplica un lapse rate de temperatura a les diferències d'altitud entre 
-l'orografia nativa del NWP i la orografia donada per un model de terreny digital (dem) 
+l'orografia nativa del NWP i l'orografia donada per un model de terreny digital (dem) 
 seguint la següent equació:
 
 .. math:: T_{1km} = T_{3km} - \gamma\cdot(z_{1km} - z_{3km})
 
-on :math:`T` és la temperatura, :math:`\gamma` és el lapse rate, :math:`z_{1km}` és l'altitut
+on :math:`T` és la temperatura, :math:`\gamma` és el lapse rate, :math:`z_{1km}` és l'altitud
 donada per un model de terreny digital (dem) amb 1 km de longitud de quadrícula i :math:`z_{3km}`
 l'altitud del model NWP natiu amb una resolució de 3 km.
 
-El lapse rate per a cada pixel es calcula a partir dels píxels dels veïns més propers. Aquests 
-pixels són només aquells que estàn a terra. Es calcula utilitzant el mètode dels mínims quadrats
-tenint en compte la temperatura i l'altitut.
+El lapse rate per a cada pixel es calcula a partir de la temperatura i altitud dels píxels dels
+veïns més propers. Aquests pixels són només aquells que el NWP considera que es troben a terra.
+Es calcula utilitzant el mètode dels mínims quadrats tenint en compte la temperatura i l'altitud.
 
 En aquest exemple importarem i llegirem la simulació de les 00 UTC del model WRF del 24 de febrer 
 del 2022 per a l'horitzó de pronòstic 10. Es carregarà un `xarray.DataArray` per a cada variable: 
 `nwp_lsm`, per inicialitzar la classe, i temperatura, `da_2t` i orografia, `da_orog`, 
 com a paràmetres de la funció que aplica la correcció 
 :py:func:`unimodel.downscaling.ecorrection.Ecorrection.apply_correction`.
+
+Aquesta funció també permet tenir en compte una màscara terra-mar a alta resolució per evitar que
+els punts propers corregits a la línia de la costa tinguin influència de la temperatura sobre el mar.
+Per activar aquesta opció, cal proporcionar un fitxer shp amb un o diversos polígons que indiquin el
+perfil de la costa a més alta resolució.
 
 .. code-block:: python
 
@@ -103,7 +110,7 @@ com a paràmetres de la funció que aplica la correcció
 
         da_2t_corrected = ecorr.apply_correction(da_2t, da_orog)
 
-En cas de que volguéssim tenir en compte el land_sea_mask, a la funció 
+En cas que volguéssim tenir en compte el `land_sea_mask`, a la funció 
 :py:func:`unimodel.downscaling.ecorrection.Ecorrection.apply_correction`, 
 posaríem `lsm_shp=path-a-la-carpeta-shp`:
 
