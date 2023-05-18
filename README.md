@@ -12,6 +12,9 @@ metodologies d'interpolació que hi ha implementades són, de moment, *nearest* 
 reprojecció es fa mitjançant la llibreria rioxarray. Els mòduls d'interpolació poden incloure també,
 de forma opcional, una reprojecció.
 
+A més, s'inclou també un mòdul de refinament del camp de temperatura basat en les diferències d'altitud
+que hi ha entre l'orografia del model i la d'un model digital d'elevació de més resolució espacial.
+
 La sortida per defecte de la lectura dels models és un xarray.DataArray, però s'inclou un mòdul per
 exportar les dades en format netCDF. L'exportació és d'un únic xarray.DataArray que pot incloure més
 d'un horitzó de pronòstic i més d'un model.
