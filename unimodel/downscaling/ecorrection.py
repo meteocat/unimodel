@@ -102,7 +102,7 @@ class Ecorrection():
 
             raise ValueError('2t variable does not exist')
 
-        if da_orog.attrs['GRIB_shortName'] not in ['orog', 'mterh', 'h']:
+        if da_orog.attrs['GRIB_shortName'] not in ['orog', 'mterh', 'h', 'HSURF']:
 
             raise ValueError('orography variable does not exist')
 
@@ -161,7 +161,7 @@ class Ecorrection():
 
             raise ValueError('2t variable does not exist')
 
-        if da_orog.attrs['GRIB_shortName'] not in ['orog', 'mterh', 'h']:
+        if da_orog.attrs['GRIB_shortName'] not in ['orog', 'mterh', 'h', 'HSURF']:
 
             raise ValueError('orography variable does not exist')
 
