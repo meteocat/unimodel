@@ -5,6 +5,7 @@ import re
 import numpy as np
 import pyproj
 import xarray
+import pickle
 
 from unimodel.utils.geotools import proj4_from_grib
 
@@ -96,7 +97,7 @@ def _get_wrf_prs_metadata(xarray_var: xarray.DataArray) -> dict:
             'x_size': n_x, 'y_size': n_y}
 
 
-def read_icon_grib(file: str, variable: str, model: str) -> xarray.DataArray:
+def read_icon_grib(grib_file: str, variable: str, model: str) -> xarray.DataArray:
     """Read wrf variable chosen in a ICON grib file
 
     Args:
@@ -108,7 +109,7 @@ def read_icon_grib(file: str, variable: str, model: str) -> xarray.DataArray:
         xarray: Icon grib file data.
     """
     grib_data = xarray.open_dataarray(
-        file, engine='cfgrib',
+        grib_file, engine='cfgrib',
         backend_kwargs={'filter_by_keys': {'shortName': variable},
                         'indexpath': ''})
 
@@ -120,6 +121,8 @@ def read_icon_grib(file: str, variable: str, model: str) -> xarray.DataArray:
 
     # Add model name to attributes
     grib_data.attrs['model'] = model
+
+    grib_data = grib_data.sel(y=slice(33.9687500, 47.0312500), x=slice(-12.0312500, 9.0312500))
 
     return grib_data
 
@@ -289,8 +292,14 @@ def read_arome_grib(grib_file: str, variable: str,
     # Rename coordinates for further reprojection
     grib_data = grib_data.rename({'longitude': 'x', 'latitude': 'y'})
 
+    grib_data = grib_data.assign_coords({'x': np.round(grib_data.x.data, 2),
+                                         'y': np.round(grib_data.y.data, 2)})
+
     # Add model name to attributes
     grib_data.attrs['model'] = model
+ 
+    # Cut out xarray
+    grib_data = grib_data.sel(y=slice(44.005, 39.0), x=slice(-1.5, 6.005))
 
     return grib_data
 
@@ -333,9 +342,14 @@ def read_arpege_grib(grib_file: str, variable: str,
 
     # Rename coordinates for further reprojection
     grib_data = grib_data.rename({'longitude': 'x', 'latitude': 'y'})
+    grib_data = grib_data.assign_coords({'x': np.round(grib_data.x.data, 1),
+                                         'y': np.round(grib_data.y.data, 1)})
 
     # Add model name to attributes
     grib_data.attrs['model'] = model
+
+    # Cut out xarray
+    grib_data = grib_data.sel(y=slice(44.05, 38.95), x=slice(-1.55, 6.05))
 
     return grib_data
 
@@ -355,7 +369,7 @@ def _get_arpege_metadata(arpege_data: xarray.DataArray) -> dict:
     return {'crs': crs_model}
 
 
-def read_ecmwf_hres_grib(file: str, variable: str, model: str):
+def read_ecmwf_hres_grib(grib_file: str, variable: str, model: str):
     """Reads an ECMWF-HRES grib file and transforms it into an
     xarray.DataArray.
 
@@ -368,7 +382,7 @@ def read_ecmwf_hres_grib(file: str, variable: str, model: str):
         xarray: ECMWF-HRES grib file data.
     """
     grib_data = xarray.open_dataarray(
-        file, engine='cfgrib',
+        grib_file, engine='cfgrib',
         backend_kwargs={'filter_by_keys': {'shortName': variable},
                         'indexpath': ''})
 
@@ -404,7 +418,7 @@ def _get_ecmwf_hres_metadata(xarray_var):
     return {'crs': crs_model}
 
 
-def read_unified_model_grib(file: str, variable: str, model: str):
+def read_unified_model_grib(grib_file: str, variable: str, model: str):
     """Reads an Unified Model grib file and transforms it into an
     xarray.DataArray.
 
@@ -416,10 +430,16 @@ def read_unified_model_grib(file: str, variable: str, model: str):
     Returns:
         xarray: Unified Model grib file data.
     """
+    backend_kwargs = {'filter_by_keys': {'shortName': variable},
+                          'indexpath': ''}
+    
+    if variable == '2t':
+
+        backend_kwargs = {'filter_by_keys': {'stepType': 'instant', 'shortName': variable},
+                          'indexpath': ''}
     grib_data = xarray.open_dataarray(
-        file, engine='cfgrib',
-        backend_kwargs={'filter_by_keys': {'shortName': variable},
-                        'indexpath': ''})
+        grib_file, engine='cfgrib',
+        backend_kwargs=backend_kwargs)
 
     geographics = _get_unified_model_metadata(grib_data)
     grib_data = grib_data.rio.write_crs(geographics['crs'])
