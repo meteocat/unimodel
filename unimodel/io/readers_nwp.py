@@ -136,11 +136,8 @@ def _get_icon_metadata(xarray_var: xarray.DataArray) -> dict:
     Returns:
         dict: Coordinate reference system.
     """
-    # projparams = proj4_from_grib(xarray_var)
-    # crs_model = pyproj.crs.CRS.from_dict(projparams)
-
-    with open('crs_icon.pkl', 'rb') as f:
-        crs_model = pickle.load(f)
+    projparams = proj4_from_grib(xarray_var)
+    crs_model = pyproj.crs.CRS.from_dict(projparams)
 
     return {'crs': crs_model}
 
