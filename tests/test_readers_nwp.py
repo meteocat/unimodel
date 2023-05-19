@@ -214,6 +214,11 @@ class TestReadersNWP(unittest.TestCase):
 
         self.assertFalse(os.path.isfile(file_idx))
 
+        variable = '2t'
+        um_data = read_unified_model_grib(file, variable, model)
+
+        self.assertEqual(um_data.shape, (138, 149))
+
     def test_read_wrf_tl_ens_grib(self):
         """Tests WRF-TL-ENS member grib to xarray."""
         file = 'tests/data/nwp_src/wrf_tl_ens/ens-002.2023032009_01.grib'
