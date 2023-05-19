@@ -27,6 +27,7 @@ grib i transformar-los a `xarray.DataArray` amb les coordenades i projecció nat
 .. automodule:: unimodel.io.readers_nwp
     :members:
 
+.. _api-downscaling:
 
 Downscaling
 -----------
@@ -41,7 +42,6 @@ per elevació.
 .. automodule:: unimodel.downscaling.ecorrection
     :members:
 
-.. _api-downscaling:
 
 Útils
 -----

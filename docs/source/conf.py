@@ -22,6 +22,9 @@ project = 'unimodel'
 copyright = '2023, Servei Meteorològic de Catalunya'
 author = 'Servei Meteorològic de Catalunya'
 
+version = '0.2'
+release = '0.2.0'
+
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
@@ -38,14 +41,15 @@ extensions = [
 templates_path = ['_templates']
 exclude_patterns = []
 
-
-
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'sphinx_book_theme'
 html_static_path = ['_static']
 
+source_suffix = '.rst'
+
+pygments_style = None
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -56,11 +60,21 @@ html_static_path = ['_static']
 # 'searchbox.html']``.
 #
 html_theme_options = {
-    
     "repository_url": "https://bitbucket.org/smc-postproc/unimodel/src/main/",
     "use_repository_button": True,
-    
+    'logo_only': True,
 }
 
 html_logo = "_static/img/logo_unimodel.png"
+
 html_title = "Uniformització de models"
+
+source_suffix = '.rst'
+
+
+# The master toctree document.
+master_doc = 'index'
+man_pages = [
+    (master_doc, 'unimodel', 'unimodel Documentation',
+     [author], 1)
+]
