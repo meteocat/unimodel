@@ -34,17 +34,9 @@ class Ecorrection():
         land_binary_mask.data = np.where(land_binary_mask.data > 0.5, 1, 0)
         self.land_binary_mask = land_binary_mask
 
-        neigh_info = self.__calculate_neighbours(land_binary_mask)
-
-        if (neigh_info.keys() !=
-                {'indices', 'neigh_needed', 'neigh_candidates'}):
-            raise KeyError("'indices', 'neigh_needed' and 'neigh_candidates' "
-                           "must be in the neigh_info dictionary")
-
-        self.neigh_info = neigh_info
+        self.neigh_info = self.__calculate_neighbours(land_binary_mask)
 
         if not os.path.exists(dem_file):
-
             raise FileNotFoundError('dem_file not found')
 
         self.dem_file = dem_file
@@ -65,7 +57,6 @@ class Ecorrection():
         Returns:
             dict: with calculated neighbours information
         """
-
         neigh_candidates = np.where(land_binary_mask == 1)
         neigh_candidates = np.vstack((neigh_candidates[1],
                                       neigh_candidates[0])).T
@@ -99,7 +90,6 @@ class Ecorrection():
             numpy.arrays: Two arrays with gradients and residues from linear
             regression calculations.
         """
-
         indices = self.neigh_info['indices']
         neigh_candidates = self.neigh_info['neigh_candidates']
         neigh_needed = self.neigh_info['neigh_needed']
@@ -150,7 +140,6 @@ class Ecorrection():
         Returns:
             xr.DataArray: DataArray with field corrected
         """
-
         if da_2t.attrs['GRIB_shortName'] != '2t':
             raise ValueError('2t variable does not exist')
 
