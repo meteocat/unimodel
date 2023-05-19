@@ -4,8 +4,15 @@ import xarray
 
 
 def xarray_attributes(func):
-    '''Measure performance of a function'''
+    """Checks and adds, if necessary, attributes of xarray.DataArray and
+    xarray.Dataset.
 
+    Args:
+        func (function): Function where decorator is applied.
+
+    Returns:
+        function: Checks xarray attributes.
+    """
     def check_attributes(*args, **kwargs):
         xarray_data = func(*args, **kwargs)
 
