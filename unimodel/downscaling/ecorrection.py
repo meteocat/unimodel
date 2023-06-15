@@ -7,7 +7,14 @@ import rasterio
 import rasterio.fill
 from sklearn.neighbors import NearestNeighbors
 
+
+import functools
+from multiprocessing import Pool
+
+import time
+
 from unimodel.utils.geotools import reproject_xarray, landsea_mask_from_shp
+from unimodel.utils.parallel import calc_batch_sizes, build_batch_ranges
 
 
 class Ecorrection():
@@ -75,8 +82,45 @@ class Ecorrection():
 
         return neigh_summary
 
+    def regression(self, batch_ranges: list, neigh_needed: np.array, gradients: np.array,
+                   neigh_candidates:np.array, indices:np.array, da_2t:xr.DataArray, 
+                   da_orog:xr.DataArray) -> np.array:
+        """Calculates the lapse rate for each point from a neighborhood using linear regression"
+
+        Args:
+            batch_ranges (list): Each list that will be passed to the function to calculate the lapse rate
+            neigh_needed (np.array): Neighbours that could be used for calculate the lapse rate
+            gradients (np.array): matrix of gradients (initialized to 0)
+            neigh_candidates (np.array): Neighbours which will be suitable for calculating the lapse rate
+            indices (np.array): llista d'índex dels punts candidats 
+            da_2t (xr.DataArray): xarray que conté les temperatures a interpolar
+            da_orog (xr.DataArray): xarray que conté les dades del DEM amb el qual interpolarem.
+
+        Returns:
+            np.array: returns the gradients (lapse rate) for each point
+        """
+        neigh_to_calculate = neigh_needed[batch_ranges]
+        for i, neigh_n in enumerate(neigh_to_calculate):
+            idxs = np.hsplit(neigh_candidates[indices[batch_ranges[0]+i]], 2)
+            idx_col = idxs[0].reshape((1, len(idxs[0])))[0]
+            idx_row = idxs[1].reshape((1, len(idxs[1])))[0]
+
+            var_sel = da_2t.values[idx_row, idx_col]
+            dem_sel = da_orog.values[idx_row, idx_col]
+            dem_sel = np.vstack([dem_sel, np.ones(len(dem_sel))]).T
+
+            # Apply the least-squares method
+            gradient, _ = np.linalg.lstsq(dem_sel, var_sel, rcond=None)[0]
+
+            gradients[neigh_n[1], neigh_n[0]] = gradient
+        
+        return gradients
+        
+
+
     def calculate_lapse_rate(self, da_2t: xr.DataArray,
                              da_orog: xr.DataArray) -> xr.DataArray:
+        
         """Calculates the lapse rates for each WRF pixel selecting the nearest
         neighbors for each pixel. Only pixels where  WRF LANDMASK value equals
         1 are considered, those that are over land.
@@ -95,33 +139,31 @@ class Ecorrection():
         neigh_needed = self.neigh_info['neigh_needed']
 
         gradients = np.zeros(da_2t.values.shape)
-        residues = np.zeros(da_2t.values.shape)
 
-        for i, neigh_n in enumerate(neigh_needed):
+        n_tasks = len(neigh_needed)
+        n_workers = 4
+        batch_sizes = calc_batch_sizes(n_tasks, n_workers)
+        batch_ranges = build_batch_ranges(batch_sizes)
 
-            idxs = np.hsplit(neigh_candidates[indices[i]], 2)
-            idx_col = idxs[0].reshape((1, len(idxs[0])))[0]
-            idx_row = idxs[1].reshape((1, len(idxs[1])))[0]
+        with Pool(n_workers) as pool:
+            partial_regression = functools.partial(self.regression,
+                                                   neigh_needed=neigh_needed, gradients=gradients,
+                                                   neigh_candidates=neigh_candidates,
+                                                   indices=indices,da_2t=da_2t, da_orog=da_orog)
+            partial_gradient = pool.map(partial_regression, batch_ranges)
 
-            var_sel = da_2t.values[idx_row, idx_col]
-            dem_sel = da_orog.values[idx_row, idx_col]
-            dem_sel = np.vstack([dem_sel, np.ones(len(dem_sel))]).T
 
-            # Apply the least-squares method
-            gradient, residue = np.linalg.lstsq(dem_sel, var_sel,
-                                                rcond=None)[0]
-
-            gradients[neigh_n[1], neigh_n[0]] = gradient
-            residues[neigh_n[1], neigh_n[0]] = residue
+        gradient = np.sum(partial_gradient, axis=0)
 
         # Set upper- and lower-limits
-        gradients[gradients < -0.0098] = -0.0098
-        gradients[gradients > 0.0294] = 0.0294
+        gradient[gradient < -0.0098] = -0.0098
+        gradient[gradient > 0.0294] = 0.0294
 
-        xr_gradients = da_2t.copy(data=gradients)
+        xr_gradients = da_2t.copy(data=gradient)
 
         return xr_gradients
 
+        
     def apply_correction(self, da_2t: xr.DataArray, da_orog: xr.DataArray,
                          lsm_shp: str = None) -> xr.DataArray:
         """Apply the elevation correction of 2t field.
