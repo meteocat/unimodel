@@ -82,9 +82,23 @@ class Ecorrection():
 
         return neigh_summary
 
-    def regression(self, batch_ranges, neigh_needed, gradients,
-                   neigh_candidates, indices, da_2t, da_orog):
-    
+    def regression(self, batch_ranges: list, neigh_needed: np.array, gradients: np.array,
+                   neigh_candidates:np.array, indices:np.array, da_2t:xr.DataArray, 
+                   da_orog:xr.DataArray) -> np.array:
+        """Calculates the lapse rate for each point from a neighborhood using linear regression"
+
+        Args:
+            batch_ranges (list): Each list that will be passed to the function to calculate the lapse rate
+            neigh_needed (np.array): Neighbours that could be used for calculate the lapse rate
+            gradients (np.array): matrix of gradients (initialized to 0)
+            neigh_candidates (np.array): Neighbours which will be suitable for calculating the lapse rate
+            indices (np.array): llista d'índex dels punts candidats 
+            da_2t (xr.DataArray): xarray que conté les temperatures a interpolar
+            da_orog (xr.DataArray): xarray que conté les dades del DEM amb el qual interpolarem.
+
+        Returns:
+            np.array: returns the gradients (lapse rate) for each point
+        """
         neigh_to_calculate = neigh_needed[batch_ranges]
         for i, neigh_n in enumerate(neigh_to_calculate):
             idxs = np.hsplit(neigh_candidates[indices[batch_ranges[0]+i]], 2)
