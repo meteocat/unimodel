@@ -50,11 +50,16 @@ class TestEcorrection(unittest.TestCase):
         self.assertAlmostEqual(float(lapse_rate[162, 72].values), -0.0017771)
         self.assertFalse(np.any(lapse_rate.values > 0.0294))
         self.assertFalse(np.any(lapse_rate.values < -0.0098))
+    
 
     def test_apply_correction(self):
         """Tests apply correction function"""
         ecor = Ecorrection(self.da_var[0], self.dem_file)
+        from datetime import datetime
+        time_0 = datetime.utcnow()
         var_correction = ecor.apply_correction(self.da_var[1], self.da_var[2])
+        print('asdasdsa')
+        print((datetime.utcnow() - time_0).total_seconds())
 
         self.assertAlmostEqual(float(var_correction[162, 72].values), 0.05, 1)
 
