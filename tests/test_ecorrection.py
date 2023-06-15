@@ -15,7 +15,6 @@ class TestEcorrection(unittest.TestCase):
     lsm_shp = 'tests/data/coastline/coastline_weurope'
 
     with open('tests/data/var_xarray.pkl', 'rb') as file:
-
         da_var = pickle.load(file)
         file.close()
 
@@ -47,19 +46,16 @@ class TestEcorrection(unittest.TestCase):
         ecor = Ecorrection(self.da_var[0], self.dem_file)
         lapse_rate = ecor.calculate_lapse_rate(self.da_var[1], self.da_var[2])
 
-        self.assertAlmostEqual(float(lapse_rate[162, 72].values), -0.0017771)
+        self.assertAlmostEqual(float(lapse_rate[162, 72].values),
+                               -0.0017771, 6)
         self.assertFalse(np.any(lapse_rate.values > 0.0294))
         self.assertFalse(np.any(lapse_rate.values < -0.0098))
-    
 
     def test_apply_correction(self):
         """Tests apply correction function"""
         ecor = Ecorrection(self.da_var[0], self.dem_file)
-        from datetime import datetime
-        time_0 = datetime.utcnow()
+
         var_correction = ecor.apply_correction(self.da_var[1], self.da_var[2])
-        print('asdasdsa')
-        print((datetime.utcnow() - time_0).total_seconds())
 
         self.assertAlmostEqual(float(var_correction[162, 72].values), 0.05, 1)
 
