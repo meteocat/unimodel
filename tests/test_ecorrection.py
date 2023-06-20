@@ -62,6 +62,7 @@ class TestEcorrection(unittest.TestCase):
     def test_apply_correction_lsm(self):
         """Tests apply correction function when lsm=True"""
         ecor = Ecorrection(self.da_var[0], self.dem_file)
+
         var_correction = ecor.apply_correction(self.da_var[1],
                                                self.da_var[2],
                                                lsm_shp=self.lsm_shp)
