@@ -43,6 +43,8 @@ class Ecorrection():
 
         self.dem_file = dem_file
 
+        self.hres_lsm = None
+
         self.result = None
 
     def __calculate_neighbours(self, land_binary_mask: xr.DataArray,
@@ -161,7 +163,9 @@ class Ecorrection():
                                           resolution=resolution)
 
         if lsm_shp is not None:
-            hres_lsm = landsea_mask_from_shp(hres_dem, lsm_shp)
+            # If lsm from shapefile is not yet calculated
+            if self.hres_lsm is None:
+                self.hres_lsm = landsea_mask_from_shp(hres_dem, lsm_shp)
 
             # Select only data over land
             var_2t = da_2t * self.land_binary_mask
@@ -183,7 +187,7 @@ class Ecorrection():
 
             # Fill the new hres data (with new lsm=1 values) with surrounding
             # data
-            hres_2t.values = np.where(hres_lsm == 1, hres_2t_mask.values,
+            hres_2t.values = np.where(self.hres_lsm == 1, hres_2t_mask.values,
                                       hres_2t.values)
 
         # Apply correction
