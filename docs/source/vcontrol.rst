@@ -1,6 +1,15 @@
 Control de versions
 ===================
 
+v0.2.1 - 20/06/2023
+-------------------
+
+.. _Numba: https://numba.pydata.org/
+
+- S'implementa una millora en l'eficiència del càlcul del gradient a la metodologia que obté un refinament del camp de temperatura :py:func:`unimodel.downscaling.ecorrection.Ecorrection`. L'optimització s'obté mitjançant la llibreria Numba_.
+- Es reorganitza la importació de la màscara terra-mar a partir d'un shapefile per augmentar l'eficiència de la funció :py:func:`unimodel.downscaling.ecorrection.Ecorrection.apply_correction`.
+
+
 v0.2.0 - 19/05/2023
 -------------------
 
