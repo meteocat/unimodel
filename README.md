@@ -1,6 +1,6 @@
 [![Anaconda-Server Badge](https://anaconda.org/meteocat/unimodel/badges/version.svg)](https://anaconda.org/meteocat/unimodel)
 
-[![Logo](docs/source/_static/img/logo_unimodel_trans.png)](#)
+<img src="docs/source/_static/img/logo_unimodel_trans.png" alt="logo" width="350"/>
 
 Aquest paquet de Python implementa un seguit de mòduls per llegir i facilitar el processament
 de les sortides dels models de prediccó numèrica del temps en format grib disponibles al
