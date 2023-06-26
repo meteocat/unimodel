@@ -17,8 +17,16 @@ O bé, en un entorn conda ja creat, tenir en compte que el paquet **unimodel** n
 - shapely
 - pyshp
 - scikit-learn
+- numba
 
-Per ara, aquest paquet es pot instal·lar de la forma tradicional i a través de pip.
+Per ara, aquest paquet es pot instal·lar de la forma tradicional amb pip i a través de conda.
+
+anaconda
+--------
+
+El paquest **unimodel** es troba al distribuidor Anaconda i es pot insta·lar amb la següent comanda:
+
+``conda install -c meteocat -c conda-forge unimodel``
 
 pip
 ---
