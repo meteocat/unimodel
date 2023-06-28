@@ -1,4 +1,6 @@
 [![Anaconda-Server Badge](https://anaconda.org/meteocat/unimodel/badges/version.svg)](https://anaconda.org/meteocat/unimodel)
+[![Documentation Status](https://readthedocs.org/projects/unimodel/badge/?version=latest)](https://unimodel.readthedocs.io/en/latest/?badge=latest)
+
 
 <img src="docs/source/_static/img/logo_unimodel_trans.png" alt="logo" width="250"/>
 
