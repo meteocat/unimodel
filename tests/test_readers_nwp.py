@@ -42,6 +42,35 @@ class TestReadersNWP(unittest.TestCase):
 
         self.assertFalse(os.path.isfile(file_idx))
 
+    def test_read_wrf_prs_gfs_9(self):
+        """Test WRF grib to xarray."""
+        file = 'tests/data/nwp_src/wrf_gfs_9/WRFPRS_d01.000'
+        file_idx = file + '.02ccc.idx'
+        variable = 'tp'
+        model = 'wrf_gfs_9'
+        data_var = read_wrf_prs(file, variable, model)
+
+        self.assertEqual(data_var.rio.crs.data['proj'], 'lcc')
+        self.assertEqual(data_var.rio.crs.data['lat_1'], 60)
+        self.assertEqual(data_var.rio.crs.data['lat_2'], 30)
+        self.assertEqual(data_var.rio.crs.data['lat_0'], 40.70002)
+        self.assertEqual(data_var.rio.crs.data['lon_0'], -1.5)
+
+        self.assertEqual(data_var.x.shape[0], 199)
+        self.assertEqual(data_var.y.shape[0], 149)
+
+        self.assertAlmostEqual(data_var.values[120][133], 0.0)
+        self.assertAlmostEqual(data_var.values[133][120], 0.0)
+
+        self.assertAlmostEqual(data_var.rio.transform().a, 9000.0)
+        self.assertAlmostEqual(data_var.rio.transform().b, 0.0)
+        self.assertAlmostEqual(data_var.rio.transform().c, -699466.8009145432)
+        self.assertAlmostEqual(data_var.rio.transform().d, 0.0)
+        self.assertAlmostEqual(data_var.rio.transform().e, 9000.0)
+        self.assertAlmostEqual(data_var.rio.transform().f, -667561.8777376108)
+
+        self.assertFalse(os.path.isfile(file_idx))
+
     def test_read_icon(self):
         """Function to test the NWP reads"""
         file = 'tests/data/nwp_src/icon/icon-07.2023020700_10.grib2'
