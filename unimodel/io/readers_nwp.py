@@ -25,7 +25,7 @@ def read_wrf_prs(grib_file: str, variable: str,
         grib_file, engine='cfgrib',
         backend_kwargs={'filter_by_keys': {'shortName': variable},
                         'indexpath': ''})
-    geographics = _get_wrf_prs_metadata(grib_data)
+    geographics = _get_wrf_prs_metadata(grib_data, model)
     grib_data = grib_data.rio.write_crs(geographics['crs'])
 
     # WRF PRS xarray does not have coordinates in its projection (Lambert),
@@ -52,11 +52,12 @@ def read_wrf_prs(grib_file: str, variable: str,
     return grib_data
 
 
-def _get_wrf_prs_metadata(xarray_var: xarray.DataArray) -> dict:
+def _get_wrf_prs_metadata(xarray_var: xarray.DataArray, model: str) -> dict:
     """Get projection, Affine transform and shape from a PRS xarray.
 
     Args:
         xarray_var (xarray): xarray to get information from.
+        model (str): WRF model name (i.e. wrf-gfs-9, wrf-ecm).
 
     Returns:
         dict: CRS, x size, y size and Affine transform.
@@ -83,8 +84,12 @@ def _get_wrf_prs_metadata(xarray_var: xarray.DataArray) -> dict:
     #   (-252466.8378711785, 3000.0, 0.0, 391438.10408251436, 0.0, -3000.0)
     #
     # Then, the upper left corner is:
-    x_0 = -252466.8378711785
-    y_0 = 391438.10408251436
+    if model == 'wrf_gfs_9':
+        x_0 = -699466.8009145432
+        y_0 = 673438.1222623892
+    else:
+        x_0 = -252466.8378711785
+        y_0 = 391438.10408251436
 
     # Since geotransform provides pixel corner coordinates, we must obtain the
     # center pixel coordinates
