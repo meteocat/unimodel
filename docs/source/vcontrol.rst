@@ -1,6 +1,13 @@
 Control de versions
 ===================
 
+v0.2.2 - 06/07/2023
+-------------------
+
+- La lectura del model WRF-GFS-9km era errònia degut a la diferència d'extensió amb la resta de models WRF pels quals estava implementada la funció :py:func:`unimodel.io.readers_nwp.read_wrf_tl_ens_grib`.
+- Es corregeix afegint un paràmetre a la funció :py:func:`unimodel.io.readers_nwp._get_wrf_prs_metadata` que controla si el model és ``wrf_gfs_9`` per aplicar una extensió diferent a la resta de models WRF considerats.
+
+
 v0.2.1 - 20/06/2023
 -------------------
 
