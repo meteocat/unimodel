@@ -4,7 +4,7 @@ import unittest
 from datetime import datetime
 from glob import glob
 from shutil import rmtree
-from os import makedirs
+from os import makedirs, path
 
 from unimodel.io.importers_nwp import import_nwp_grib
 
@@ -50,11 +50,19 @@ class TestNWPImporter(unittest.TestCase):
               'nwp_dir': 'tests/data/nwp_dir/'}
 
     def setUp(self) -> None:
-        makedirs('tests/data/nwp_dir/moloch_ecm')
+        moloch_dir = 'tests/data/nwp_dir/moloch_ecm'
+        if path.isdir(moloch_dir):
+            rmtree(moloch_dir)
+
+        makedirs(moloch_dir)
         open('tests/data/nwp_dir/moloch_ecm/example.tar.gz', 'wb')
         open('tests/data/nwp_dir/moloch_ecm/example.grib2', 'wb')
 
-        makedirs('tests/data/nwp_dir/wrf43_prs')
+        wrfprs_dir = 'tests/data/nwp_dir/wrf43_prs'
+        if path.isdir(wrfprs_dir):
+            rmtree(wrfprs_dir)
+
+        makedirs(wrfprs_dir)
         open('tests/data/nwp_dir/wrf43_prs/WRFPRS_d01.001', 'wb')
         open('tests/data/nwp_dir/wrf43_prs/WRFPRS_d01.000', 'wb')
 
