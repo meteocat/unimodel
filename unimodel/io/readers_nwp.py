@@ -406,6 +406,52 @@ def read_ecmwf_hres_grib(grib_file: str, variable: str, model: str):
     return grib_data
 
 
+def read_ecmwf_ens_grib(grib_file: str, variable: str, ens_type: str,
+                        model: str):
+    """Reads the control or the perturbed members of an ECMWF-ENS grib file
+    and transforms it into an xarray.DataArray.
+
+    Args:
+        grib_file (str): Path to an ECMWF-ENS grib file.
+        variable (str): Variable to extract.
+        ens_type (str): Ensemble type to extract.
+                        It can be 'cf' for the control forecast
+                        or 'pf' for all the members of the perturbed forecast.
+        model (str): Model name.
+
+    Raises:
+        ValueError: If 'ens_type' not 'cf' or not 'pf'.
+
+    Returns:
+        xarray: ECMWF-ENS grib file data.
+    """
+    if ens_type not in ['cf', 'pf']:
+        raise ValueError('\'ens_type\' must be \'cf\' for control forecast '
+                         'or \'pf\' for perturbed forecast')
+
+    grib_data = xarray.open_dataarray(
+        grib_file, engine='cfgrib',
+        backend_kwargs={'filter_by_keys': {'shortName': variable,
+                                           'dataType': ens_type},
+                        'indexpath': ''})
+
+    if variable == 'tp':
+        grib_data.data = grib_data.data * 1000
+        grib_data.attrs['units'] = 'mm'
+        grib_data.attrs['GRIB_units'] = 'mm'
+
+    geographics = _get_ecmwf_hres_metadata(grib_data)
+    grib_data = grib_data.rio.write_crs(geographics['crs'])
+
+    # Rename coordinates for further reprojection
+    grib_data = grib_data.rename({'longitude': 'x', 'latitude': 'y'})
+
+    # Add model name to attributes
+    grib_data.attrs['model'] = model
+
+    return grib_data
+
+
 def _get_ecmwf_hres_metadata(xarray_var):
     """Gets projection of an ECMWF-HRES xarray.
 
