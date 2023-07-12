@@ -56,7 +56,7 @@ def import_nwp_grib(date_run: datetime, lead_time: int, model: str,
 
     # Valid datetime is required for ECMWF-HRES files
     valid_datetime = date_run + timedelta(hours=lead_time)
-    if lead_time == 0:
+    if lead_time == 0 and model == 'ecmwf_hres':
         valid_datetime = valid_datetime.strftime('%m%d%H011')
     else:
         valid_datetime = valid_datetime.strftime('%m%d%H001')

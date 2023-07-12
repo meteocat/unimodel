@@ -5,9 +5,9 @@ import os
 
 from unimodel.io.readers_nwp import (read_arome_grib, read_arpege_grib,
                                      read_bolam_grib, read_ecmwf_hres_grib,
-                                     read_icon_grib, read_moloch_grib,
-                                     read_unified_model_grib, read_wrf_prs,
-                                     read_wrf_tl_ens_grib)
+                                     read_ecmwf_ens_grib, read_icon_grib,
+                                     read_moloch_grib, read_unified_model_grib,
+                                     read_wrf_prs, read_wrf_tl_ens_grib)
 
 
 class TestReadersNWP(unittest.TestCase):
@@ -219,6 +219,40 @@ class TestReadersNWP(unittest.TestCase):
         self.assertAlmostEqual(data_var.rio.transform().f, 47.05)
 
         self.assertFalse(os.path.isfile(file_idx))
+
+    def test_read_ecmwf_ens_grib(self):
+        """Tests ECMWF-ENS grib to xarray."""
+        file = 'tests/data/nwp_src/ecmwf/A4E07050000070501001'
+        file_idx = file + '.02ccc.idx'
+        variable = 'tp'
+        ens_type = 'pf'
+        data_var = read_ecmwf_ens_grib(file, variable, ens_type, 'ecmwf_ens')
+
+        self.assertEqual(data_var.rio.crs.data['proj'], 'longlat')
+        self.assertEqual(data_var.rio.crs.data['datum'], 'WGS84')
+
+        self.assertEqual(data_var.x.shape[0], 66)
+        self.assertEqual(data_var.y.shape[0], 46)
+
+        self.assertAlmostEqual(data_var.values[2, 11, 16], 1.385, 2)
+        self.assertAlmostEqual(data_var.values[2, 0, 6], 0.0)
+
+        self.assertAlmostEqual(data_var.rio.transform().a, 0.1)
+        self.assertAlmostEqual(data_var.rio.transform().b, 0.0)
+        self.assertAlmostEqual(data_var.rio.transform().c, -1.55)
+        self.assertAlmostEqual(data_var.rio.transform().d, 0.0)
+        self.assertAlmostEqual(data_var.rio.transform().e, -0.1)
+        self.assertAlmostEqual(data_var.rio.transform().f, 43.55)
+
+        self.assertFalse(os.path.isfile(file_idx))
+
+        bad_ens_type = 'control'
+        with self.assertRaises(ValueError) as err:
+            read_ecmwf_ens_grib(file, variable, bad_ens_type, 'ecmwf_ens')
+
+        self.assertEqual(err.exception.args[0],
+                         '\'ens_type\' must be \'cf\' for control forecast '
+                         'or \'pf\' for perturbed forecast')
 
     def test_read_unified_model_grib(self):
         """Tests Unified Model grib to xarray."""
