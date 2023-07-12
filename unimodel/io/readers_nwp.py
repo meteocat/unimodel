@@ -19,7 +19,7 @@ def read_wrf_prs(grib_file: str, variable: str,
         model (str): Model to be read.
 
     Returns:
-        xarray: WRF PRS grib file data.
+        xarray.DataArray: WRF PRS grib file data.
     """
     grib_data = xarray.open_dataarray(
         grib_file, engine='cfgrib',
@@ -111,7 +111,7 @@ def read_icon_grib(grib_file: str, variable: str,
         model (str): Model to be read.
 
     Returns:
-        xarray: Icon grib file data.
+        xarray.DataArray: Icon grib file data.
     """
     grib_data = xarray.open_dataarray(
         grib_file, engine='cfgrib',
@@ -155,7 +155,7 @@ def read_moloch_grib(grib_file: str, variable: str,
         model (str): Model to be read.
 
     Returns:
-        xarray: Moloch grib file data.
+        xarray.DataArray: Moloch grib file data.
     """
     grib_data = xarray.open_dataarray(
         grib_file, engine='cfgrib',
@@ -218,7 +218,7 @@ def read_bolam_grib(grib_file: str, variable: str,
         model (str): Model to be read.
 
     Returns:
-        xarray: Bolam grib file data.
+        xarray.DataArray: Bolam grib file data.
     """
     grib_data = xarray.open_dataarray(
         grib_file, engine='cfgrib',
@@ -281,7 +281,7 @@ def read_arome_grib(grib_file: str, variable: str,
         model (str): Model to be read.
 
     Returns:
-        xarray: AROME grib file data.
+        xarray.DataArray: AROME grib file data.
     """
     grib_data = xarray.open_dataarray(
         grib_file, engine='cfgrib',
@@ -332,7 +332,7 @@ def read_arpege_grib(grib_file: str, variable: str,
         model (str): Model to be read.
 
     Returns:
-        xarray: ARPEGE grib file data.
+        xarray.DataArray: ARPEGE grib file data.
     """
     grib_data = xarray.open_dataarray(
         grib_file, engine='cfgrib',
@@ -382,7 +382,7 @@ def read_ecmwf_hres_grib(grib_file: str, variable: str, model: str):
         model (str): Model name.
 
     Returns:
-        xarray: ECMWF-HRES grib file data.
+        xarray.DataArray: ECMWF-HRES grib file data.
     """
     grib_data = xarray.open_dataarray(
         grib_file, engine='cfgrib',
@@ -423,7 +423,7 @@ def read_ecmwf_ens_grib(grib_file: str, variable: str, ens_type: str,
         ValueError: If 'ens_type' not 'cf' or not 'pf'.
 
     Returns:
-        xarray: ECMWF-ENS grib file data.
+        xarray.DataArray: ECMWF-ENS grib file data.
     """
     if ens_type not in ['cf', 'pf']:
         raise ValueError('\'ens_type\' must be \'cf\' for control forecast '
@@ -477,7 +477,7 @@ def read_unified_model_grib(grib_file: str, variable: str, model: str):
         model (str): Model name.
 
     Returns:
-        xarray: Unified Model grib file data.
+        xarray.DataArray: Unified Model grib file data.
     """
     backend_kwargs = {'filter_by_keys': {'shortName': variable},
                       'indexpath': ''}
@@ -527,7 +527,7 @@ def read_wrf_tl_ens_grib(grib_file: str, variable: str,
         model (str): Model to be read.
 
     Returns:
-        xarray: WRF-TL-ENS member grib file data.
+        xarray.DataArray: WRF-TL-ENS member grib file data.
     """
     grib_data = xarray.open_dataarray(
         grib_file, engine='cfgrib',
