@@ -1,6 +1,13 @@
 Control de versions
 ===================
 
+
+v0.2.3 - 12/07/2023
+-------------------
+
+- S'afegeix la lectura del grib de l'ensemble de l'ECMWF mitjançant la funció :py:func:`unimodel.io.readers_nwp.read_ecmwf_ens_grib`.
+- Correcció de petits bugs dels tests.
+
 v0.2.2 - 06/07/2023
 -------------------
 
