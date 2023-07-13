@@ -29,8 +29,8 @@ class TestNWPImporter(unittest.TestCase):
                                        '{lt}.grib',
                                 'lead_time_digits': 3,
                                 'compressed': True},
-              'ecmwf_hres': {'src': 'tests/data/nwp_src/ecmwf/A1S{month}{day}'
-                                    '{run}00{valid_time}',
+              'ecmwf_hres': {'src': 'tests/data/nwp_src/ecmwf_hres/A1S{month}{day}'
+                                    '{run}00{valid_time}-99',
                              'compressed': False},
               'wrf_tl_ens': {'src_tar': 'tests/data/nwp_src/wrf_tl_ens/'
                                         'NWCST_TL_ENS-membres.{year}{month}'
@@ -136,7 +136,7 @@ class TestNWPImporter(unittest.TestCase):
                                    self.config)
 
         self.assertEqual(nwp_file, 'tests/data/nwp_dir/ecmwf_hres/'
-                         'A1S02200000022000011')
+                         'A1S02200000022000011-99')
 
     def test_io_import_nwp_grib_ecmwf_lt_not_0(self):
         """Tests import of a ECMWF-HRES grib file corresponding to lt!=0"""
@@ -144,7 +144,7 @@ class TestNWPImporter(unittest.TestCase):
                                    self.config)
 
         self.assertEqual(nwp_file, 'tests/data/nwp_dir/ecmwf_hres/'
-                         'A1S02200000022006001')
+                         'A1S02200000022006001-99')
 
     def test_io_import_nwp_tl_ens_grib_compressed(self):
         """Tests import of a compressed grib file"""

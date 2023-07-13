@@ -197,7 +197,7 @@ class TestReadersNWP(unittest.TestCase):
 
     def test_read_ecmwf_hres_grib(self):
         """Tests ECMWF-HRES grib to xarray"""
-        file = 'tests/data/nwp_src/ecmwf/A1S02200000022006001'
+        file = 'tests/data/nwp_src/ecmwf_hres/A1S02200000022006001-99'
         file_idx = file + '.02ccc.idx'
         variable = 'tp'
         data_var = read_ecmwf_hres_grib(file, variable, 'ecmwf_hres')
@@ -208,8 +208,8 @@ class TestReadersNWP(unittest.TestCase):
         self.assertEqual(data_var.x.shape[0], 211)
         self.assertEqual(data_var.y.shape[0], 131)
 
-        self.assertAlmostEqual(data_var.values[50, 80], 0.503, 2)
-        self.assertAlmostEqual(data_var.values[80, 50], 0.0)
+        self.assertEqual(data_var.values[50, 80], 99000.0)
+        self.assertEqual(data_var.values[80, 50], 99000.0)
 
         self.assertAlmostEqual(data_var.rio.transform().a, 0.1)
         self.assertAlmostEqual(data_var.rio.transform().b, 0.0)
@@ -222,7 +222,7 @@ class TestReadersNWP(unittest.TestCase):
 
     def test_read_ecmwf_ens_grib(self):
         """Tests ECMWF-ENS grib to xarray"""
-        file = 'tests/data/nwp_src/ecmwf/A4E07050000070501001'
+        file = 'tests/data/nwp_src/ecmwf_ens/A4E07050000070501001-99'
         file_idx = file + '.02ccc.idx'
         variable = 'tp'
         ens_type = 'pf'
@@ -234,8 +234,8 @@ class TestReadersNWP(unittest.TestCase):
         self.assertEqual(data_var.x.shape[0], 66)
         self.assertEqual(data_var.y.shape[0], 46)
 
-        self.assertAlmostEqual(data_var.values[2, 11, 16], 1.385, 2)
-        self.assertAlmostEqual(data_var.values[2, 0, 6], 0.0)
+        self.assertEqual(data_var.values[2, 11, 16], 99000.0)
+        self.assertEqual(data_var.values[2, 0, 6], 99000.0)
 
         self.assertAlmostEqual(data_var.rio.transform().a, 0.1)
         self.assertAlmostEqual(data_var.rio.transform().b, 0.0)
