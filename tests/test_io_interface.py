@@ -14,7 +14,7 @@ from unimodel.io.readers_nwp import (read_arome_grib, read_arpege_grib,
 class TestIOInterface(unittest.TestCase):
     """Tests the io interface"""
     def test_io_interface(self):
-        """Test the io module interface."""
+        """Test the io module interface"""
         reader_pairs = [("arome", read_arome_grib),
                         ("arpege", read_arpege_grib),
                         ("bolam", read_bolam_grib),

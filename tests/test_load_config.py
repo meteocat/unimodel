@@ -14,7 +14,7 @@ class TestLoadConfig(unittest.TestCase):
         self.assertEqual(config['lead_times'], 49)
 
     def test_load_config_not_found(self):
-        """Test load_config when file not found."""
+        """Test load_config when file not found"""
         with self.assertRaises(FileNotFoundError) as err:
             load_config('tests/data/not_found.json')
 
