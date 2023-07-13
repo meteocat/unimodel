@@ -8,7 +8,7 @@ from unimodel.utils.xarray_tools import expand_valid_time_coord
 
 
 class Test_XarrayTools(unittest.TestCase):
-    """Tests different interpolation methodologies."""
+    """Tests different interpolation methodologies"""
     with open('tests/data/list_arome_xarray.pkl', 'rb') as file:
         data = pickle.load(file)
 
@@ -16,7 +16,7 @@ class Test_XarrayTools(unittest.TestCase):
         concat_data = pickle.load(file)
 
     def test_expand_valid_time_coord(self):
-        """Tests expand time coordinate utility."""
+        """Tests expand time coordinate utility"""
         xarray_padded = expand_valid_time_coord(self.data[0], lead_time=72,
                                                 interval=1)
 
@@ -56,7 +56,7 @@ class Test_XarrayTools(unittest.TestCase):
         self.assertTrue(np.isnan(xarray_padded[8][200][200].data))
 
     def test_expand_valid_time_coord_wrong_interval(self):
-        """Tests interval different than data temporal resolution."""
+        """Tests interval different than data temporal resolution"""
         with self.assertRaises(ValueError) as err:
             expand_valid_time_coord(self.concat_data, lead_time=72,
                                     interval=6)
@@ -65,7 +65,7 @@ class Test_XarrayTools(unittest.TestCase):
                          'resolution of data.', err.exception.args[0])
 
     def test_expand_valid_time_coord_multiple_interval(self):
-        """Tests lead_time not multiple of interval."""
+        """Tests lead_time not multiple of interval"""
         with self.assertRaises(ValueError) as err:
             expand_valid_time_coord(self.data[0], lead_time=65,
                                     interval=6)
@@ -75,7 +75,7 @@ class Test_XarrayTools(unittest.TestCase):
                          err.exception.args[0])
 
     def test_expand_valid_time_coord_valid_time_not_found(self):
-        """Tests valid_time not in data."""
+        """Tests valid_time not in data"""
         data = self.data[0].drop_vars('valid_time')
         with self.assertRaises(KeyError) as err:
             expand_valid_time_coord(data, lead_time=65,

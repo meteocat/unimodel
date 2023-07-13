@@ -11,10 +11,10 @@ from unimodel.io.readers_nwp import (read_arome_grib, read_arpege_grib,
 
 
 class TestReadersNWP(unittest.TestCase):
-    """Tests NWP grib to xarray."""
+    """Tests NWP grib to xarray"""
 
     def test_read_wrf_prs(self):
-        """Test WRF grib to xarray."""
+        """Test WRF grib to xarray"""
         file = 'tests/data/nwp_src/wrf43_prs/WRFPRS-03.2023020600_032.grib'
         file_idx = file + '.02ccc.idx'
         variable = 'tp'
@@ -43,7 +43,7 @@ class TestReadersNWP(unittest.TestCase):
         self.assertFalse(os.path.isfile(file_idx))
 
     def test_read_wrf_prs_gfs_9(self):
-        """Test WRF grib to xarray."""
+        """Test WRF grib to xarray"""
         file = 'tests/data/nwp_src/wrf_gfs_9/WRFPRS_d01.000'
         file_idx = file + '.02ccc.idx'
         variable = 'tp'
@@ -98,7 +98,7 @@ class TestReadersNWP(unittest.TestCase):
         self.assertFalse(os.path.isfile(file_idx))
 
     def test_read_moloch_grib(self):
-        """Tests Moloch grib to xarray."""
+        """Tests Moloch grib to xarray"""
         file = 'tests/data/nwp_src/moloch/moloch-1p6.2022032100_48.grib2'
         file_idx = file + '.02ccc.idx'
         variable = 'tp'
@@ -124,7 +124,7 @@ class TestReadersNWP(unittest.TestCase):
         self.assertFalse(os.path.isfile(file_idx))
 
     def test_read_bolam_grib(self):
-        """Tests Bolam grib to xarray."""
+        """Tests Bolam grib to xarray"""
         file = 'tests/data/nwp_src/bolam/bolam-08.2023020600_32.grib2'
         file_idx = file + '.02ccc.idx'
         variable = 'tp'
@@ -150,7 +150,7 @@ class TestReadersNWP(unittest.TestCase):
         self.assertFalse(os.path.isfile(file_idx))
 
     def test_read_arome_grib(self):
-        """Tests AROME grib to xarray."""
+        """Tests AROME grib to xarray"""
         file = 'tests/data/nwp_src/arome/arome-1p1.2023021000_10.grib2'
         file_idx = file + '.02ccc.idx'
         variable = 'tp'
@@ -173,7 +173,7 @@ class TestReadersNWP(unittest.TestCase):
         self.assertFalse(os.path.isfile(file_idx))
 
     def test_read_arpege_grib(self):
-        """Tests ARPEGE grib to xarray."""
+        """Tests ARPEGE grib to xarray"""
         file = 'tests/data/nwp_src/arpege/arpege-11.2023020900_20.grib2'
         file_idx = file + '.02ccc.idx'
         variable = 'tp'
@@ -196,7 +196,7 @@ class TestReadersNWP(unittest.TestCase):
         self.assertFalse(os.path.isfile(file_idx))
 
     def test_read_ecmwf_hres_grib(self):
-        """Tests ECMWF-HRES grib to xarray."""
+        """Tests ECMWF-HRES grib to xarray"""
         file = 'tests/data/nwp_src/ecmwf/A1S02200000022006001'
         file_idx = file + '.02ccc.idx'
         variable = 'tp'
@@ -221,7 +221,7 @@ class TestReadersNWP(unittest.TestCase):
         self.assertFalse(os.path.isfile(file_idx))
 
     def test_read_ecmwf_ens_grib(self):
-        """Tests ECMWF-ENS grib to xarray."""
+        """Tests ECMWF-ENS grib to xarray"""
         file = 'tests/data/nwp_src/ecmwf/A4E07050000070501001'
         file_idx = file + '.02ccc.idx'
         variable = 'tp'
@@ -255,7 +255,7 @@ class TestReadersNWP(unittest.TestCase):
                          'or \'pf\' for perturbed forecast')
 
     def test_read_unified_model_grib(self):
-        """Tests Unified Model grib to xarray."""
+        """Tests Unified Model grib to xarray"""
         file = 'tests/data/nwp_src/um/um-10.2023032700_03.grib2'
         file_idx = file + '.02ccc.idx'
         variable = 'tp'
@@ -283,7 +283,7 @@ class TestReadersNWP(unittest.TestCase):
         self.assertEqual(um_data.shape, (138, 149))
 
     def test_read_wrf_tl_ens_grib(self):
-        """Tests WRF-TL-ENS member grib to xarray."""
+        """Tests WRF-TL-ENS member grib to xarray"""
         file = 'tests/data/nwp_src/wrf_tl_ens/ens-002.2023032009_01.grib'
         file_idx = file + '.02ccc.idx'
         variable = 'tp'

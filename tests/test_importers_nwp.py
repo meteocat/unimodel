@@ -69,7 +69,7 @@ class TestNWPImporter(unittest.TestCase):
         return super().setUp()
 
     def test_io_import_nwp_grib_compressed(self):
-        """Tests import of a compressed grib file."""
+        """Tests import of a compressed grib file"""
         nwp_file = import_nwp_grib(datetime(2022, 11, 7, 0), 0, 'moloch_ecm',
                                    self.config)
 
@@ -77,7 +77,7 @@ class TestNWPImporter(unittest.TestCase):
                          'moloch-1p6-rep.2022110700_00.grib2')
 
     def test_io_import_nwp_grib_compressed_tar_not_found(self):
-        """Tests import of a compressed grib file."""
+        """Tests import of a compressed grib file"""
         with self.assertRaises(FileNotFoundError) as err:
             import_nwp_grib(datetime(2022, 11, 15, 0), 0, 'moloch_ecm',
                             self.config)
@@ -86,7 +86,7 @@ class TestNWPImporter(unittest.TestCase):
                          'moloch-grib2.2022111500.1p6.tar.gz not found.')
 
     def test_io_import_nwp_grib_compressed_src_not_found(self):
-        """Tests import of a compressed grib file."""
+        """Tests import of a compressed grib file"""
         with self.assertRaises(FileNotFoundError) as err:
             import_nwp_grib(datetime(2022, 11, 7, 0), 200, 'moloch_ecm',
                             self.config)
@@ -97,7 +97,7 @@ class TestNWPImporter(unittest.TestCase):
                          'moloch-grib2.2022110700.1p6.tar.gz.')
 
     def test_io_import_nwp_grib_not_compressed(self):
-        """Tests import of a not compressed grib file."""
+        """Tests import of a not compressed grib file"""
         nwp_file = import_nwp_grib(datetime(2023, 2, 6, 0), 32, 'wrf43_prs',
                                    self.config)
 
@@ -105,7 +105,7 @@ class TestNWPImporter(unittest.TestCase):
                          'WRFPRS-03.2023020600_032.grib')
 
     def test_io_import_nwp_grib_not_compressed_not_found(self):
-        """Tests import of a compressed grib file."""
+        """Tests import of a compressed grib file"""
         with self.assertRaises(FileNotFoundError) as err:
             import_nwp_grib(datetime(2022, 11, 15, 0), 0, 'wrf43_prs',
                             self.config)
@@ -114,7 +114,7 @@ class TestNWPImporter(unittest.TestCase):
                          'WRFPRS-03.2022111500_000.grib not found.')
 
     def test_io_import_nwp_grib_model_not_in_config(self):
-        """Tests import of a model not in configuration dictionary."""
+        """Tests import of a model not in configuration dictionary"""
         with self.assertRaises(KeyError) as err:
             import_nwp_grib(datetime(2022, 11, 7, 0), 2, 'molcho', self.config)
 
@@ -122,7 +122,7 @@ class TestNWPImporter(unittest.TestCase):
                          'molcho not in configuration dictionary.')
 
     def test_io_import_nwp_grib_model_not_src_tar(self):
-        """Tests import of a comprsessed model without src_tar."""
+        """Tests import of a comprsessed model without src_tar"""
         with self.assertRaises(KeyError) as err:
             import_nwp_grib(datetime(2022, 11, 7, 0), 2, 'wrf43_prs_tar',
                             self.config)
@@ -131,7 +131,7 @@ class TestNWPImporter(unittest.TestCase):
                          'compressed is set to True.')
 
     def test_io_import_nwp_grib_ecmwf_lt_0(self):
-        """Tests import of a ECMWF-HRES grib file corresponding to lt=0."""
+        """Tests import of a ECMWF-HRES grib file corresponding to lt=0"""
         nwp_file = import_nwp_grib(datetime(2023, 2, 20, 0), 0, 'ecmwf_hres',
                                    self.config)
 
@@ -139,7 +139,7 @@ class TestNWPImporter(unittest.TestCase):
                          'A1S02200000022000011')
 
     def test_io_import_nwp_grib_ecmwf_lt_not_0(self):
-        """Tests import of a ECMWF-HRES grib file corresponding to lt!=0."""
+        """Tests import of a ECMWF-HRES grib file corresponding to lt!=0"""
         nwp_file = import_nwp_grib(datetime(2023, 2, 20, 0), 6, 'ecmwf_hres',
                                    self.config)
 
@@ -147,7 +147,7 @@ class TestNWPImporter(unittest.TestCase):
                          'A1S02200000022006001')
 
     def test_io_import_nwp_tl_ens_grib_compressed(self):
-        """Tests import of a compressed grib file."""
+        """Tests import of a compressed grib file"""
         nwp_file = import_nwp_grib(datetime(2023, 3, 20, 9), 1, 'wrf_tl_ens',
                                    self.config)
 
@@ -164,7 +164,7 @@ class TestNWPImporter(unittest.TestCase):
         self.assertEqual(len(nwp_file), 12)
 
     def test_io_import_nwp_grib_model_not_lt_digits(self):
-        """Tests import of a comprsessed model without src_tar."""
+        """Tests import of a comprsessed model without src_tar"""
         with self.assertRaises(KeyError) as err:
             import_nwp_grib(datetime(2022, 11, 7, 0), 2, 'no_lt_digits',
                             self.config)
@@ -175,7 +175,7 @@ class TestNWPImporter(unittest.TestCase):
 
     def test_io_import_nwp_conflicting_lead_times(self):
         """Tests importing files with conflicting lead times
-        (ex 12 and 120)."""
+        (ex 12 and 120)"""
         nwp_file = import_nwp_grib(datetime(2022, 11, 19, 0), 12, 'wrf_gfs_3',
                                    self.config)
         self.assertTrue(isinstance(nwp_file, str))
