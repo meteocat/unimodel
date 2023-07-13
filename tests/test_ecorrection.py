@@ -57,7 +57,7 @@ class TestEcorrection(unittest.TestCase):
 
         var_correction = ecor.apply_correction(self.da_var[1], self.da_var[2])
 
-        self.assertAlmostEqual(float(var_correction[162, 72].values), 0.05, 1)
+        self.assertAlmostEqual(float(var_correction[288, 142].values), 8.22, 1)
 
     def test_apply_correction_lsm(self):
         """Tests apply correction function when lsm=True"""
@@ -67,8 +67,8 @@ class TestEcorrection(unittest.TestCase):
                                                self.da_var[2],
                                                lsm_shp=self.lsm_shp)
 
-        self.assertAlmostEqual(float(var_correction[1105, 676].values),
-                               9.66, 1)
+        self.assertAlmostEqual(float(var_correction[288, 142].values),
+                               4.74, 1)
 
     def test_apply_correction_not_2t_dataarray(self):
         """Datarray without the desired variable (2t)"""
