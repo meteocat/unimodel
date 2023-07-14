@@ -7,10 +7,10 @@ from unimodel.io.exporters import concat_and_merge
 
 
 class TestExporters(unittest.TestCase):
-    """Tests exporters module."""
+    """Tests exporters module"""
 
     def test_concat_and_merge(self):
-        """Test concat and merge a list of lists of models."""
+        """Test concat and merge a list of lists of models"""
         with open('tests/data/list_arome_xarray.pkl', 'rb') as file:
             arome_xarrays = pickle.load(file)
         with open('tests/data/list_bolam_xarray.pkl', 'rb') as file:

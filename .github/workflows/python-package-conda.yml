@@ -1,4 +1,4 @@
-name: Python Package using Conda
+name: Python Package and Tests using Conda
 
 on: [pull_request]
 
@@ -28,7 +28,15 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Download unimodel data
+      env:
+        UNIMODEL_DATA_PATH: /home/runner/work/unimodel/unimodel/tests/data
+      working-directory: /home/runner/work/unimodel/unimodel/
+      run: |
+        export PYTHONPATH=$PYTHONPATH:/home/runner/work/unimodel/unimodel/
+        python ci/get_unimodel_data.py
     - name: Test with pytest
       run: |
         conda install pytest
+        export PYTHONPATH=$PYTHONPATH:/home/runner/work/unimodel/unimodel/
         pytest
