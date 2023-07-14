@@ -31,9 +31,9 @@ jobs:
     - name: Download unimodel data
       env:
         UNIMODEL_DATA_PATH: ${{github.workspace}}/tests/data
-      working-directory: ${{github.workspace}}/ci
+      working-directory: ${{github.workspace}}
       run: |
-        python get_unimodel_data.py
+        python ci/get_unimodel_data.py
     - name: Test with pytest
       run: |
         conda install pytest
