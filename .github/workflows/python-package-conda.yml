@@ -30,9 +30,10 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Download unimodel data
       env:
-        UNIMODEL_DATA_PATH: /home/runner/work/unimodel/tests/data
-      working-directory: /home/runner/work/unimodel/
+        UNIMODEL_DATA_PATH: /home/runner/work/unimodel/unimodel/tests/data
+      working-directory: /home/runner/work/unimodel/unimodel/
       run: |
+        export PYTHONPATH=$PYTHONPATH:/home/runner/work/unimodel/unimodel/
         python ci/get_unimodel_data.py
     - name: Test with pytest
       run: |
