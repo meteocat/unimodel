@@ -6,12 +6,12 @@ from unimodel.downscaling.interpolation import (bilinear, nearest)
 
 
 class TestInterpolation(unittest.TestCase):
-    """Tests different interpolation methodologies."""
+    """Tests different interpolation methodologies"""
     with open('tests/data/xarray_model.pkl', 'rb') as file:
         data = pickle.load(file)
 
     def test_bilinear(self):
-        """Tests bilinear interpolation with and without projection."""
+        """Tests bilinear interpolation with and without projection"""
         # Test without specifying any projection, assuming the output
         # projection is the same as input
         corner_ul = (-7.2375, -4.9875)
@@ -48,7 +48,7 @@ class TestInterpolation(unittest.TestCase):
         self.assertAlmostEqual(grid_repr.rio.transform().f, 43.4555, 3)
 
     def test_nearest(self):
-        """Tests nearest interpolation with and without projection."""
+        """Tests nearest interpolation with and without projection"""
         corner_ul = (-1.621137007661705, 43.4555890422600939)
         grid_shape = (620, 417)
         grid_res = (0.010642497622783, 0.010642497622783)
