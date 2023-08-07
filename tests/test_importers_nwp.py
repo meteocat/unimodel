@@ -37,7 +37,7 @@ class TestNWPImporter(unittest.TestCase):
         },
         "ecmwf_hres": {
             "src": "tests/data/nwp_src/ecmwf_hres/A1S{month}"
-            "{day}{run}00{valid_month}{valid_day}{valid_run}1-99",
+            "{day}{run}00{valid_month}{valid_day}{valid_hour}1-99",
             "compressed": False,
         },
         "wrf_tl_ens": {

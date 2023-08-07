@@ -94,7 +94,7 @@ def import_nwp_grib(
             "run": date_run_f["hour"],
             "valid_month": valid_date_run["month"],
             "valid_day": valid_date_run["day"],
-            "valid_run": valid_date_run["hour"],
+            "valid_hour": valid_date_run["hour"],
             "lt": str(lead_time).zfill(lt_digits),
             "member": r"[0-9]*",
         }
