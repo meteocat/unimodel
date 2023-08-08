@@ -106,7 +106,7 @@ def import_nwp_grib(
         # If model is informed as compressed (tar.gz), the key 'src_tar'
         # (tar source file) must be included in the configuration dictionary
         if "src_tar" not in config[model].keys():
-            raise KeyError("src_tar must be included if compressed is set to " "True.")
+            raise KeyError("src_tar must be included if compressed is set to True.")
         tar_file = config[model]["src_tar"].format(
             year=date_run_f["year"],
             month=date_run_f["month"],
@@ -127,7 +127,15 @@ def import_nwp_grib(
                 copy2(tar_file, model_dir)
             else:
                 raise FileNotFoundError(tar_file + " not found.")
+        else:
+            # Check if previous files match the required nwp_file
+            for prev_file in prev_files:
+                if re.match(model_dir + basename(nwp_file) + "$", prev_file):
+                    nwp_files.append(prev_file)
 
+        # If none of the previous files (not tar) matches the required nwp_file
+        if len(nwp_files) == 0:
+            # Extract files from tar file
             with tarfile.open(model_dir + basename(tar_file), "r:gz") as _tar:
                 for member in _tar:
                     _tar.makefile(member, model_dir + member.path)
@@ -135,10 +143,6 @@ def import_nwp_grib(
                         nwp_files.append(model_dir + member.path)
             if len(nwp_files) == 0:
                 raise FileNotFoundError(nwp_file + " not found in " + tar_file + ".")
-        else:
-            for prev_file in prev_files:
-                if re.match(model_dir + basename(nwp_file) + "$", prev_file):
-                    nwp_files.append(prev_file)
     else:
         # If NWP grib file not compressed, previous grib files are removed
         for prev_file in prev_files:

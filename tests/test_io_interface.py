@@ -13,7 +13,7 @@ from unimodel.io.readers_nwp import (
     read_wrf_prs,
     read_wrf_tl_ens_grib,
     read_unified_model_grib,
-    read_ncep_grib
+    read_ncep_grib,
 )
 
 
@@ -34,7 +34,7 @@ class TestIOInterface(unittest.TestCase):
             ("unified_model", read_unified_model_grib),
             ("wrf_tl_ens", read_wrf_tl_ens_grib),
             ("gfs", read_ncep_grib),
-            ("gefs", read_ncep_grib)
+            ("gefs", read_ncep_grib),
         ]
 
         for reader_pair in reader_pairs:
