@@ -13,6 +13,7 @@ from unimodel.io.readers_nwp import (
     read_unified_model_grib,
     read_wrf_prs,
     read_wrf_tl_ens_grib,
+    read_ncep_grib
 )
 
 
@@ -316,5 +317,57 @@ class TestReadersNWP(unittest.TestCase):
         self.assertAlmostEqual(data_var.rio.transform().d, 0.0)
         self.assertAlmostEqual(data_var.rio.transform().e, 0.025)
         self.assertAlmostEqual(data_var.rio.transform().f, 39.2375)
+
+        self.assertFalse(os.path.isfile(file_idx))
+
+    def test_read_ncep_grib(self):
+        """Tests NCEP grib to xarray"""
+
+        # GFS file test
+        file_gfs = "tests/data/nwp_src/gfs/gfs.2023022800_003.grib2"
+        file_idx = file_gfs + ".02ccc.idx"
+        variable = "tp"
+        data_var = read_ncep_grib(file_gfs, variable, "gfs")
+
+        self.assertEqual(data_var.rio.crs.data["proj"], "longlat")
+        self.assertEqual(data_var.rio.crs.data["datum"], "WGS84")
+
+        self.assertEqual(data_var.x.shape[0], 387)
+        self.assertEqual(data_var.y.shape[0], 219)
+
+        self.assertAlmostEqual(data_var.values[0, 3], 0.125, 2)
+        self.assertAlmostEqual(data_var.values[0, 0], 0.0)
+
+        self.assertAlmostEqual(data_var.rio.transform().a, 0.25)
+        self.assertAlmostEqual(data_var.rio.transform().b, 0.0)
+        self.assertAlmostEqual(data_var.rio.transform().c, -66.625)
+        self.assertAlmostEqual(data_var.rio.transform().d, 0.0)
+        self.assertAlmostEqual(data_var.rio.transform().e, 0.25)
+        self.assertAlmostEqual(data_var.rio.transform().f, 15.375)
+
+        self.assertFalse(os.path.isfile(file_idx))
+
+        # GEFS file test
+        file_gefs = "tests/data/nwp_src/gefs/GEFS.2023022800.f003"
+        file_idx = file_gefs + ".02ccc.idx"
+        variable = "tp"
+        extra_filter = {"dataType": "pf"}
+        data_var = read_ncep_grib(file_gefs, variable, "gefs", extra_filter)
+
+        self.assertEqual(data_var.rio.crs.data["proj"], "longlat")
+        self.assertEqual(data_var.rio.crs.data["datum"], "WGS84")
+
+        self.assertEqual(data_var.x.shape[0], 14)
+        self.assertEqual(data_var.y.shape[0], 10)
+
+        self.assertAlmostEqual(data_var.values[0, 3, 7], 0.62, 2)
+        self.assertAlmostEqual(data_var.values[0, 0, 0], 0.0)
+
+        self.assertAlmostEqual(data_var.rio.transform().a, 0.5)
+        self.assertAlmostEqual(data_var.rio.transform().b, 0.0)
+        self.assertAlmostEqual(data_var.rio.transform().c, -1.75)
+        self.assertAlmostEqual(data_var.rio.transform().d, 0.0)
+        self.assertAlmostEqual(data_var.rio.transform().e, 0.5)
+        self.assertAlmostEqual(data_var.rio.transform().f, 38.75)
 
         self.assertFalse(os.path.isfile(file_idx))

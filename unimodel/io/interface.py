@@ -4,7 +4,7 @@ from unimodel.io.readers_nwp import (read_arome_grib, read_arpege_grib,
                                      read_bolam_grib, read_ecmwf_grib,
                                      read_icon_grib, read_moloch_grib,
                                      read_unified_model_grib, read_wrf_prs,
-                                     read_wrf_tl_ens_grib)
+                                     read_wrf_tl_ens_grib, read_ncep_grib)
 
 _readers = dict()
 _readers['arome'] = read_arome_grib
@@ -22,6 +22,8 @@ _readers['ecmwf_hres'] = read_ecmwf_grib
 _readers['ecmwf_ens'] = read_ecmwf_grib
 _readers['unified_model'] = read_unified_model_grib
 _readers['wrf_tl_ens'] = read_wrf_tl_ens_grib
+_readers['gfs'] = read_ncep_grib
+_readers['gefs'] = read_ncep_grib
 
 
 def get_reader(name):
