@@ -17,7 +17,7 @@ class TestNWPImporter(unittest.TestCase):
             "src_tar": "tests/data/nwp_src/moloch/"
             "moloch-grib2.{year}{month}{day}{run}"
             ".1p6.tar.gz",
-            "src": "moloch-1p6-rep.{year}{month}{day}{run}" "_{lt}.grib2",
+            "src": "moloch-1p6-rep.{year}{month}{day}{run}_{lt}.grib2",
             "compressed": True,
             "lead_time_digits": 2,
         },
@@ -44,7 +44,7 @@ class TestNWPImporter(unittest.TestCase):
             "src_tar": "tests/data/nwp_src/wrf_tl_ens/"
             "NWCST_TL_ENS-membres.{year}{month}"
             "{day}{run}.tar.gz",
-            "src": "ens-{member}.{year}{month}{day}{run}" "_{lt}.grib",
+            "src": "ens-{member}.{year}{month}{day}{run}_{lt}.grib",
             "compressed": True,
             "lead_time_digits": 2,
         },
@@ -55,7 +55,7 @@ class TestNWPImporter(unittest.TestCase):
             "compressed": False,
         },
         "wrf_gfs_3": {
-            "src": "tests/data/nwp_src/wrf_gfs_3/" "WRFPRS_d01.{lt}",
+            "src": "tests/data/nwp_src/wrf_gfs_3/WRFPRS_d01.{lt}",
             "compressed": False,
             "lead_time_digits": 3,
         },
@@ -89,7 +89,7 @@ class TestNWPImporter(unittest.TestCase):
 
         self.assertEqual(
             nwp_file,
-            "tests/data/nwp_dir/moloch_ecm/" "moloch-1p6-rep.2022110700_00.grib2",
+            "tests/data/nwp_dir/moloch_ecm/moloch-1p6-rep.2022110700_00.grib2",
         )
 
     def test_io_import_nwp_grib_compressed_tar_not_found(self):
@@ -122,7 +122,7 @@ class TestNWPImporter(unittest.TestCase):
         )
 
         self.assertEqual(
-            nwp_file, "tests/data/nwp_dir/wrf43_prs/" "WRFPRS-03.2023020600_032.grib"
+            nwp_file, "tests/data/nwp_dir/wrf43_prs/WRFPRS-03.2023020600_032.grib"
         )
 
     def test_io_import_nwp_grib_not_compressed_not_found(self):
@@ -132,7 +132,7 @@ class TestNWPImporter(unittest.TestCase):
 
         self.assertEqual(
             err.exception.args[0],
-            "tests/data/nwp_src/wrf43_prs/" "WRFPRS-03.2022111500_000.grib not found.",
+            "tests/data/nwp_src/wrf43_prs/WRFPRS-03.2022111500_000.grib not found.",
         )
 
     def test_io_import_nwp_grib_model_not_in_config(self):
@@ -151,7 +151,7 @@ class TestNWPImporter(unittest.TestCase):
 
         self.assertEqual(
             err.exception.args[0],
-            "src_tar must be included if " "compressed is set to True.",
+            "src_tar must be included if compressed is set to True.",
         )
 
     def test_io_import_nwp_grib_ecmwf_lt_0(self):
@@ -161,7 +161,7 @@ class TestNWPImporter(unittest.TestCase):
         )
 
         self.assertEqual(
-            nwp_file, "tests/data/nwp_dir/ecmwf_hres/" "A1S02200000022000011-99"
+            nwp_file, "tests/data/nwp_dir/ecmwf_hres/A1S02200000022000011-99"
         )
 
     def test_io_import_nwp_grib_ecmwf_lt_not_0(self):
@@ -171,7 +171,7 @@ class TestNWPImporter(unittest.TestCase):
         )
 
         self.assertEqual(
-            nwp_file, "tests/data/nwp_dir/ecmwf_hres/" "A1S02200000022006001-99"
+            nwp_file, "tests/data/nwp_dir/ecmwf_hres/A1S02200000022006001-99"
         )
 
     def test_io_import_nwp_tl_ens_grib_compressed(self):
@@ -182,7 +182,7 @@ class TestNWPImporter(unittest.TestCase):
 
         self.assertEqual(
             sorted(nwp_file)[0],
-            "tests/data/nwp_dir/wrf_tl_ens/" "ens-001.2023032009_01.grib",
+            "tests/data/nwp_dir/wrf_tl_ens/ens-001.2023032009_01.grib",
         )
         self.assertEqual(len(nwp_file), 12)
 
@@ -193,7 +193,7 @@ class TestNWPImporter(unittest.TestCase):
 
         self.assertEqual(
             sorted(nwp_file)[0],
-            "tests/data/nwp_dir/wrf_tl_ens/" "ens-001.2023032009_04.grib",
+            "tests/data/nwp_dir/wrf_tl_ens/ens-001.2023032009_04.grib",
         )
         self.assertEqual(len(nwp_file), 12)
 
@@ -217,6 +217,18 @@ class TestNWPImporter(unittest.TestCase):
         )
         self.assertTrue(isinstance(nwp_file, str))
         self.assertNotEqual(nwp_file, "tests/data/nwp_dir/WRFPRS_d01.120")
+
+    # def test_io_import_nwp_file_not_in_tar(self):
+    #     """Tests importing files with conflicting lead times
+    #     (ex 12 and 120)"""
+    #     modified_config = deepcopy(self.config)
+    #     modified_config['moloch_ecm']['src'] = 'wrong_file_name'
+
+    #     nwp_file = import_nwp_grib(
+    #         datetime(2022, 11, 7, 0), 0, "moloch_ecm", modified_config
+    #     )
+    #     self.assertTrue(isinstance(nwp_file, str))
+    #     self.assertNotEqual(nwp_file, "tests/data/nwp_dir/WRFPRS_d01.120")
 
     def tearDown(self) -> None:
         for f_dir in glob(self.config["nwp_dir"] + "/*"):
