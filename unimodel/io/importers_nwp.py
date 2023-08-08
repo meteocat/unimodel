@@ -119,8 +119,8 @@ def import_nwp_grib(
         if not exists(model_dir + basename(tar_file)):
             # If tar_file not exists, previous tar and non-tar files are
             # removed
-            for prev_file_tar in prev_files_tar + prev_files:
-                remove(prev_file_tar)
+            for prev_file in prev_files_tar + prev_files:
+                remove(prev_file)
             # If tar_file exists in source folder, it is copied to stage
             # directory
             if exists(tar_file):
