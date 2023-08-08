@@ -1,3 +1,5 @@
+"""Module to download unimodel test data.
+"""
 from urllib import request
 from zipfile import ZipFile
 import os
@@ -15,10 +17,10 @@ def download_unimodel_test_data(test_dir: str) -> None:
         rmtree(test_dir)
 
     file_name, _ = request.urlretrieve(
-        'https://github.com/meteocat/unimodel-data/archive/refs/heads/'
-        'main.zip')
+        "https://github.com/meteocat/unimodel-data/archive/refs/heads/main.zip"
+    )
 
-    with ZipFile(file_name, 'r') as zip_obj:
+    with ZipFile(file_name, "r") as zip_obj:
         tmp_dir = TemporaryDirectory()
         common_path = os.path.commonprefix(zip_obj.namelist())
         zip_obj.extractall(tmp_dir.name)
