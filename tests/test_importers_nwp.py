@@ -4,6 +4,7 @@ import unittest
 from datetime import datetime
 from glob import glob
 from shutil import rmtree
+from copy import deepcopy
 from os import makedirs, path
 
 from unimodel.io.importers_nwp import import_nwp_grib
@@ -17,7 +18,7 @@ class TestNWPImporter(unittest.TestCase):
             "src_tar": "tests/data/nwp_src/moloch/"
             "moloch-grib2.{year}{month}{day}{run}"
             ".1p6.tar.gz",
-            "src": "moloch-1p6-rep.{year}{month}{day}{run}" "_{lt}.grib2",
+            "src": "moloch-1p6-rep.{year}{month}{day}{run}_{lt}.grib2",
             "compressed": True,
             "lead_time_digits": 2,
         },
@@ -44,7 +45,7 @@ class TestNWPImporter(unittest.TestCase):
             "src_tar": "tests/data/nwp_src/wrf_tl_ens/"
             "NWCST_TL_ENS-membres.{year}{month}"
             "{day}{run}.tar.gz",
-            "src": "ens-{member}.{year}{month}{day}{run}" "_{lt}.grib",
+            "src": "ens-{member}.{year}{month}{day}{run}_{lt}.grib",
             "compressed": True,
             "lead_time_digits": 2,
         },
@@ -55,7 +56,7 @@ class TestNWPImporter(unittest.TestCase):
             "compressed": False,
         },
         "wrf_gfs_3": {
-            "src": "tests/data/nwp_src/wrf_gfs_3/" "WRFPRS_d01.{lt}",
+            "src": "tests/data/nwp_src/wrf_gfs_3/WRFPRS_d01.{lt}",
             "compressed": False,
             "lead_time_digits": 3,
         },
@@ -217,6 +218,18 @@ class TestNWPImporter(unittest.TestCase):
         )
         self.assertTrue(isinstance(nwp_file, str))
         self.assertNotEqual(nwp_file, "tests/data/nwp_dir/WRFPRS_d01.120")
+
+    # def test_io_import_nwp_file_not_in_tar(self):
+    #     """Tests importing files with conflicting lead times
+    #     (ex 12 and 120)"""
+    #     modified_config = deepcopy(self.config)
+    #     modified_config['moloch_ecm']['src'] = 'wrong_file_name'
+
+    #     nwp_file = import_nwp_grib(
+    #         datetime(2022, 11, 7, 0), 0, "moloch_ecm", modified_config
+    #     )
+    #     self.assertTrue(isinstance(nwp_file, str))
+    #     self.assertNotEqual(nwp_file, "tests/data/nwp_dir/WRFPRS_d01.120")
 
     def tearDown(self) -> None:
         for f_dir in glob(self.config["nwp_dir"] + "/*"):
