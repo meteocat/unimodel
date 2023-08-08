@@ -13,6 +13,7 @@ from unimodel.io.readers_nwp import (
     read_wrf_prs,
     read_wrf_tl_ens_grib,
     read_unified_model_grib,
+    read_ncep_grib
 )
 
 
@@ -32,6 +33,8 @@ class TestIOInterface(unittest.TestCase):
             ("ecmwf_ens", read_ecmwf_grib),
             ("unified_model", read_unified_model_grib),
             ("wrf_tl_ens", read_wrf_tl_ens_grib),
+            ("gfs", read_ncep_grib),
+            ("gefs", read_ncep_grib)
         ]
 
         for reader_pair in reader_pairs:
@@ -48,5 +51,5 @@ class TestIOInterface(unittest.TestCase):
             "'bolam', 'icon', 'moloch_gfs', 'moloch_ecm',"
             " 'wrf_ecm', 'wrf_exp', 'wrf_gfs_3', "
             "'wrf_gfs_9', 'ecmwf', 'ecmwf_hres', 'ecmwf_ens', "
-            "'unified_model', 'wrf_tl_ens']",
+            "'unified_model', 'wrf_tl_ens', 'gfs', 'gefs']",
         )

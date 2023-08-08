@@ -643,3 +643,58 @@ def _get_wrf_tl_ens_metadata(xarray_var: xarray.DataArray) -> dict:
     crs_model = pyproj.crs.CRS.from_dict(projparams)
 
     return {"crs": crs_model}
+
+
+def read_ncep_grib(
+    grib_file: str, variable: str, model: str, extra_filters={}
+) -> xarray.DataArray:
+    """Reads an NCEP (GEFS or GFS) grib file and transforms it into an xarray.DataArray.
+
+    Args:
+        grib_file (string): Path to an GFS/GEFS grib file.
+        variable (string): Variable to extract.
+        model (str): Model to be read.
+        extra_filters (dict, optional): Other filters
+                                        needed to read the variable
+
+    Returns:
+        xarray.DataArray: GFS/GEFS grib file data.
+    """
+
+    filter_keys = {"shortName": variable}
+    filter_keys.update(extra_filters)
+
+    try:
+        grib_data = xarray.open_dataarray(
+            grib_file,
+            engine="cfgrib",
+            backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
+        )
+    except DatasetBuildError as e:
+        raise_reader_missing_filters(grib_file, variable, model, e)
+
+    geographics = _get_ncep_metadata(grib_data)
+    grib_data = grib_data.rio.write_crs(geographics["crs"])
+
+    # Rename coordinates for further reprojection
+    grib_data = grib_data.rename({"longitude": "x", "latitude": "y"})
+
+    # Add model name to attributes
+    grib_data.attrs["model"] = model
+
+    return grib_data
+
+
+def _get_ncep_metadata(xarray_var):
+    """Gets projection of an GFS/GEFS xarray.
+
+    Args:
+        xarray_var (xarray): GFS/GEFS grib data.
+
+    Returns:
+        dict: Coordinate reference system.
+    """
+    projparams = proj4_from_grib(xarray_var)
+    crs_model = pyproj.crs.CRS.from_dict(projparams)
+
+    return {"crs": crs_model}
