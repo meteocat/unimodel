@@ -1,6 +1,6 @@
 package:
   name: "unimodel"
-  version: "0.2.2"
+  version: "0.2.4"
 
 source:
   branch: main
@@ -11,6 +11,7 @@ requirements:
     - python
     - setuptools_scm
     - cfgrib
+    - dask
     - eccodes
     - netcdf4
     - numba
@@ -24,6 +25,7 @@ requirements:
   run:
     - python
     - cfgrib
+    - dask
     - eccodes
     - netcdf4
     - numba

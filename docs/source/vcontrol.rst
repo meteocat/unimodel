@@ -1,6 +1,12 @@
 Control de versions
 ===================
 
+v0.2.4 - 08/08/2023
+-------------------
+
+- S'afegeix la lectura del grib del hindcast de l'ECMWF i s'unifiquen els readers dels gribs de l'ECMWF mitjançant la funció :py:func:`unimodel.io.readers_nwp.read_ecmwf_grib`.
+- S'inclou la lectura dels fitxers grib del model GFS i del GEFS mitjançant la funció :py:func:`unimodel.io.readers_nwp.read_ncep_grib`.
+- Correcció de bugs al modul d'importació de fitxers :py:func:`unimodel.io.importers_nwp.import_nwp_grib`.
 
 v0.2.3 - 12/07/2023
 -------------------

@@ -22,8 +22,8 @@ project = 'unimodel'
 copyright = '2023, Servei Meteorològic de Catalunya'
 author = 'Servei Meteorològic de Catalunya'
 
-version = '0.2'
-release = '0.2.0'
+version = '0.2.4'
+release = '0.2.4'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
