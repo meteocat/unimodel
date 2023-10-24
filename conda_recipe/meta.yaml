@@ -15,7 +15,7 @@ requirements:
     - eccodes
     - netcdf4
     - numba
-    - numpy
+    - numpy >=1.24
     - pyshp
     - rioxarray
     - scikit-learn
@@ -29,7 +29,7 @@ requirements:
     - eccodes
     - netcdf4
     - numba
-    - numpy
+    - numpy >=1.24
     - pyshp
     - rioxarray
     - scikit-learn
