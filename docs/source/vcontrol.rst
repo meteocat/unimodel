@@ -1,6 +1,13 @@
 Control de versions
 ===================
 
+
+v0.2.5 - 24/10/2023
+-------------------
+
+- Es modifica la lectura dels fitxers grib del model WRF-TL-ENS degut a un canvi en la seva nomenclatura :py:func:`unimodel.io.readers_nwp.read_wrf_tl_ens_grib`.
+
+
 v0.2.4 - 08/08/2023
 -------------------
 
