@@ -42,9 +42,8 @@ class TestNWPImporter(unittest.TestCase):
         },
         "wrf_tl_ens": {
             "src_tar": "tests/data/nwp_src/wrf_tl_ens/"
-            "NWCST_TL_ENS-membres.{year}{month}"
-            "{day}{run}.tar.gz",
-            "src": "ens-{member}.{year}{month}{day}{run}_{lt}.grib",
+            "NWCST_TL_ENS-membres.{year}{month}{day}{run}.tar.gz",
+            "src": "tl_ens-03-{member}.{year}{month}{day}{run}_{lt}.grib",
             "compressed": True,
             "lead_time_digits": 2,
         },
@@ -177,23 +176,23 @@ class TestNWPImporter(unittest.TestCase):
     def test_io_import_nwp_tl_ens_grib_compressed(self):
         """Tests import of a compressed grib file"""
         nwp_file = import_nwp_grib(
-            datetime(2023, 3, 20, 9), 1, "wrf_tl_ens", self.config
+            datetime(2023, 10, 19, 0), 1, "wrf_tl_ens", self.config
         )
 
         self.assertEqual(
             sorted(nwp_file)[0],
-            "tests/data/nwp_dir/wrf_tl_ens/ens-001.2023032009_01.grib",
+            "tests/data/nwp_dir/wrf_tl_ens/tl_ens-03-001.2023101900_01.grib",
         )
         self.assertEqual(len(nwp_file), 12)
 
         # Double test to check re-use of already extracted files from a .tar.gz
         nwp_file = import_nwp_grib(
-            datetime(2023, 3, 20, 9), 4, "wrf_tl_ens", self.config
+            datetime(2023, 10, 19, 0), 4, "wrf_tl_ens", self.config
         )
 
         self.assertEqual(
             sorted(nwp_file)[0],
-            "tests/data/nwp_dir/wrf_tl_ens/ens-001.2023032009_04.grib",
+            "tests/data/nwp_dir/wrf_tl_ens/tl_ens-03-001.2023101900_04.grib",
         )
         self.assertEqual(len(nwp_file), 12)
 
