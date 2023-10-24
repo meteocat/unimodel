@@ -296,7 +296,7 @@ class TestReadersNWP(unittest.TestCase):
 
     def test_read_wrf_tl_ens_grib(self):
         """Tests WRF-TL-ENS member grib to xarray"""
-        file = "tests/data/nwp_src/wrf_tl_ens/ens-002.2023032009_01.grib"
+        file = "tests/data/nwp_src/wrf_tl_ens/tl_ens-03-002.2023101900_01.grib"
         file_idx = file + ".02ccc.idx"
         variable = "tp"
         data_var = read_wrf_tl_ens_grib(file, variable, "wrf_tl_ens")
@@ -308,7 +308,7 @@ class TestReadersNWP(unittest.TestCase):
         self.assertEqual(data_var.x.shape[0], 231)
         self.assertEqual(data_var.y.shape[0], 161)
 
-        self.assertAlmostEqual(data_var.values[76, 160], 0.109, 2)
+        self.assertAlmostEqual(data_var.values[76, 160], 0.0, 2)
         self.assertAlmostEqual(data_var.values[160, 72], 0.0)
 
         self.assertAlmostEqual(data_var.rio.transform().a, 0.025)
