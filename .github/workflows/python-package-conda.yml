@@ -16,10 +16,9 @@ jobs:
     - uses: actions/checkout@v4
     - uses: conda-incubator/setup-miniconda@v3
       with:
-        activate-environment: anaconda-client-env
-        environment-file: etc/example-environment.yml
+        activate-environment: unimodel-dev
+        environment-file: environment_dev.yml
         python-version: 3.11.4
-        condarc-file: etc/example-condarc.yml
         auto-activate-base: false
     #- name: Set up Python 3.11.4
     #  uses: actions/setup-python@v4
@@ -29,15 +28,15 @@ jobs:
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
         echo $CONDA/bin >> $GITHUB_PATH
-    - name: Install dependencies
-      run: |
-        conda env create --file environment_dev.yml
-    - name: Init conda
-      run: |
-        conda init
-    - name: Activate environment
-      run: |
-        conda activate unimodel-dev
+    # - name: Install dependencies
+    #  run: |
+    #    conda env create --file environment_dev.yml
+   # - name: Init conda
+   #   run: |
+   #     conda init
+   # - name: Activate environment
+   #   run: |
+   #     conda activate unimodel-dev
     - name: Lint with flake8
       run: |
         conda install flake8
