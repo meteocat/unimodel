@@ -97,7 +97,7 @@ dependencies:
   - libbrotlienc=1.0.9=h166bdaf_9
   - libcblas=3.9.0=17_linux64_openblas
   - libcrc32c=1.1.2=h9c3ff4c_0
-  - libcurl=8.2.1=hca28451_0
+  - libcurl
   - libdeflate=1.18=h0b41bf4_0
   - libedit=3.1.20191231=he28a2e2_2
   - libev=4.33=h516909a_1
@@ -154,7 +154,7 @@ dependencies:
   - numba=0.57.1=py311h96b013e_0
   - numpy=1.24.4=py311h64a7726_0
   - openjpeg=2.5.0=hfec8fc6_2
-  - openssl=3.1.2=hd590300_0
+  - openssl
   - orc=1.9.0=h385abfd_1
   - packaging=23.1=pyhd8ed1ab_0
   - pandas=1.5.3=py311h2872171_1
@@ -181,7 +181,7 @@ dependencies:
   - pysocks=1.7.1=pyha2e5f31_6
   - pytest=7.4.0=pyhd8ed1ab_0
   - pytest-cov=4.1.0=pyhd8ed1ab_0
-  - python=3.11.4=hab00c5b_0_cpython
+  - python=3.11
   - python-dateutil=2.8.2=pyhd8ed1ab_0
   - python-eccodes=1.6.0=py311h1f0f07a_0
   - python-tzdata=2023.3=pyhd8ed1ab_0
