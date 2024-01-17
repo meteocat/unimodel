@@ -5,6 +5,10 @@ on: [pull_request]
 jobs:
   build-linux:
     runs-on: ubuntu-latest
+    # To activate environment: https://stackoverflow.com/a/72735253/11135165
+    defaults:
+      run:
+        shell: bash -el {0}   
     strategy:
       max-parallel: 5
 
@@ -21,9 +25,6 @@ jobs:
     - name: Install dependencies
       run: |
         conda env create --file environment_dev.yml
-    - name: Init conda
-      run: |
-        conda init
     - name: Activate environment
       run: |
         conda activate unimodel-dev
