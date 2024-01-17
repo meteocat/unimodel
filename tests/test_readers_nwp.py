@@ -2,6 +2,7 @@
 """
 import unittest
 import os
+import numpy as np
 
 from unimodel.io.readers_nwp import (
     read_arome_grib,
@@ -14,6 +15,8 @@ from unimodel.io.readers_nwp import (
     read_wrf_prs,
     read_wrf_tl_ens_grib,
     read_ncep_grib,
+    read_swan_grib,
+    read_ww3_grib,
 )
 
 
@@ -369,5 +372,59 @@ class TestReadersNWP(unittest.TestCase):
         self.assertAlmostEqual(data_var.rio.transform().d, 0.0)
         self.assertAlmostEqual(data_var.rio.transform().e, 0.5)
         self.assertAlmostEqual(data_var.rio.transform().f, 38.75)
+
+        self.assertFalse(os.path.isfile(file_idx))
+
+    def test_read_swan_grib(self):
+        """Tests SWAN grib to xarray"""
+
+        # GFS file test
+        file_gfs = "tests/data/nwp_src/swan/swan-03.2024011000_00.grb"
+        file_idx = file_gfs + ".02ccc.idx"
+        variable = "swh"
+        data_var = read_swan_grib(file_gfs, variable, "swan")
+
+        self.assertEqual(data_var.rio.crs.data["proj"], "longlat")
+        self.assertEqual(data_var.rio.crs.data["datum"], "WGS84")
+
+        self.assertEqual(data_var.x.shape[0], 218)
+        self.assertEqual(data_var.y.shape[0], 185)
+
+        self.assertAlmostEqual(data_var.values[120, 190], 0.659, 2)
+        self.assertTrue(np.isnan(data_var.values[0, 0]))
+
+        self.assertAlmostEqual(data_var.rio.transform().a, 0.03)
+        self.assertAlmostEqual(data_var.rio.transform().b, 0.0)
+        self.assertAlmostEqual(data_var.rio.transform().c, -0.845)
+        self.assertAlmostEqual(data_var.rio.transform().d, 0.0)
+        self.assertAlmostEqual(data_var.rio.transform().e, 0.03)
+        self.assertAlmostEqual(data_var.rio.transform().f, 38.415)
+
+        self.assertFalse(os.path.isfile(file_idx))
+
+    def test_read_ww3_grib(self):
+        """Tests WW3 grib to xarray"""
+
+        # GFS file test
+        file_gfs = "tests/data/nwp_src/ww3/ww3-03.2024011000_00.grb"
+        file_idx = file_gfs + ".02ccc.idx"
+        variable = "swh"
+        data_var = read_ww3_grib(file_gfs, variable, "ww3")
+
+        self.assertEqual(data_var.rio.crs.data["proj"], "longlat")
+        self.assertEqual(data_var.rio.crs.data["datum"], "WGS84")
+
+        self.assertEqual(data_var.x.shape[0], 218)
+        self.assertEqual(data_var.y.shape[0], 185)
+
+        self.assertAlmostEqual(data_var.values[120, 190], 0.563, 2)
+        self.assertTrue(np.isnan(data_var.values[0, 0]))
+
+        self.assertAlmostEqual(data_var.rio.transform().a, 0.03)
+        self.assertAlmostEqual(data_var.rio.transform().b, 0.0)
+        self.assertAlmostEqual(data_var.rio.transform().c, -0.845)
+        self.assertAlmostEqual(data_var.rio.transform().d, 0.0)
+        self.assertAlmostEqual(data_var.rio.transform().e, 0.03)
+        self.assertAlmostEqual(data_var.rio.transform().f, 38.415)
 
         self.assertFalse(os.path.isfile(file_idx))

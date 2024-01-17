@@ -51,5 +51,5 @@ class TestIOInterface(unittest.TestCase):
             "'bolam', 'icon', 'moloch_gfs', 'moloch_ecm',"
             " 'wrf_ecm', 'wrf_exp', 'wrf_gfs_3', "
             "'wrf_gfs_9', 'ecmwf', 'ecmwf_hres', 'ecmwf_ens', "
-            "'unified_model', 'wrf_tl_ens', 'gfs', 'gefs']",
+            "'unified_model', 'wrf_tl_ens', 'gfs', 'gefs', 'swan', 'ww3']",
         )

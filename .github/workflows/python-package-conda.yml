@@ -5,22 +5,38 @@ on: [pull_request]
 jobs:
   build-linux:
     runs-on: ubuntu-latest
+    # To activate environment: https://stackoverflow.com/a/72735253/11135165
+    defaults:
+      run:
+        shell: bash -el {0}   
     strategy:
       max-parallel: 5
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v4
+    - uses: actions/checkout@v4
+    - uses: conda-incubator/setup-miniconda@v3
       with:
-        python-version: '3.11'
+        activate-environment: unimodel-dev
+        environment-file: environment_dev.yml
+        python-version: 3.11.4
+        auto-activate-base: false
+    #- name: Set up Python 3.11.4
+    #  uses: actions/setup-python@v4
+    #  with:
+    #    python-version: '3.11.4'
     - name: Add conda to system path
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
         echo $CONDA/bin >> $GITHUB_PATH
-    - name: Install dependencies
-      run: |
-        conda env update --file environment_dev.yml --name base
+    # - name: Install dependencies
+    #  run: |
+    #    conda env create --file environment_dev.yml
+   # - name: Init conda
+   #   run: |
+   #     conda init
+   # - name: Activate environment
+   #   run: |
+   #     conda activate unimodel-dev
     - name: Lint with flake8
       run: |
         conda install flake8

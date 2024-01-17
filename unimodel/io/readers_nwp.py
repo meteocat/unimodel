@@ -708,3 +708,121 @@ def _get_ncep_metadata(xarray_var):
     crs_model = pyproj.crs.CRS.from_dict(projparams)
 
     return {"crs": crs_model}
+
+
+def read_swan_grib(
+    grib_file: str, variable: str, model: str, extra_filters: dict = None
+) -> xarray.DataArray:
+    """Reads a SWAN grib file and transforms it into an xarray.DataArray.
+
+    Args:
+        grib_file (string): Path to a SWAN grib file.
+        variable (string): Variable to extract.
+        model (str): Model to be read.
+        extra_filters (dict, optional): Other filters
+                                        needed to read the variable
+
+    Returns:
+        xarray.DataArray: SWAN grib file data.
+    """
+
+    filter_keys = {"shortName": variable}
+    if extra_filters is not None:
+        filter_keys.update(extra_filters)
+
+    try:
+        grib_data = xarray.open_dataarray(
+            grib_file,
+            engine="cfgrib",
+            backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
+        )
+    except DatasetBuildError as err:
+        raise_reader_missing_filters(grib_file, variable, model, err)
+
+    geographics = _get_swan_metadata(grib_data)
+    grib_data = grib_data.rio.write_crs(geographics["crs"])
+
+    # Change time for steps (timedelta)
+    # grib_data["time"] = (grib_data.time - grib_data.time[0])
+
+    # grib_data = grib_data.drop_vars("step")
+
+    # Rename coordinates for further reprojection
+    grib_data = grib_data.rename({"longitude": "x", "latitude": "y"})
+    # , "time": "step"})
+
+    # Add model name to attributes
+    grib_data.attrs["model"] = model
+
+    return grib_data
+
+
+def _get_swan_metadata(xarray_var):
+    """Gets projection of a SWAN xarray.
+
+    Args:
+        xarray_var (xarray): SWAN grib data.
+
+    Returns:
+        dict: Coordinate reference system.
+    """
+    projparams = proj4_from_grib(xarray_var)
+    crs_model = pyproj.crs.CRS.from_dict(projparams)
+
+    return {"crs": crs_model}
+
+
+def read_ww3_grib(
+    grib_file: str, variable: str, model: str, extra_filters: dict = None
+) -> xarray.DataArray:
+    """Reads a WW3 grib file and transforms it into an xarray.DataArray.
+
+    Args:
+        grib_file (string): Path to a WW3 grib file.
+        variable (string): Variable to extract.
+        model (str): Model to be read.
+        extra_filters (dict, optional): Other filters
+                                        needed to read the variable
+
+    Returns:
+        xarray.DataArray: WW3 grib file data.
+    """
+
+    filter_keys = {"shortName": variable}
+    if extra_filters is not None:
+        filter_keys.update(extra_filters)
+
+    try:
+        grib_data = xarray.open_dataarray(
+            grib_file,
+            engine="cfgrib",
+            backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
+        )
+    except DatasetBuildError as err:
+        raise_reader_missing_filters(grib_file, variable, model, err)
+
+    geographics = _get_ww3_metadata(grib_data)
+    grib_data = grib_data.rio.write_crs(geographics["crs"])
+
+    # Rename coordinates for further reprojection
+    grib_data = grib_data.rename({"longitude": "x", "latitude": "y"})
+
+    # Add model name to attributes
+    grib_data.attrs["model"] = model
+
+    return grib_data
+
+
+def _get_ww3_metadata(xarray_var):
+    """Gets projection of a WW3 xarray.
+
+    Args:
+        xarray_var (xarray): WW3 grib data.
+
+    Returns:
+        dict: Coordinate reference system.
+    """
+    projparams = proj4_from_grib(xarray_var)
+    crs_model = pyproj.crs.CRS.from_dict(projparams)
+
+    return {"crs": crs_model}
