@@ -11,7 +11,7 @@ from unimodel.utils.custom_errors import raise_reader_missing_filters
 
 
 def read_wrf_prs(
-    grib_file: str, variable: str, model: str, extra_filters={}
+    grib_file: str, variable: str, model: str, extra_filters: dict = None
 ) -> xarray.DataArray:
     """Reads a WRF grib file and transforms it into an xarray.DataArray.
 
@@ -27,7 +27,8 @@ def read_wrf_prs(
     """
 
     filter_keys = {"shortName": variable}
-    filter_keys.update(extra_filters)
+    if extra_filters is not None:
+        filter_keys.update(extra_filters)
 
     try:
         grib_data = xarray.open_dataarray(
@@ -35,8 +36,8 @@ def read_wrf_prs(
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
         )
-    except DatasetBuildError as e:
-        raise_reader_missing_filters(grib_file, variable, model, e)
+    except DatasetBuildError as err:
+        raise_reader_missing_filters(grib_file, variable, model, err)
 
     geographics = _get_wrf_prs_metadata(grib_data, model)
     grib_data = grib_data.rio.write_crs(geographics["crs"])
@@ -126,7 +127,7 @@ def _get_wrf_prs_metadata(xarray_var: xarray.DataArray, model: str) -> dict:
 
 
 def read_icon_grib(
-    grib_file: str, variable: str, model: str, extra_filters={}
+    grib_file: str, variable: str, model: str, extra_filters: dict = None
 ) -> xarray.DataArray:
     """Reads an ICON grib file and transforms it into an xarray.DataArray.
 
@@ -142,7 +143,8 @@ def read_icon_grib(
     """
 
     filter_keys = {"shortName": variable}
-    filter_keys.update(extra_filters)
+    if extra_filters is not None:
+        filter_keys.update(extra_filters)
 
     try:
         grib_data = xarray.open_dataarray(
@@ -150,8 +152,8 @@ def read_icon_grib(
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
         )
-    except DatasetBuildError as e:
-        raise_reader_missing_filters(grib_file, variable, model, e)
+    except DatasetBuildError as err:
+        raise_reader_missing_filters(grib_file, variable, model, err)
 
     geographics = _get_icon_metadata(grib_data)
     grib_data = grib_data.rio.write_crs(geographics["crs"])
@@ -181,7 +183,7 @@ def _get_icon_metadata(xarray_var: xarray.DataArray) -> dict:
 
 
 def read_moloch_grib(
-    grib_file: str, variable: str, model: str, extra_filters={}
+    grib_file: str, variable: str, model: str, extra_filters: dict = None
 ) -> xarray.DataArray:
     """Reads a Moloch grib file and transforms it into an xarray.DataArray.
 
@@ -197,7 +199,8 @@ def read_moloch_grib(
     """
 
     filter_keys = {"shortName": variable}
-    filter_keys.update(extra_filters)
+    if extra_filters is not None:
+        filter_keys.update(extra_filters)
 
     try:
         grib_data = xarray.open_dataarray(
@@ -205,8 +208,8 @@ def read_moloch_grib(
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
         )
-    except DatasetBuildError as e:
-        raise_reader_missing_filters(grib_file, variable, model, e)
+    except DatasetBuildError as err:
+        raise_reader_missing_filters(grib_file, variable, model, err)
 
     grib_md = _get_moloch_metadata(grib_data)
 
@@ -262,7 +265,7 @@ def _get_moloch_metadata(moloch_data: xarray.DataArray) -> dict:
 
 
 def read_bolam_grib(
-    grib_file: str, variable: str, model: str, extra_filters={}
+    grib_file: str, variable: str, model: str, extra_filters: dict = None
 ) -> xarray.DataArray:
     """Reads a Bolam grib file and transforms it into an xarray.DataArray.
 
@@ -278,7 +281,8 @@ def read_bolam_grib(
     """
 
     filter_keys = {"shortName": variable}
-    filter_keys.update(extra_filters)
+    if extra_filters is not None:
+        filter_keys.update(extra_filters)
 
     try:
         grib_data = xarray.open_dataarray(
@@ -286,8 +290,8 @@ def read_bolam_grib(
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
         )
-    except DatasetBuildError as e:
-        raise_reader_missing_filters(grib_file, variable, model, e)
+    except DatasetBuildError as err:
+        raise_reader_missing_filters(grib_file, variable, model, err)
 
     grib_md = _get_bolam_metadata(grib_data)
 
@@ -343,7 +347,7 @@ def _get_bolam_metadata(bolam_data: xarray.DataArray) -> dict:
 
 
 def read_arome_grib(
-    grib_file: str, variable: str, model: str, extra_filters={}
+    grib_file: str, variable: str, model: str, extra_filters: dict = None
 ) -> xarray.DataArray:
     """Reads an AROME grib file and transforms it into an xarray.DataArray.
 
@@ -359,7 +363,8 @@ def read_arome_grib(
     """
 
     filter_keys = {"shortName": variable}
-    filter_keys.update(extra_filters)
+    if extra_filters is not None:
+        filter_keys.update(extra_filters)
 
     try:
         grib_data = xarray.open_dataarray(
@@ -367,8 +372,8 @@ def read_arome_grib(
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
         )
-    except DatasetBuildError as e:
-        raise_reader_missing_filters(grib_file, variable, model, e)
+    except DatasetBuildError as err:
+        raise_reader_missing_filters(grib_file, variable, model, err)
 
     grib_md = _get_arome_metadata(grib_data)
 
@@ -406,7 +411,7 @@ def _get_arome_metadata(arome_data: xarray.DataArray) -> dict:
 
 
 def read_arpege_grib(
-    grib_file: str, variable: str, model: str, extra_filters={}
+    grib_file: str, variable: str, model: str, extra_filters: dict = None
 ) -> xarray.DataArray:
     """Reads an ARPEGE grib file and transforms it into an xarray.DataArray.
 
@@ -422,7 +427,8 @@ def read_arpege_grib(
     """
 
     filter_keys = {"shortName": variable}
-    filter_keys.update(extra_filters)
+    if extra_filters is not None:
+        filter_keys.update(extra_filters)
 
     try:
         grib_data = xarray.open_dataarray(
@@ -430,8 +436,8 @@ def read_arpege_grib(
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
         )
-    except DatasetBuildError as e:
-        raise_reader_missing_filters(grib_file, variable, model, e)
+    except DatasetBuildError as err:
+        raise_reader_missing_filters(grib_file, variable, model, err)
 
     grib_md = _get_arpege_metadata(grib_data)
 
@@ -468,7 +474,7 @@ def _get_arpege_metadata(arpege_data: xarray.DataArray) -> dict:
 
 
 def read_ecmwf_grib(
-    grib_file: str, variable: str, model: str, extra_filters={}
+    grib_file: str, variable: str, model: str, extra_filters: dict = None
 ) -> xarray.DataArray:
     """Reads an ECMWF grib file and transforms it into an xarray.DataArray.
 
@@ -484,7 +490,8 @@ def read_ecmwf_grib(
     """
 
     filter_keys = {"shortName": variable}
-    filter_keys.update(extra_filters)
+    if extra_filters is not None:
+        filter_keys.update(extra_filters)
 
     try:
         grib_data = xarray.open_dataarray(
@@ -492,8 +499,8 @@ def read_ecmwf_grib(
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
         )
-    except DatasetBuildError as e:
-        raise_reader_missing_filters(grib_file, variable, model, e)
+    except DatasetBuildError as err:
+        raise_reader_missing_filters(grib_file, variable, model, err)
 
     if variable == "tp":
         grib_data.data = grib_data.data * 1000
@@ -528,7 +535,7 @@ def _get_ecmwf_hres_metadata(xarray_var):
 
 
 def read_unified_model_grib(
-    grib_file: str, variable: str, model: str, extra_filters={}
+    grib_file: str, variable: str, model: str, extra_filters: dict = None
 ) -> xarray.DataArray:
     """Reads an Unified Model grib file and transforms it into
     an xarray.DataArray.
@@ -545,7 +552,8 @@ def read_unified_model_grib(
     """
 
     filter_keys = {"shortName": variable}
-    filter_keys.update(extra_filters)
+    if extra_filters is not None:
+        filter_keys.update(extra_filters)
 
     try:
         grib_data = xarray.open_dataarray(
@@ -553,8 +561,8 @@ def read_unified_model_grib(
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
         )
-    except DatasetBuildError as e:
-        raise_reader_missing_filters(grib_file, variable, model, e)
+    except DatasetBuildError as err:
+        raise_reader_missing_filters(grib_file, variable, model, err)
 
     geographics = _get_unified_model_metadata(grib_data)
     grib_data = grib_data.rio.write_crs(geographics["crs"])
@@ -584,7 +592,7 @@ def _get_unified_model_metadata(xarray_var):
 
 
 def read_wrf_tl_ens_grib(
-    grib_file: str, variable: str, model: str, extra_filters={}
+    grib_file: str, variable: str, model: str, extra_filters: dict = None
 ) -> xarray.DataArray:
     """Reads a WRF-TLS-ENS member grib file and transforms it into
     an xarray.DataArray.
@@ -601,7 +609,8 @@ def read_wrf_tl_ens_grib(
     """
 
     filter_keys = {"shortName": variable}
-    filter_keys.update(extra_filters)
+    if extra_filters is not None:
+        filter_keys.update(extra_filters)
 
     try:
         grib_data = xarray.open_dataarray(
@@ -609,8 +618,8 @@ def read_wrf_tl_ens_grib(
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
         )
-    except DatasetBuildError as e:
-        raise_reader_missing_filters(grib_file, variable, model, e)
+    except DatasetBuildError as err:
+        raise_reader_missing_filters(grib_file, variable, model, err)
 
     grib_md = _get_wrf_tl_ens_metadata(grib_data)
 
@@ -621,7 +630,7 @@ def read_wrf_tl_ens_grib(
 
     # Add ensemble member coordinate
     grib_data = grib_data.assign_coords(
-        realization=int(re.search(r"(?<=-).+?(?=\.)", grib_file).group())
+        realization=int(re.search(r"tl_ens-\d+-(\d+)\.", grib_file).group(1))
     )
 
     # Add model name to attributes
@@ -646,7 +655,7 @@ def _get_wrf_tl_ens_metadata(xarray_var: xarray.DataArray) -> dict:
 
 
 def read_ncep_grib(
-    grib_file: str, variable: str, model: str, extra_filters={}
+    grib_file: str, variable: str, model: str, extra_filters: dict = None
 ) -> xarray.DataArray:
     """Reads an NCEP (GEFS or GFS) grib file and transforms it into an xarray.DataArray.
 
@@ -662,7 +671,8 @@ def read_ncep_grib(
     """
 
     filter_keys = {"shortName": variable}
-    filter_keys.update(extra_filters)
+    if extra_filters is not None:
+        filter_keys.update(extra_filters)
 
     try:
         grib_data = xarray.open_dataarray(
@@ -670,8 +680,8 @@ def read_ncep_grib(
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
         )
-    except DatasetBuildError as e:
-        raise_reader_missing_filters(grib_file, variable, model, e)
+    except DatasetBuildError as err:
+        raise_reader_missing_filters(grib_file, variable, model, err)
 
     geographics = _get_ncep_metadata(grib_data)
     grib_data = grib_data.rio.write_crs(geographics["crs"])
@@ -701,7 +711,7 @@ def _get_ncep_metadata(xarray_var):
 
 
 def read_swan_grib(
-    grib_file: str, variable: str, model: str, extra_filters={}
+    grib_file: str, variable: str, model: str, extra_filters: dict = None
 ) -> xarray.DataArray:
     """Reads a SWAN grib file and transforms it into an xarray.DataArray.
 
@@ -717,7 +727,8 @@ def read_swan_grib(
     """
 
     filter_keys = {"shortName": variable}
-    filter_keys.update(extra_filters)
+    if extra_filters is not None:
+        filter_keys.update(extra_filters)
 
     try:
         grib_data = xarray.open_dataarray(
@@ -725,8 +736,8 @@ def read_swan_grib(
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
         )
-    except DatasetBuildError as e:
-        raise_reader_missing_filters(grib_file, variable, model, e)
+    except DatasetBuildError as err:
+        raise_reader_missing_filters(grib_file, variable, model, err)
 
     geographics = _get_swan_metadata(grib_data)
     grib_data = grib_data.rio.write_crs(geographics["crs"])
@@ -762,7 +773,7 @@ def _get_swan_metadata(xarray_var):
 
 
 def read_ww3_grib(
-    grib_file: str, variable: str, model: str, extra_filters={}
+    grib_file: str, variable: str, model: str, extra_filters: dict = None
 ) -> xarray.DataArray:
     """Reads a WW3 grib file and transforms it into an xarray.DataArray.
 
@@ -778,7 +789,8 @@ def read_ww3_grib(
     """
 
     filter_keys = {"shortName": variable}
-    filter_keys.update(extra_filters)
+    if extra_filters is not None:
+        filter_keys.update(extra_filters)
 
     try:
         grib_data = xarray.open_dataarray(
@@ -786,8 +798,8 @@ def read_ww3_grib(
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
         )
-    except DatasetBuildError as e:
-        raise_reader_missing_filters(grib_file, variable, model, e)
+    except DatasetBuildError as err:
+        raise_reader_missing_filters(grib_file, variable, model, err)
 
     geographics = _get_ww3_metadata(grib_data)
     grib_data = grib_data.rio.write_crs(geographics["crs"])
