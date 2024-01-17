@@ -20,7 +20,11 @@ jobs:
         echo $CONDA/bin >> $GITHUB_PATH
     - name: Install dependencies
       run: |
-        conda env update --file environment_dev.yml --name base
+        conda env create --file environment_dev.yml
+    - name: Init and activate environment
+      run: |
+        conda init
+        conda activate unimodel-dev
     - name: Lint with flake8
       run: |
         conda install flake8
