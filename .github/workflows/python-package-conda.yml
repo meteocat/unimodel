@@ -10,20 +10,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Python 3.11
+    - name: Set up Python 3.11.4
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: '3.11.4'
     - name: Add conda to system path
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
         echo $CONDA/bin >> $GITHUB_PATH
     - name: Install dependencies
       run: |
-        conda env create --file environment_dev.yml
-    - name: Activate environment
-      run: |
-        conda activate unimodel-dev
+        conda env update --file environment_dev.yml --name base
     - name: Lint with flake8
       run: |
         conda install flake8
