@@ -1,6 +1,10 @@
 Control de versions
 ===================
 
+v0.2.6 - 24/10/2023
+-------------------
+
+- S'afegeix la lectura dels models SWAN (:py:func:`unimodel.io.readers_nwp.read_swan_grib`) i WW3 (:py:func:`unimodel.io.readers_nwp.read_ww3_grib`).
 
 v0.2.5 - 24/10/2023
 -------------------
