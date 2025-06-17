@@ -17,7 +17,7 @@ class TestEcorrection(unittest.TestCase):
     dem_file_wrong = "tests/hres_dem_25831.tif"
     lsm_shp = "tests/data/coastline/coastline_weurope"
 
-    da_var = xarray.open_dataset("tests/data/var_xarray_old.nc", decode_timedelta=False)
+    da_var = xarray.open_dataset("tests/data/var_xarray.nc", decode_timedelta=False)
     da_var = da_var.rio.write_crs(da_var["spatial_ref"].attrs["crs_wkt"])
 
     def test_init(self):
