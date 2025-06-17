@@ -1,5 +1,5 @@
 """Module with xarray tools."""
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import numpy as np
 import pandas as pd
@@ -44,7 +44,7 @@ def expand_valid_time_coord(
                 "'interval' is different than temporal resolution of data."
             )
     # Transform time_coord to datetime format
-    time_coord = [datetime.utcfromtimestamp(dt.astype(int) / 1e9) for dt in time_coord]
+    time_coord = pd.to_datetime(time_coord, utc=True).tz_convert(None)
 
     start_date_pad = time_coord[-1]
     end_date_pad = time_coord[0] + timedelta(hours=lead_time)
@@ -68,7 +68,7 @@ def expand_valid_time_coord(
     valid_time_coord = pd.date_range(
         start=time_coord[0],
         end=end_date_pad,
-        freq=str(interval) + "H",
+        freq=str(interval) + "h",
         inclusive="left",
     )
 
