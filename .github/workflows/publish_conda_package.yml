@@ -37,7 +37,7 @@ jobs:
           ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: |
           source "$HOME/miniconda/etc/profile.d/conda.sh"
-          export ANACONDA_TOKEN=${{ secrets.ANACONDA_TOKEN }}
+          anaconda whoami
           for pkg in $(conda build -c conda-forge conda_recipe/ --output); do
             anaconda upload --user meteocat --label main "$pkg"
           done
