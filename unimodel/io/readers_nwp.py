@@ -6,8 +6,9 @@ import numpy as np
 import pyproj
 import xarray
 from cfgrib.dataset import DatasetBuildError
-from unimodel.utils.geotools import proj4_from_grib
+
 from unimodel.utils.custom_errors import raise_reader_missing_filters
+from unimodel.utils.geotools import proj4_from_grib
 
 
 def read_wrf_prs(
@@ -35,6 +36,7 @@ def read_wrf_prs(
             grib_file,
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
+            decode_timedelta=True,
         )
     except DatasetBuildError as err:
         raise_reader_missing_filters(grib_file, variable, model, err)
@@ -151,6 +153,7 @@ def read_icon_grib(
             grib_file,
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
+            decode_timedelta=False,
         )
     except DatasetBuildError as err:
         raise_reader_missing_filters(grib_file, variable, model, err)
@@ -207,6 +210,7 @@ def read_moloch_grib(
             grib_file,
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
+            decode_timedelta=True,
         )
     except DatasetBuildError as err:
         raise_reader_missing_filters(grib_file, variable, model, err)
@@ -289,6 +293,7 @@ def read_bolam_grib(
             grib_file,
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
+            decode_timedelta=True,
         )
     except DatasetBuildError as err:
         raise_reader_missing_filters(grib_file, variable, model, err)
@@ -371,6 +376,7 @@ def read_arome_grib(
             grib_file,
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
+            decode_timedelta=True,
         )
     except DatasetBuildError as err:
         raise_reader_missing_filters(grib_file, variable, model, err)
@@ -435,6 +441,7 @@ def read_arpege_grib(
             grib_file,
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
+            decode_timedelta=True,
         )
     except DatasetBuildError as err:
         raise_reader_missing_filters(grib_file, variable, model, err)
@@ -498,6 +505,7 @@ def read_ecmwf_grib(
             grib_file,
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
+            decode_timedelta=True,
         )
     except DatasetBuildError as err:
         raise_reader_missing_filters(grib_file, variable, model, err)
@@ -560,6 +568,7 @@ def read_unified_model_grib(
             grib_file,
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
+            decode_timedelta=True,
         )
     except DatasetBuildError as err:
         raise_reader_missing_filters(grib_file, variable, model, err)
@@ -617,6 +626,7 @@ def read_wrf_tl_ens_grib(
             grib_file,
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
+            decode_timedelta=True,
         )
     except DatasetBuildError as err:
         raise_reader_missing_filters(grib_file, variable, model, err)
@@ -679,6 +689,7 @@ def read_ncep_grib(
             grib_file,
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
+            decode_timedelta=True,
         )
     except DatasetBuildError as err:
         raise_reader_missing_filters(grib_file, variable, model, err)
@@ -735,6 +746,7 @@ def read_swan_grib(
             grib_file,
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
+            decode_timedelta=True,
         )
     except DatasetBuildError as err:
         raise_reader_missing_filters(grib_file, variable, model, err)
@@ -797,6 +809,7 @@ def read_ww3_grib(
             grib_file,
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
+            decode_timedelta=True,
         )
     except DatasetBuildError as err:
         raise_reader_missing_filters(grib_file, variable, model, err)
