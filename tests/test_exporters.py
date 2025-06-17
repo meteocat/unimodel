@@ -1,7 +1,8 @@
 """Tests exporters module.
 """
-import pickle
 import unittest
+
+import xarray
 
 from unimodel.io.exporters import concat_and_merge
 
@@ -11,18 +12,21 @@ class TestExporters(unittest.TestCase):
 
     def test_concat_and_merge(self):
         """Test concat and merge a list of lists of models"""
-        with open("tests/data/list_arome_xarray.pkl", "rb") as file:
-            arome_xarrays = pickle.load(file)
-        with open("tests/data/list_bolam_xarray.pkl", "rb") as file:
-            bolam_xarrays = pickle.load(file)
+        arome_0 = xarray.open_dataset("tests/data/list_arome_xarray_0.nc", decode_timedelta=True)["tp"]
+        arome_1 = xarray.open_dataset("tests/data/list_arome_xarray_1.nc", decode_timedelta=True)["tp"]
+        arome_xarrays = [arome_0, arome_1]
+
+        bolam_0 = xarray.open_dataset("tests/data/list_bolam_xarray_0.nc", decode_timedelta=True)["tp"]
+        bolam_1 = xarray.open_dataset("tests/data/list_bolam_xarray_1.nc", decode_timedelta=True)["tp"]
+        bolam_xarrays = [bolam_0, bolam_1]
 
         models_arrays = [arome_xarrays, bolam_xarrays]
         model_data = concat_and_merge(models_arrays)
 
-        self.assertEqual(model_data.dims["x"], 620)
-        self.assertEqual(model_data.dims["y"], 417)
-        self.assertEqual(model_data.dims["valid_time"], 1)
-        self.assertEqual(model_data.dims["model"], 2)
+        self.assertEqual(model_data.sizes["x"], 620)
+        self.assertEqual(model_data.sizes["y"], 417)
+        self.assertEqual(model_data.sizes["valid_time"], 1)
+        self.assertEqual(model_data.sizes["model"], 2)
 
         self.assertEqual(
             model_data.valid_time.encoding["units"], "hours since 2023-02-15 00:00:00"

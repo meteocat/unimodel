@@ -1,23 +1,16 @@
 """Tests transformation of NWP grib to xarray.
 """
-import unittest
 import os
+import unittest
+
 import numpy as np
 
-from unimodel.io.readers_nwp import (
-    read_arome_grib,
-    read_arpege_grib,
-    read_bolam_grib,
-    read_ecmwf_grib,
-    read_icon_grib,
-    read_moloch_grib,
-    read_unified_model_grib,
-    read_wrf_prs,
-    read_wrf_tl_ens_grib,
-    read_ncep_grib,
-    read_swan_grib,
-    read_ww3_grib,
-)
+from unimodel.io.readers_nwp import (read_arome_grib, read_arpege_grib,
+                                     read_bolam_grib, read_ecmwf_grib,
+                                     read_icon_grib, read_moloch_grib,
+                                     read_ncep_grib, read_swan_grib,
+                                     read_unified_model_grib, read_wrf_prs,
+                                     read_wrf_tl_ens_grib, read_ww3_grib)
 
 
 class TestReadersNWP(unittest.TestCase):
@@ -256,6 +249,22 @@ class TestReadersNWP(unittest.TestCase):
 
         self.assertFalse(os.path.isfile(file_idx))
 
+        # Test raise missing filters
+        err_msg = (
+            "The grib file has multiple values for unique key, try re-open the "
+            "file with one of:"
+            "\n    extra_filters={'dataType': 'pf'}"
+            "\n    extra_filters={'dataType': 'cf'}"
+            "\nFor example:"
+            f"\n reader(grib_file='{file_ens}', "
+            f"variable='{variable}', model='ecmwf_ens',"
+            " extra_filters={'dataType': 'cf'})"
+        )
+        with self.assertRaises(TypeError) as err:
+            read_unified_model_grib(file_ens, variable, "ecmwf_ens")
+
+        self.assertEqual(err_msg, err.exception.args[0])
+
     def test_read_unified_model_grib(self):
         """Tests Unified Model grib to xarray"""
         file = "tests/data/nwp_src/um/um-10.2023032700_03.grib2"
@@ -278,24 +287,6 @@ class TestReadersNWP(unittest.TestCase):
         self.assertAlmostEqual(um_data.data[137, 83], 0.0, 2)
 
         self.assertFalse(os.path.isfile(file_idx))
-
-        # Test raise missing filters
-        variable = "2t"
-        err_msg = (
-            "The grib file has multiple values for unique key, try re-open the "
-            "file with one of:"
-            "\n    extra_filters={'stepType': 'instant'}"
-            "\n    extra_filters={'stepType': 'min'}"
-            "\n    extra_filters={'stepType': 'max'}"
-            "\nFor example:"
-            f"\n reader(grib_file='{file}', "
-            f"variable='{variable}', model='{model}',"
-            " extra_filters={'stepType': 'max'})"
-        )
-        with self.assertRaises(TypeError) as err:
-            um_data = read_unified_model_grib(file, variable, model)
-
-        self.assertEqual(err_msg, err.exception.args[0])
 
     def test_read_wrf_tl_ens_grib(self):
         """Tests WRF-TL-ENS member grib to xarray"""

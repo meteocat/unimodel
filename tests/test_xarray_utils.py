@@ -1,8 +1,9 @@
 """Tests downscaling interpolation module.
 """
-import pickle
 import unittest
+
 import numpy as np
+import xarray
 
 from unimodel.utils.xarray_tools import expand_valid_time_coord
 
@@ -10,11 +11,11 @@ from unimodel.utils.xarray_tools import expand_valid_time_coord
 class TestXarrayTools(unittest.TestCase):
     """Tests different interpolation methodologies"""
 
-    with open("tests/data/list_arome_xarray.pkl", "rb") as file:
-        data = pickle.load(file)
-
-    with open("tests/data/concat_xarray.pkl", "rb") as file:
-        concat_data = pickle.load(file)
+    arome_0 = xarray.open_dataset("tests/data/list_arome_xarray_0.nc", decode_timedelta=True)["tp"]
+    arome_1 = xarray.open_dataset("tests/data/list_arome_xarray_1.nc", decode_timedelta=True)["tp"]
+    data = [arome_0, arome_1]
+    
+    concat_data = xarray.open_dataset("tests/data/concat_xarray.nc", decode_timedelta=True)["tp"]
 
     def test_expand_valid_time_coord(self):
         """Tests expand time coordinate utility"""
