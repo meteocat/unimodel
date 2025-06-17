@@ -1,15 +1,19 @@
-"""Tests downscaling interpolation module.
-"""
-import pickle
+"""Tests downscaling interpolation module."""
+
 import unittest
+
+import xarray
+
 from unimodel.downscaling.interpolation import bilinear, nearest
 
 
 class TestInterpolation(unittest.TestCase):
     """Tests different interpolation methodologies"""
 
-    with open("tests/data/xarray_model.pkl", "rb") as file:
-        data = pickle.load(file)
+    data = xarray.open_dataset("tests/data/xarray_model.nc", decode_timedelta=True)[
+        "tp"
+    ]
+    data = data.rio.write_crs(data["spatial_ref"].attrs["crs_wkt"])
 
     def test_bilinear(self):
         """Tests bilinear interpolation with and without projection"""
@@ -42,7 +46,7 @@ class TestInterpolation(unittest.TestCase):
         )
         self.assertEqual(grid_repr.shape, (620, 417))
 
-        self.assertEqual(grid_repr.rio.crs.data["init"], "epsg:4326")
+        self.assertEqual(grid_repr.rio.crs, "EPSG:4326")
 
         self.assertAlmostEqual(grid_repr.rio.transform().a, 0.0106, 3)
         self.assertAlmostEqual(grid_repr.rio.transform().c, -1.6211, 3)
@@ -86,7 +90,7 @@ class TestInterpolation(unittest.TestCase):
         )
 
         self.assertEqual(grid_repr.shape, (620, 417))
-        self.assertEqual(grid_repr.rio.crs.data["init"], "epsg:4326")
+        self.assertEqual(grid_repr.rio.crs, "EPSG:4326")
         self.assertAlmostEqual(grid_repr.rio.transform().a, 0.0106, 3)
         self.assertAlmostEqual(grid_repr.rio.transform().c, -1.6211, 3)
         self.assertAlmostEqual(grid_repr.rio.transform().e, -0.0106, 3)

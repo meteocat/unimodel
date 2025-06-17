@@ -1,5 +1,5 @@
-"""Interpolation module.
-"""
+"""Interpolation module."""
+
 import xarray
 from rasterio.warp import Resampling
 

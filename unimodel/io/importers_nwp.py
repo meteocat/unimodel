@@ -1,5 +1,5 @@
-"""Module to import NWP grib files.
-"""
+"""Module to import NWP grib files."""
+
 import re
 import tarfile
 from datetime import datetime, timedelta

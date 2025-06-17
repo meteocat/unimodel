@@ -1,32 +1,40 @@
-"""Interface for I/O grib readers.
-"""
-from unimodel.io.readers_nwp import (read_arome_grib, read_arpege_grib,
-                                     read_bolam_grib, read_ecmwf_grib,
-                                     read_icon_grib, read_moloch_grib,
-                                     read_unified_model_grib, read_wrf_prs,
-                                     read_wrf_tl_ens_grib, read_ncep_grib,
-                                     read_swan_grib, read_ww3_grib)
+"""Interface for I/O grib readers."""
+
+from unimodel.io.readers_nwp import (
+    read_arome_grib,
+    read_arpege_grib,
+    read_bolam_grib,
+    read_ecmwf_grib,
+    read_icon_grib,
+    read_moloch_grib,
+    read_unified_model_grib,
+    read_wrf_prs,
+    read_wrf_tl_ens_grib,
+    read_ncep_grib,
+    read_swan_grib,
+    read_ww3_grib,
+)
 
 _readers = dict()
-_readers['arome'] = read_arome_grib
-_readers['arpege'] = read_arpege_grib
-_readers['bolam'] = read_bolam_grib
-_readers['icon'] = read_icon_grib
-_readers['moloch_gfs'] = read_moloch_grib
-_readers['moloch_ecm'] = read_moloch_grib
-_readers['wrf_ecm'] = read_wrf_prs
-_readers['wrf_exp'] = read_wrf_prs
-_readers['wrf_gfs_3'] = read_wrf_prs
-_readers['wrf_gfs_9'] = read_wrf_prs
-_readers['ecmwf'] = read_ecmwf_grib
-_readers['ecmwf_hres'] = read_ecmwf_grib
-_readers['ecmwf_ens'] = read_ecmwf_grib
-_readers['unified_model'] = read_unified_model_grib
-_readers['wrf_tl_ens'] = read_wrf_tl_ens_grib
-_readers['gfs'] = read_ncep_grib
-_readers['gefs'] = read_ncep_grib
-_readers['swan'] = read_swan_grib
-_readers['ww3'] = read_ww3_grib
+_readers["arome"] = read_arome_grib
+_readers["arpege"] = read_arpege_grib
+_readers["bolam"] = read_bolam_grib
+_readers["icon"] = read_icon_grib
+_readers["moloch_gfs"] = read_moloch_grib
+_readers["moloch_ecm"] = read_moloch_grib
+_readers["wrf_ecm"] = read_wrf_prs
+_readers["wrf_exp"] = read_wrf_prs
+_readers["wrf_gfs_3"] = read_wrf_prs
+_readers["wrf_gfs_9"] = read_wrf_prs
+_readers["ecmwf"] = read_ecmwf_grib
+_readers["ecmwf_hres"] = read_ecmwf_grib
+_readers["ecmwf_ens"] = read_ecmwf_grib
+_readers["unified_model"] = read_unified_model_grib
+_readers["wrf_tl_ens"] = read_wrf_tl_ens_grib
+_readers["gfs"] = read_ncep_grib
+_readers["gefs"] = read_ncep_grib
+_readers["swan"] = read_swan_grib
+_readers["ww3"] = read_ww3_grib
 
 
 def get_reader(name):
@@ -51,5 +59,7 @@ def get_reader(name):
         reader_method = _readers[name]
         return reader_method
     except KeyError:
-        raise ValueError(f"Unknown reader {name}\n The available readers are: "
-                         + str(list(_readers.keys()))) from None
+        raise ValueError(
+            f"Unknown reader {name}\n The available readers are: "
+            + str(list(_readers.keys()))
+        ) from None

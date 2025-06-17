@@ -1,10 +1,10 @@
-"""Module to test NWP importer module.
-"""
+"""Module to test NWP importer module."""
+
 import unittest
 from datetime import datetime
 from glob import glob
-from shutil import rmtree
 from os import makedirs, path
+from shutil import rmtree
 
 from unimodel.io.importers_nwp import import_nwp_grib
 

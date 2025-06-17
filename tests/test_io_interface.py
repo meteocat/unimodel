@@ -1,5 +1,5 @@
-"""Tests interface for I/O methods.
-"""
+"""Tests interface for I/O methods."""
+
 import unittest
 
 import unimodel.io
@@ -10,10 +10,10 @@ from unimodel.io.readers_nwp import (
     read_ecmwf_grib,
     read_icon_grib,
     read_moloch_grib,
+    read_ncep_grib,
+    read_unified_model_grib,
     read_wrf_prs,
     read_wrf_tl_ens_grib,
-    read_unified_model_grib,
-    read_ncep_grib,
 )
 
 

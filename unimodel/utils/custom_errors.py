@@ -1,5 +1,4 @@
-"""Unimodel custom error messages.
-"""
+"""Unimodel custom error messages."""
 
 
 def raise_reader_missing_filters(grib_file, variable, model, error):

@@ -1,10 +1,10 @@
-"""Module to download unimodel test data.
-"""
-from urllib import request
-from zipfile import ZipFile
+"""Module to download unimodel test data."""
+
 import os
 from shutil import copytree, rmtree
 from tempfile import TemporaryDirectory
+from urllib import request
+from zipfile import ZipFile
 
 
 def download_unimodel_test_data(test_dir: str) -> None:

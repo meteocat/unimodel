@@ -1,5 +1,5 @@
-"""Class that calculates the elevation correction of 2t
-"""
+"""Class that calculates the elevation correction of 2t"""
+
 import os
 
 import numpy as np
