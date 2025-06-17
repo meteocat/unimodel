@@ -1,5 +1,5 @@
-"""Test geotools module.
-"""
+"""Test geotools module."""
+
 import unittest
 
 import pyproj
@@ -11,7 +11,9 @@ from unimodel.utils.geotools import proj4_from_grib, reproject_xarray
 class TestGeoTools(unittest.TestCase):
     """Test geotools module"""
 
-    data = xarray.open_dataset("tests/data/xarray_model.nc", decode_timedelta=True)["tp"]
+    data = xarray.open_dataset("tests/data/xarray_model.nc", decode_timedelta=True)[
+        "tp"
+    ]
     data = data.rio.write_crs(data["spatial_ref"].attrs["crs_wkt"])
 
     def test_proj4_from_grib(self):

@@ -1,5 +1,5 @@
-"""Module to import configuration files.
-"""
+"""Module to import configuration files."""
+
 import json
 from os.path import exists
 
@@ -17,9 +17,9 @@ def load_config(config_file):
         dict: Configuration dictionary.
     """
     if not exists(config_file):
-        raise FileNotFoundError(config_file + ' does not exist.')
+        raise FileNotFoundError(config_file + " does not exist.")
 
-    with open(config_file, 'rb') as c_f:
+    with open(config_file, "rb") as c_f:
         config = json.load(c_f)
         c_f.close()
 

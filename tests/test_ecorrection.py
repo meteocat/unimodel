@@ -1,5 +1,5 @@
-"""Tests ecorrection class
-"""
+"""Tests ecorrection class"""
+
 import unittest
 from datetime import datetime
 

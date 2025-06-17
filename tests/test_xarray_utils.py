@@ -1,5 +1,5 @@
-"""Tests downscaling interpolation module.
-"""
+"""Tests downscaling interpolation module."""
+
 import unittest
 
 import numpy as np
@@ -11,11 +11,17 @@ from unimodel.utils.xarray_tools import expand_valid_time_coord
 class TestXarrayTools(unittest.TestCase):
     """Tests different interpolation methodologies"""
 
-    arome_0 = xarray.open_dataset("tests/data/list_arome_xarray_0.nc", decode_timedelta=True)["tp"]
-    arome_1 = xarray.open_dataset("tests/data/list_arome_xarray_1.nc", decode_timedelta=True)["tp"]
+    arome_0 = xarray.open_dataset(
+        "tests/data/list_arome_xarray_0.nc", decode_timedelta=True
+    )["tp"]
+    arome_1 = xarray.open_dataset(
+        "tests/data/list_arome_xarray_1.nc", decode_timedelta=True
+    )["tp"]
     data = [arome_0, arome_1]
-    
-    concat_data = xarray.open_dataset("tests/data/concat_xarray.nc", decode_timedelta=True)["tp"]
+
+    concat_data = xarray.open_dataset(
+        "tests/data/concat_xarray.nc", decode_timedelta=True
+    )["tp"]
 
     def test_expand_valid_time_coord(self):
         """Tests expand time coordinate utility"""

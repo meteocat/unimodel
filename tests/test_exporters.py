@@ -1,5 +1,5 @@
-"""Tests exporters module.
-"""
+"""Tests exporters module."""
+
 import unittest
 
 import xarray
@@ -12,12 +12,20 @@ class TestExporters(unittest.TestCase):
 
     def test_concat_and_merge(self):
         """Test concat and merge a list of lists of models"""
-        arome_0 = xarray.open_dataset("tests/data/list_arome_xarray_0.nc", decode_timedelta=True)["tp"]
-        arome_1 = xarray.open_dataset("tests/data/list_arome_xarray_1.nc", decode_timedelta=True)["tp"]
+        arome_0 = xarray.open_dataset(
+            "tests/data/list_arome_xarray_0.nc", decode_timedelta=True
+        )["tp"]
+        arome_1 = xarray.open_dataset(
+            "tests/data/list_arome_xarray_1.nc", decode_timedelta=True
+        )["tp"]
         arome_xarrays = [arome_0, arome_1]
 
-        bolam_0 = xarray.open_dataset("tests/data/list_bolam_xarray_0.nc", decode_timedelta=True)["tp"]
-        bolam_1 = xarray.open_dataset("tests/data/list_bolam_xarray_1.nc", decode_timedelta=True)["tp"]
+        bolam_0 = xarray.open_dataset(
+            "tests/data/list_bolam_xarray_0.nc", decode_timedelta=True
+        )["tp"]
+        bolam_1 = xarray.open_dataset(
+            "tests/data/list_bolam_xarray_1.nc", decode_timedelta=True
+        )["tp"]
         bolam_xarrays = [bolam_0, bolam_1]
 
         models_arrays = [arome_xarrays, bolam_xarrays]

@@ -1,16 +1,24 @@
-"""Tests transformation of NWP grib to xarray.
-"""
+"""Tests transformation of NWP grib to xarray."""
+
 import os
 import unittest
 
 import numpy as np
 
-from unimodel.io.readers_nwp import (read_arome_grib, read_arpege_grib,
-                                     read_bolam_grib, read_ecmwf_grib,
-                                     read_icon_grib, read_moloch_grib,
-                                     read_ncep_grib, read_swan_grib,
-                                     read_unified_model_grib, read_wrf_prs,
-                                     read_wrf_tl_ens_grib, read_ww3_grib)
+from unimodel.io.readers_nwp import (
+    read_arome_grib,
+    read_arpege_grib,
+    read_bolam_grib,
+    read_ecmwf_grib,
+    read_icon_grib,
+    read_moloch_grib,
+    read_ncep_grib,
+    read_swan_grib,
+    read_unified_model_grib,
+    read_wrf_prs,
+    read_wrf_tl_ens_grib,
+    read_ww3_grib,
+)
 
 
 class TestReadersNWP(unittest.TestCase):

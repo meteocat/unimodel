@@ -1,5 +1,5 @@
-"""Tests downscaling interpolation module.
-"""
+"""Tests downscaling interpolation module."""
+
 import unittest
 
 import xarray
@@ -10,7 +10,9 @@ from unimodel.downscaling.interpolation import bilinear, nearest
 class TestInterpolation(unittest.TestCase):
     """Tests different interpolation methodologies"""
 
-    data = xarray.open_dataset("tests/data/xarray_model.nc", decode_timedelta=True)["tp"]
+    data = xarray.open_dataset("tests/data/xarray_model.nc", decode_timedelta=True)[
+        "tp"
+    ]
     data = data.rio.write_crs(data["spatial_ref"].attrs["crs_wkt"])
 
     def test_bilinear(self):

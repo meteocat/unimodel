@@ -1,5 +1,5 @@
-"""Module to read NWP files and transfrom them to xarray.
-"""
+"""Module to read NWP files and transfrom them to xarray."""
+
 import re
 
 import numpy as np

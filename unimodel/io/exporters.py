@@ -1,5 +1,5 @@
-"""Module to export xarray to different file formats.
-"""
+"""Module to export xarray to different file formats."""
+
 import xarray
 
 from unimodel.utils.decorators import xarray_attributes
@@ -36,9 +36,9 @@ def merge_models(models: list) -> xarray.DataArray:
     model_list = []
     for model in models:
         # Add 'model' coordinate
-        model_new_coord = model.assign_coords(model=model.attrs['model'])
+        model_new_coord = model.assign_coords(model=model.attrs["model"])
         # New coordinate 'model' as dimension
-        model_new_coord = model_new_coord.expand_dims('model')
+        model_new_coord = model_new_coord.expand_dims("model")
         model_list.append(model_new_coord)
 
     model_merged = xarray.merge(model_list)
@@ -58,11 +58,11 @@ def differences_by_lead_time(model_concat: list) -> xarray.DataArray:
     Returns:
         xarray.Datarray: Iterative differences between lead times.
     """
-    diff_data = model_concat.diff('valid_time')
+    diff_data = model_concat.diff("valid_time")
     diff_data.attrs = model_concat.attrs
 
     run_date = str(diff_data.time.dt.strftime("%Y-%m-%d %H:%M:%S").data)
-    diff_data.valid_time.encoding['units'] = "hours since " + run_date
+    diff_data.valid_time.encoding["units"] = "hours since " + run_date
 
     return diff_data
 
@@ -83,8 +83,8 @@ def concat_and_merge(models: list) -> xarray.DataArray:
 
     data_xarray = []
     for model in models:
-        model_concat = concat_model(model, dim='valid_time')
-        if model_concat.name == 'tp':
+        model_concat = concat_model(model, dim="valid_time")
+        if model_concat.name == "tp":
             data_xarray.append(differences_by_lead_time(model_concat))
         else:
             data_xarray.append(model_concat)
