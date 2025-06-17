@@ -28,7 +28,7 @@ def xarray_attributes(func):
                     xarray_data.attrs['models'] = list(xarray_data.model.data)
 
         if isinstance(xarray_data, xarray.Dataset):
-            if xarray_data.dims.get('model') > 1:
+            if xarray_data.sizes.get('model') > 1:
                 del xarray_data.attrs['model']
                 xarray_data.attrs['models'] = list(xarray_data.model.data)
 
