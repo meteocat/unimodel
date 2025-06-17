@@ -18,6 +18,9 @@ jobs:
           echo "$HOME/miniconda/bin" >> $GITHUB_PATH
           source "$HOME/miniconda/etc/profile.d/conda.sh"
           conda init bash
+          # Ensure conda-forge is used
+          conda config --set channel_priority strict
+          conda config --add channels conda-forge
 
       - name: Install conda-build and anaconda-client
         run: |
@@ -34,6 +37,6 @@ jobs:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: |
           source "$HOME/miniconda/etc/profile.d/conda.sh"
-          for pkg in $(conda build conda_recipe/ --output); do
+          for pkg in $(conda build -c conda-forge conda_recipe/ --output); do
             anaconda --token $ANACONDA_TOKEN upload -u meteocat -l master "$pkg"
           done
