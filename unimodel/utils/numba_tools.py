@@ -2,9 +2,9 @@ import numba
 import numpy as np
 
 
-@numba.jit(nogil=True, parallel=True, nopython=True, target_backend='cuda')
+@numba.jit(nogil=True, parallel=True, nopython=True)
 def linalg_lstsq(XX, yy):
-    """"Fit a large set of points to a regression"""
+    """Fit a large set of points to a regression"""
     assert XX.shape == yy.shape, "Inputs mismatched"
     n_pnts, _ = XX.shape
 
