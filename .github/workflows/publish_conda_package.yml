@@ -35,5 +35,5 @@ jobs:
         run: |
           source "$HOME/miniconda/etc/profile.d/conda.sh"
           for pkg in $(conda build -c conda-forge conda_recipe/ --output); do
-            anaconda --token $ANACONDA_TOKEN upload -u meteocat -l master "$pkg"
+            anaconda --token $ANACONDA_TOKEN upload -u meteocat -l main "$pkg"
           done
