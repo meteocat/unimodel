@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from glob import glob
 from os import makedirs, remove
 from posixpath import basename
-from shutil import copy2
+from shutil import copyfile
 
 from genericpath import exists
 
@@ -124,7 +124,7 @@ def import_nwp_grib(
             # If tar_file exists in source folder, it is copied to stage
             # directory
             if exists(tar_file):
-                copy2(tar_file, model_dir)
+                copyfile(tar_file, model_dir + basename(tar_file))
             else:
                 raise FileNotFoundError(tar_file + " not found.")
         else:
@@ -149,7 +149,7 @@ def import_nwp_grib(
             remove(prev_file)
         # IF NWP grib file exists in source directory, it is copied
         if exists(nwp_file):
-            copy2(nwp_file, model_dir)
+            copyfile(nwp_file, model_dir + basename(nwp_file))
             nwp_files.append(model_dir + basename(nwp_file))
         else:
             raise FileNotFoundError(nwp_file + " not found.")
