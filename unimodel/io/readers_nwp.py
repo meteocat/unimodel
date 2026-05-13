@@ -153,7 +153,7 @@ def read_icon_grib(
             grib_file,
             engine="cfgrib",
             backend_kwargs={"filter_by_keys": filter_keys, "indexpath": ""},
-            decode_timedelta=False,
+            decode_timedelta=True,
         )
     except DatasetBuildError as err:
         raise_reader_missing_filters(grib_file, variable, model, err)
