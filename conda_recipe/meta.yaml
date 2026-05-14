@@ -7,20 +7,11 @@ source:
   git_url: https://github.com/meteocat/unimodel.git
 
 requirements:
-  build:
+  host:
     - python
+    - pip
+    - setuptools
     - setuptools_scm
-    - cfgrib
-    - dask
-    - eccodes
-    - netcdf4
-    - numba
-    - numpy >=1.24
-    - pyshp
-    - rioxarray
-    - scikit-learn
-    - shapely
-    - xarray
 
   run:
     - python
